@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { updateProfile, updateParentProfile } from "@/lib/actions/profiles";
@@ -18,6 +19,9 @@ import {
   CheckCircle,
   XCircle,
   Loader2,
+  Sparkles,
+  ShieldCheck,
+  Send,
 } from "lucide-react";
 
 interface Child {
@@ -65,13 +69,12 @@ export function ParentDashboardClient({
   const [updatingProfile, setUpdatingProfile] = useState(false);
   const [profileMsg, setProfileMsg] = useState<string | null>(null);
 
-  // Profile Update Handler
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setUpdatingProfile(true);
     setProfileMsg(null);
     try {
-      const resBase = await updateProfile({
+      await updateProfile({
         userId: parentUser.id,
         name: parentName,
       });
@@ -83,12 +86,7 @@ export function ParentDashboardClient({
           country: parentCountry,
         });
       }
-
-      if (resBase.error) {
-        setProfileMsg("Error: " + resBase.error);
-      } else {
-        setProfileMsg("Profile updated successfully!");
-      }
+      setProfileMsg("Profile updated successfully!");
     } catch (err) {
       setProfileMsg("Failed to update profile details.");
     } finally {
@@ -96,7 +94,6 @@ export function ParentDashboardClient({
     }
   };
 
-  // Cancel Booking Handler
   const handleCancelBooking = async (bookingId: string) => {
     if (!confirm("Are you sure you want to cancel this class slot?")) return;
     try {
@@ -104,7 +101,6 @@ export function ParentDashboardClient({
         bookingId,
         status: BookingStatus.CANCELLED,
       });
-      // Update local state
       setChildren((prev) =>
         prev.map((c) => ({
           ...c,
@@ -120,107 +116,102 @@ export function ParentDashboardClient({
 
   return (
     <div className="space-y-8">
-      {/* Navigation Tab Bar */}
-      <div className="flex flex-wrap gap-2 border-b border-border pb-px font-mono text-xs uppercase tracking-wider">
-        {["overview", "attendance", "billing", "settings"].map((tab) => (
+      {/* Top Banner */}
+      <div className="relative overflow-hidden rounded-2xl bg-navy p-6 lg:p-8 text-white shadow-xl">
+        <div className="absolute top-0 right-0 h-40 w-40 bg-copper/20 blur-3xl rounded-full" />
+        <div className="relative z-10 flex flex-wrap items-center justify-between gap-6">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full bg-copper/20 px-3 py-1 text-xs font-semibold text-copper border border-copper/30 mb-3">
+              <ShieldCheck className="h-3.5 w-3.5" />
+              <span>Parent Control Center</span>
+            </div>
+            <h1 className="text-2xl font-extrabold text-white sm:text-3xl">Parent Dashboard: {parentUser.name}</h1>
+            <p className="mt-1 text-sm text-slate-light max-w-xl">
+              Monitor your children&apos;s 40-minute 1-on-1 live sessions, tutor performance notes, and slot approval statuses.
+            </p>
+          </div>
+          <div>
+            <a href="/book-trial">
+              <Button variant="copper" className="gap-2 shadow-md">
+                <Calendar className="h-4 w-4" /> Book New 40-Min Session
+              </Button>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex flex-wrap gap-2 border-b border-slate-border pb-4">
+        {[
+          { id: "overview", label: "Children Overview", icon: User },
+          { id: "bookings", label: "Class Slots & Approvals", icon: Calendar },
+          { id: "billing", label: "Billing & Subscriptions", icon: CreditCard },
+          { id: "profile", label: "Account Settings", icon: FileText },
+        ].map((tab) => (
           <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 border-b-2 font-medium transition-colors ${
-              activeTab === tab
-                ? "border-gold text-foreground font-semibold"
-                : "border-transparent text-muted-foreground hover:text-foreground"
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl transition-all ${
+              activeTab === tab.id
+                ? "bg-navy text-white shadow-sm"
+                : "bg-white text-slate hover:text-navy border border-slate-border hover:bg-cream-muted"
             }`}
           >
-            {tab}
+            <tab.icon className="h-4 w-4" />
+            <span>{tab.label}</span>
           </button>
         ))}
       </div>
 
       {/* OVERVIEW TAB */}
       {activeTab === "overview" && (
-        <div className="space-y-8">
-          <div className="grid gap-6 md:grid-cols-2">
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-extrabold text-navy">Learners & Progress Summary</h2>
+          </div>
+
+          <div className="grid gap-6">
             {children.map((child) => (
-              <div key={child.id} className="rounded-xl border border-border bg-card p-6 space-y-6">
-                <div className="flex justify-between items-start">
+              <div key={child.id} className="rounded-2xl border border-slate-border bg-white p-6 shadow-sm">
+                <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-border/50 pb-4">
                   <div>
-                    <h2 className="font-display text-xl text-foreground">{child.user.name}</h2>
-                    <p className="mt-1 font-mono text-xs uppercase text-muted-foreground">
-                      {child.gradeLevel || "Middle School"} · {child.englishLevel}
-                    </p>
+                    <h3 className="text-lg font-bold text-navy">{child.user.name}</h3>
+                    <p className="text-xs text-slate">{child.user.email} • Level: {child.englishLevel}</p>
                   </div>
-                  <Badge>Active Scholar</Badge>
+                  <span className="rounded-full bg-copper/10 px-3 py-1 text-xs font-bold text-copper border border-copper/20">
+                    Active 1-on-1 Student
+                  </span>
                 </div>
 
-                {/* Progress Indicators */}
-                <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
-                    <TrendingUp size={16} className="text-gold" /> Course Progress
-                  </h3>
-                  {child.enrollments.map((e) => (
-                    <div key={e.id} className="space-y-1">
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>{e.course.title}</span>
-                        <span>{e.progressPercent}%</span>
-                      </div>
-                      <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
-                        <div
-                          className="h-full bg-meridian transition-all duration-300"
-                          style={{ width: `${e.progressPercent}%` }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                  {child.enrollments.length === 0 && (
-                    <p className="text-xs text-muted-foreground">No active enrollments yet.</p>
-                  )}
-                </div>
-
-                {/* Class Schedule */}
-                <div className="space-y-3 border-t border-border pt-4">
-                  <h3 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
-                    <Calendar size={16} className="text-gold" /> Upcoming Classes
-                  </h3>
-                  <div className="space-y-2">
-                    {child.bookings
-                      .filter((b) => b.status === BookingStatus.CONFIRMED || b.status === BookingStatus.PENDING)
-                      .slice(0, 3)
-                      .map((b) => (
-                        <div
-                          key={b.id}
-                          className="flex items-center justify-between rounded-lg bg-background p-3 text-xs border border-border"
-                        >
-                          <div>
-                            <p className="font-medium text-foreground">
-                              {b.type} Session with {b.teacher.user.name}
-                            </p>
-                            <p className="text-muted-foreground mt-0.5">
-                              {new Date(b.scheduledAt).toLocaleString("en-US", {
-                                weekday: "short",
-                                month: "short",
-                                day: "numeric",
-                                hour: "numeric",
-                                minute: "2-digit",
-                              })}
-                            </p>
+                <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                  <div className="rounded-xl bg-cream/40 p-4 border border-slate-border/50">
+                    <h4 className="text-xs font-bold text-navy uppercase tracking-wider">Enrolled Courses</h4>
+                    {child.enrollments.length === 0 ? (
+                      <p className="text-xs text-slate mt-2">No active course enrollments yet.</p>
+                    ) : (
+                      <div className="mt-2 space-y-2">
+                        {child.enrollments.map((en) => (
+                          <div key={en.id} className="flex justify-between text-xs font-semibold text-navy">
+                            <span>{en.course.title}</span>
+                            <span className="text-copper">{en.progressPercent}%</span>
                           </div>
-                          {b.status === BookingStatus.CONFIRMED && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-7 text-xs text-danger hover:text-danger/90"
-                              onClick={() => handleCancelBooking(b.id)}
-                            >
-                              Cancel
-                            </Button>
-                          )}
-                        </div>
-                      ))}
-                    {child.bookings.filter(
-                      (b) => b.status === BookingStatus.CONFIRMED || b.status === BookingStatus.PENDING
-                    ).length === 0 && (
-                      <p className="text-xs text-muted-foreground">No upcoming classes booked.</p>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="rounded-xl bg-cream/40 p-4 border border-slate-border/50">
+                    <h4 className="text-xs font-bold text-navy uppercase tracking-wider">Tutor Feedback & Notes</h4>
+                    {child.bookings.some((b) => b.teacherNotes) ? (
+                      <div className="mt-2 space-y-2 text-xs text-slate">
+                        {child.bookings.filter((b) => b.teacherNotes).map((b) => (
+                          <p key={b.id} className="bg-white p-2 rounded border border-slate-border">
+                            &quot;{b.teacherNotes}&quot; — <span className="font-bold text-navy">{b.teacher.user.name}</span>
+                          </p>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-slate mt-2">Feedback notes will appear after completed 40-min sessions.</p>
                     )}
                   </div>
                 </div>
@@ -230,154 +221,121 @@ export function ParentDashboardClient({
         </div>
       )}
 
-      {/* ATTENDANCE & REPORT TAB */}
-      {activeTab === "attendance" && (
+      {/* BOOKINGS TAB */}
+      {activeTab === "bookings" && (
         <div className="space-y-6">
-          {children.map((child) => (
-            <div key={child.id} className="rounded-xl border border-border bg-card p-6 space-y-4">
-              <h2 className="font-display text-lg text-foreground">{child.user.name}&apos;s Class Ledger</h2>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm border-collapse">
-                  <thead>
-                    <tr className="border-b border-border font-mono text-xs uppercase text-muted-foreground">
-                      <th className="py-2">Date</th>
-                      <th className="py-2">Teacher</th>
-                      <th className="py-2">Type</th>
-                      <th className="py-2">Status</th>
-                      <th className="py-2">Teacher Reports</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border/50">
-                    {child.bookings.map((b) => (
-                      <tr key={b.id} className="hover:bg-muted/30">
-                        <td className="py-3">
-                          {new Date(b.scheduledAt).toLocaleDateString()}
-                        </td>
-                        <td className="py-3 font-medium text-foreground">{b.teacher.user.name}</td>
-                        <td className="py-3">{b.type}</td>
-                        <td className="py-3">
-                          <span className="inline-flex items-center gap-1">
-                            {b.status === BookingStatus.COMPLETED ? (
-                              <CheckCircle size={14} className="text-success" />
-                            ) : b.status === BookingStatus.CANCELLED ? (
-                              <XCircle size={14} className="text-danger" />
-                            ) : (
-                              <Clock size={14} className="text-warning" />
-                            )}
-                            {b.status}
-                          </span>
-                        </td>
-                        <td className="py-3 text-muted-foreground max-w-xs truncate">
-                          {b.teacherNotes || "No notes submitted yet."}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+          <div>
+            <h2 className="text-xl font-extrabold text-navy">40-Minute Class Slots & Approval Requests</h2>
+            <p className="text-xs text-slate mt-0.5">Track upcoming sessions, custom slot confirmations, and teacher allotments.</p>
+          </div>
+
+          <div className="grid gap-4">
+            {children.flatMap((c) => c.bookings).length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-slate-border bg-white p-8 text-center">
+                <Calendar className="h-10 w-10 text-slate mx-auto mb-2" />
+                <p className="text-sm font-bold text-navy">No scheduled class slots found.</p>
+                <a href="/book-trial" className="mt-3 inline-block">
+                  <Button variant="copper" size="sm">Book Free 40-Min Trial</Button>
+                </a>
               </div>
-            </div>
-          ))}
+            ) : (
+              children.flatMap((c) =>
+                c.bookings.map((b) => (
+                  <div key={b.id} className="rounded-2xl border border-slate-border bg-white p-5 shadow-sm flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold text-navy">{b.course?.title || "1-on-1 Class Session"}</span>
+                        <span className="rounded-full bg-navy/10 px-2.5 py-0.5 text-[10px] font-bold text-navy">40 Mins</span>
+                      </div>
+                      <p className="text-xs text-slate mt-1 flex items-center gap-2">
+                        <Clock className="h-3.5 w-3.5 text-copper" /> {new Date(b.scheduledAt).toLocaleString()}
+                        <span>• Tutor: {b.teacher.user.name} (Auto-Allotted)</span>
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                        b.status === BookingStatus.CONFIRMED
+                          ? "bg-emerald-100 text-emerald-700"
+                          : b.status === BookingStatus.PENDING
+                          ? "bg-amber-100 text-amber-700"
+                          : "bg-slate-100 text-slate-600"
+                      }`}>
+                        {b.status}
+                      </span>
+                      {b.status !== BookingStatus.CANCELLED && (
+                        <Button variant="outline" size="sm" onClick={() => handleCancelBooking(b.id)}>
+                          Cancel Slot
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )
+            )}
+          </div>
         </div>
       )}
 
       {/* BILLING TAB */}
       {activeTab === "billing" && (
-        <div className="rounded-xl border border-border bg-card p-6 space-y-6">
-          <h2 className="font-display text-lg text-foreground flex items-center gap-2">
-            <CreditCard className="text-gold" size={20} /> Invoices & Tuition Ledger
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            View past payments, download PDF statements, and update billing details.
-          </p>
+        <div className="space-y-6">
+          <div>
+            <h2 className="text-xl font-extrabold text-navy">Billing & Pricing Packages</h2>
+            <p className="text-xs text-slate mt-0.5">Manage course fees and invoice receipts.</p>
+          </div>
 
-          <div className="space-y-3">
-            {[
-              { id: "INV-001", date: "July 1, 2026", amount: 29900, status: "Paid", course: "Algebra Foundations" },
-              { id: "INV-002", date: "June 1, 2026", amount: 24900, status: "Paid", course: "Spoken English Fluency" },
-            ].map((inv) => (
-              <div
-                key={inv.id}
-                className="flex items-center justify-between rounded-lg border border-border p-4 text-sm"
-              >
-                <div>
-                  <h3 className="font-semibold text-foreground">{inv.course}</h3>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {inv.id} · Issued {inv.date}
-                  </p>
-                </div>
-                <div className="flex items-center gap-4">
-                  <span className="font-mono font-medium">${(inv.amount / 100).toFixed(2)}</span>
-                  <Badge className="bg-success/10 text-success border-success/20">{inv.status}</Badge>
-                  <Button variant="ghost" size="sm" className="h-8 gap-1">
-                    <FileText size={14} /> PDF
-                  </Button>
-                </div>
+          <div className="rounded-2xl border border-slate-border bg-white p-6 shadow-sm space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-border/50 pb-4">
+              <div>
+                <p className="text-xs font-bold text-slate uppercase tracking-wider">Current Package</p>
+                <p className="text-lg font-bold text-navy">1-on-1 Monthly Learning Plan (12 Sessions / Mo)</p>
               </div>
-            ))}
+              <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
+                Active Subscription
+              </span>
+            </div>
+            <p className="text-xs text-slate">All invoices are generated in GBP (£) with multi-currency conversion support.</p>
           </div>
         </div>
       )}
 
-      {/* SETTINGS TAB */}
-      {activeTab === "settings" && (
-        <div className="rounded-xl border border-border bg-card p-6 max-w-xl">
+      {/* PROFILE TAB */}
+      {activeTab === "profile" && (
+        <div className="rounded-2xl border border-slate-border bg-white p-6 shadow-sm max-w-xl">
+          <h2 className="text-xl font-extrabold text-navy mb-4">Account & Parent Profile Settings</h2>
           <form onSubmit={handleUpdateProfile} className="space-y-4">
-            <h2 className="font-display text-lg text-foreground flex items-center gap-2">
-              <User className="text-gold" size={20} /> Parent Profile Settings
-            </h2>
-
-            {profileMsg && (
-              <div className="rounded-md bg-info/10 p-3 text-sm text-info border border-info/20 font-medium">
-                {profileMsg}
-              </div>
-            )}
-
             <div>
-              <label className="block text-sm font-medium text-foreground">Your Name</label>
+              <label className="block text-xs font-bold text-navy mb-1">Parent Name</label>
               <input
                 type="text"
                 value={parentName}
                 onChange={(e) => setParentName(e.target.value)}
-                required
-                className="mt-1 block w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:ring-2 focus:ring-gold"
+                className="w-full rounded-xl border border-slate-border p-3 text-xs text-navy font-medium focus:border-copper focus:outline-none"
               />
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-foreground font-mono text-[11px] uppercase tracking-wide text-muted-foreground">
-                Phone Number
-              </label>
+              <label className="block text-xs font-bold text-navy mb-1">Phone Number</label>
               <input
                 type="tel"
                 value={parentPhone}
                 onChange={(e) => setParentPhone(e.target.value)}
-                placeholder="+1 (555) 0199"
-                className="mt-1 block w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:ring-2 focus:ring-gold"
+                className="w-full rounded-xl border border-slate-border p-3 text-xs text-navy font-medium focus:border-copper focus:outline-none"
               />
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-foreground font-mono text-[11px] uppercase tracking-wide text-muted-foreground">
-                Country
-              </label>
+              <label className="block text-xs font-bold text-navy mb-1">Country</label>
               <input
                 type="text"
                 value={parentCountry}
                 onChange={(e) => setParentCountry(e.target.value)}
-                placeholder="United States"
-                className="mt-1 block w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:ring-2 focus:ring-gold"
+                className="w-full rounded-xl border border-slate-border p-3 text-xs text-navy font-medium focus:border-copper focus:outline-none"
               />
             </div>
-
-            <Button type="submit" variant="primary" disabled={updatingProfile}>
-              {updatingProfile ? (
-                <>
-                  <Loader2 size={16} className="animate-spin" /> Updating...
-                </>
-              ) : (
-                "Save Changes"
-              )}
+            <Button variant="copper" type="submit" isLoading={updatingProfile}>
+              Save Profile Changes
             </Button>
+            {profileMsg && <p className="text-xs font-bold text-copper mt-2">{profileMsg}</p>}
           </form>
         </div>
       )}

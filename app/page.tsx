@@ -1,7 +1,6 @@
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Hero } from "@/components/home/hero";
-import { TrustedBy } from "@/components/home/trusted-by";
 import { Stats } from "@/components/home/stats";
 import { Features } from "@/components/home/features";
 import { HowItWorks } from "@/components/home/how-it-works";
@@ -20,7 +19,6 @@ export default function HomePage() {
       <Navbar />
       <main>
         <Hero />
-        <TrustedBy />
         <Stats />
         <Features />
         <HowItWorks />

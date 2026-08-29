@@ -8,14 +8,15 @@ import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 
 const categories = [
-  { id: "ib", label: "IB & IGCSE", highlight: "International Standard", stats: "96% Grade Increase" },
-  { id: "tutoring", label: "1-on-1 Tutoring", highlight: "Tailored Mastery", stats: "Dedicated Mentors" },
-  { id: "sat", label: "SAT & Exam Prep", highlight: "+210 Avg Score Boost", stats: "Top 5% Tutors" },
-  { id: "critical", label: "Critical Thinking", highlight: "Future-Ready Skills", stats: "Interactive Labs" },
+  { id: "exams", label: "Competitive Exams & Curriculums", highlight: "NAPLAN, ACARA, TOEFL, UK SAT", stats: "Selective Exam Mastery" },
+  { id: "communication", label: "Communication Skills", highlight: "Spoken Fluency & Confidence", stats: "Interactive Practice" },
+  { id: "islamic", label: "Islamic Foundation Courses", highlight: "Kalimas, Namaz, Azan & Duas", stats: "Quran Recitation & Tajweed" },
+  { id: "short-skills", label: "Short Skills", highlight: "Writing & Reading Skills", stats: "Structured Modules" },
+  { id: "academics", label: "Core Academics", highlight: "Math, Sciences & Languages", stats: "1-on-1 Guidance" },
 ];
 
 export function Hero() {
-  const [activeTab, setActiveTab] = useState("ib");
+  const [activeTab, setActiveTab] = useState("exams");
   const [hoveredNode, setHoveredNode] = useState<number | null>(null);
 
   const selectedCategory = categories.find((c) => c.id === activeTab) || categories[0];
@@ -50,7 +51,7 @@ export function Hero() {
 
           {/* Subtitle */}
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate">
-            Empowering students globally through personalized 1-on-1 tutoring, international curriculum mastery, and structured learning paths that compound over time.
+            Empowering students globally through personalized 1-on-1 tutoring, competitive school assessment prep (NAPLAN, ACARA, TOEFL, UK SAT), communication skills, and Quranic recitation.
           </p>
 
           {/* Interactive Program Tabs */}
@@ -121,7 +122,7 @@ export function Hero() {
                 <Users className="h-5 w-5 text-copper" />
               </div>
               <div>
-                <p className="text-sm font-bold text-navy">15+ Countries</p>
+                <p className="text-sm font-bold text-navy">5+ Countries</p>
                 <p className="text-xs text-slate">Global Master Faculty</p>
               </div>
             </div>

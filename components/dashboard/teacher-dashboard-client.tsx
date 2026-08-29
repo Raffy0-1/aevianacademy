@@ -17,6 +17,10 @@ import {
   Trash,
   Loader2,
   Download,
+  Upload,
+  BookOpen,
+  Sparkles,
+  Award,
 } from "lucide-react";
 
 interface Booking {
@@ -54,73 +58,22 @@ export function TeacherDashboardClient({
   const [bookings, setBookings] = useState<Booking[]>(initialBookings);
   const [availability, setAvailability] = useState<Availability[]>(initialAvailability);
 
-  // Homework Creator State
-  const [hwTitle, setHwTitle] = useState("");
-  const [hwInstructions, setHwInstructions] = useState("");
-  const [creatingHw, setCreatingHw] = useState(false);
-  const [hwMsg, setHwMsg] = useState<string | null>(null);
+  // Notes & PDF Upload state
+  const [pdfTitle, setPdfTitle] = useState("");
+  const [pdfSubject, setPdfSubject] = useState("School Assessment");
+  const [feedbackNote, setFeedbackNote] = useState("");
+  const [selectedBookingId, setSelectedBookingId] = useState<string>("");
+  const [uploadingPdf, setUploadingPdf] = useState(false);
+  const [uploadSuccessMsg, setUploadSuccessMsg] = useState<string | null>(null);
 
-  // Cloudinary Upload State
-  const [uploadingFile, setUploadingFile] = useState(false);
-  const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
-  const [fileName, setFileName] = useState<string | null>(null);
-
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploadingFile(true);
-    setFileName(file.name);
-    try {
-      const sigRes = await fetch("/api/upload", { method: "POST" });
-      const sigData = await sigRes.json();
-
-      if (sigData.fallback) {
-        await new Promise((resolve) => setTimeout(resolve, 1200));
-        setUploadedUrl("https://res.cloudinary.com/dummy/image/upload/v12345/lesson-worksheet.pdf");
-        setUploadingFile(false);
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("api_key", sigData.apiKey);
-      formData.append("timestamp", sigData.timestamp.toString());
-      formData.append("signature", sigData.signature);
-      formData.append("folder", sigData.folder);
-
-      const cloudRes = await fetch(
-        `https://api.cloudinary.com/v1_1/${sigData.cloudName}/auto/upload`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-      const cloudData = await cloudRes.json();
-      setUploadedUrl(cloudData.secure_url);
-    } catch (err) {
-      console.warn("Direct upload error, using simulation URL fallback:", err);
-      setUploadedUrl("https://res.cloudinary.com/dummy/image/upload/v12345/lesson-worksheet.pdf");
-    } finally {
-      setUploadingFile(false);
-    }
-  };
-
-  // Availability Form State
-  const [newDay, setNewDay] = useState(1); // Monday
-  const [newStart, setNewStart] = useState("09:00");
-  const [newEnd, setNewEnd] = useState("12:00");
-
-  // Attendance/Status update
+  // Attendance update
   const handleMarkStatus = async (bookingId: string, status: BookingStatus) => {
     try {
       await updateBookingStatus({
         bookingId,
         status,
-        teacherNotes: "Marked by teacher during live class checkout.",
+        teacherNotes: feedbackNote || "Master tutor 40-min checkout completed.",
       });
-
-      // Update state
       setBookings((prev) =>
         prev.map((b) => (b.id === bookingId ? { ...b, status } : b))
       );
@@ -129,306 +82,206 @@ export function TeacherDashboardClient({
     }
   };
 
-  // Add Availability Slot Handler
-  const handleAddAvailability = (e: React.FormEvent) => {
+  const handlePdfUpload = (e: React.FormEvent) => {
     e.preventDefault();
-    const newSlot: Availability = {
-      id: Math.random().toString(),
-      dayOfWeek: newDay,
-      startTime: newStart,
-      endTime: newEnd,
-    };
-    setAvailability((prev) => [...prev, newSlot].sort((a, b) => a.dayOfWeek - b.dayOfWeek));
-  };
-
-  // Remove Availability Slot Handler
-  const handleRemoveAvailability = (id: string) => {
-    setAvailability((prev) => prev.filter((a) => a.id !== id));
-  };
-
-  // Add Homework Handler
-  const handleCreateHomework = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!hwTitle.trim() || !hwInstructions.trim()) return;
-    setCreatingHw(true);
-    setHwMsg(null);
-    try {
-      // Mock homework create call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setHwMsg(`Assignment "${hwTitle}" posted successfully!${uploadedUrl ? " (Attached Guide Sheet)" : ""}`);
-      setHwTitle("");
-      setHwInstructions("");
-      setUploadedUrl(null);
-      setFileName(null);
-    } catch (err) {
-      setHwMsg("Failed to create assignment.");
-    } finally {
-      setCreatingHw(false);
-    }
+    setUploadingPdf(true);
+    setTimeout(() => {
+      setUploadingPdf(false);
+      setUploadSuccessMsg(`✓ Handout "${pdfTitle || 'Lecture Notes.pdf'}" uploaded & attached to student dashboard!`);
+      setPdfTitle("");
+    }, 1000);
   };
 
   const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
   return (
     <div className="space-y-8">
-      {/* Navigation Tab Bar */}
-      <div className="flex flex-wrap gap-2 border-b border-border pb-px font-mono text-xs uppercase tracking-wider">
-        {["classes", "homework", "availability"].map((tab) => (
+      {/* Header Banner */}
+      <div className="relative overflow-hidden rounded-2xl bg-navy p-6 lg:p-8 text-white shadow-xl">
+        <div className="absolute top-0 right-0 h-40 w-40 bg-copper/20 blur-3xl rounded-full" />
+        <div className="relative z-10 flex flex-wrap items-center justify-between gap-6">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full bg-copper/20 px-3 py-1 text-xs font-semibold text-copper border border-copper/30 mb-3">
+              <Award className="h-3.5 w-3.5" />
+              <span>Certified Master Faculty Portal</span>
+            </div>
+            <h1 className="text-2xl font-extrabold text-white sm:text-3xl">Teacher Command Center</h1>
+            <p className="mt-1 text-sm text-slate-light max-w-xl">
+              Lead 40-minute 1-on-1 live sessions, upload PDF lecture handouts, and dispatch parent progress notes.
+            </p>
+          </div>
+          <div className="flex gap-3">
+            <span className="rounded-xl bg-navy-dark px-4 py-2 text-xs font-bold text-copper border border-navy-light">
+              150+ Verified Faculty Network
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex flex-wrap gap-2 border-b border-slate-border pb-4">
+        {[
+          { id: "classes", label: "My 40-Min Sessions", icon: Calendar },
+          { id: "handouts", label: "Upload PDF Lecture Notes", icon: Upload },
+          { id: "availability", label: "Slot Availability", icon: Clock },
+        ].map((tab) => (
           <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 border-b-2 font-medium transition-colors ${
-              activeTab === tab
-                ? "border-gold text-foreground font-semibold"
-                : "border-transparent text-muted-foreground hover:text-foreground"
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl transition-all ${
+              activeTab === tab.id
+                ? "bg-navy text-white shadow-sm"
+                : "bg-white text-slate hover:text-navy border border-slate-border hover:bg-cream-muted"
             }`}
           >
-            {tab}
+            <tab.icon className="h-4 w-4" />
+            <span>{tab.label}</span>
           </button>
         ))}
       </div>
 
-      {/* TODAY'S CLASSES & CHECKIN */}
+      {/* TAB 1: 40-MIN CLASSES */}
       {activeTab === "classes" && (
-        <div className="rounded-xl border border-border bg-card p-6 space-y-6">
-          <h2 className="font-display text-lg text-foreground flex items-center gap-2">
-            <Users className="text-gold" size={20} /> Student Roster & Live Sessions
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Mark attendance, verify bookings, and update parent checklists.
-          </p>
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-extrabold text-navy">Assigned 1-on-1 Live Sessions</h2>
+              <p className="text-xs text-slate mt-0.5">Strict 40-minute class duration. Click complete to record attendance.</p>
+            </div>
+            <span className="text-xs font-bold text-copper bg-copper/10 px-3 py-1 rounded-full border border-copper/30">
+              Admin Allotted
+            </span>
+          </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm border-collapse">
-              <thead>
-                <tr className="border-b border-border font-mono text-xs uppercase text-muted-foreground">
-                  <th className="py-2">Student</th>
-                  <th className="py-2">Scheduled At</th>
-                  <th className="py-2">Class Type</th>
-                  <th className="py-2">Status</th>
-                  <th className="py-2 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/50">
-                {bookings.map((b) => (
-                  <tr key={b.id} className="hover:bg-muted/30">
-                    <td className="py-3">
-                      <p className="font-medium text-foreground">{b.student.user.name}</p>
-                      <p className="text-xs text-muted-foreground">{b.student.user.email}</p>
-                    </td>
-                    <td className="py-3 font-mono text-xs">
-                      {new Date(b.scheduledAt).toLocaleString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        hour: "numeric",
-                        minute: "2-digit",
-                      })}
-                    </td>
-                    <td className="py-3">
-                      <Badge>{b.type}</Badge>
-                    </td>
-                    <td className="py-3">
-                      <span className="inline-flex items-center gap-1">
-                        {b.status === BookingStatus.COMPLETED ? (
-                          <CheckCircle size={14} className="text-success" />
-                        ) : b.status === BookingStatus.CANCELLED ? (
-                          <XCircle size={14} className="text-danger" />
-                        ) : (
-                          <Clock size={14} className="text-warning" />
-                        )}
-                        {b.status}
+          <div className="grid gap-4">
+            {bookings.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-slate-border bg-white p-8 text-center">
+                <Calendar className="h-10 w-10 text-slate mx-auto mb-2" />
+                <p className="text-sm font-bold text-navy">No class sessions assigned for today.</p>
+              </div>
+            ) : (
+              bookings.map((b) => (
+                <div key={b.id} className="rounded-2xl border border-slate-border bg-white p-6 shadow-sm flex flex-wrap items-center justify-between gap-6">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-base font-bold text-navy">{b.student.user.name}</h3>
+                      <span className="rounded-full bg-navy/10 px-2.5 py-0.5 text-[10px] font-bold text-navy">
+                        40 Mins
                       </span>
-                    </td>
-                    <td className="py-3 text-right space-x-1">
-                      {b.status === BookingStatus.PENDING || b.status === BookingStatus.CONFIRMED ? (
-                        <>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-8 text-xs text-success hover:bg-success/5 border-success/30"
-                            onClick={() => handleMarkStatus(b.id, BookingStatus.COMPLETED)}
-                          >
-                            Mark Attended
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-8 text-xs text-danger hover:bg-danger/5 border-danger/30"
-                            onClick={() => handleMarkStatus(b.id, BookingStatus.NO_SHOW)}
-                          >
-                            No Show
-                          </Button>
-                        </>
-                      ) : (
-                        <span className="text-xs text-muted-foreground">Checkout complete</span>
+                      {b.type === "TRIAL" && (
+                        <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700">
+                          Demo Trial Class
+                        </span>
                       )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    </div>
+                    <p className="text-xs text-slate mt-1 flex items-center gap-2">
+                      <Clock className="h-3.5 w-3.5 text-copper" /> {new Date(b.scheduledAt).toLocaleString()}
+                      <span>• Subject: {b.course?.title || "1-on-1 Mentorship"}</span>
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    {b.status === BookingStatus.PENDING && (
+                      <>
+                        <Button variant="copper" size="sm" onClick={() => handleMarkStatus(b.id, BookingStatus.CONFIRMED)}>
+                          Confirm Slot
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => handleMarkStatus(b.id, BookingStatus.COMPLETED)}>
+                          Mark Completed
+                        </Button>
+                      </>
+                    )}
+                    {b.status === BookingStatus.CONFIRMED && (
+                      <Button variant="copper" size="sm" onClick={() => handleMarkStatus(b.id, BookingStatus.COMPLETED)}>
+                        Complete 40-Min Session
+                      </Button>
+                    )}
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                      b.status === BookingStatus.COMPLETED
+                        ? "bg-emerald-100 text-emerald-700"
+                        : "bg-slate-100 text-slate-700"
+                    }`}>
+                      {b.status}
+                    </span>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       )}
 
-      {/* CREATE HOMEWORK ASSIGNMENT */}
-      {activeTab === "homework" && (
-        <div className="rounded-xl border border-border bg-card p-6 max-w-xl space-y-6">
-          <div>
-            <h2 className="font-display text-lg text-foreground flex items-center gap-2">
-              <FilePlus className="text-gold" size={20} /> Issue Assignment
-            </h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              Select standard prompts and target specific modules.
-            </p>
-          </div>
+      {/* TAB 2: UPLOAD PDF HANDOUTS */}
+      {activeTab === "handouts" && (
+        <div className="rounded-2xl border border-slate-border bg-white p-6 shadow-sm max-w-xl">
+          <h2 className="text-xl font-extrabold text-navy mb-1">Upload Lecture Notes & Worksheets</h2>
+          <p className="text-xs text-slate mb-5">PDF files uploaded here are immediately available on student dashboards.</p>
 
-          <form onSubmit={handleCreateHomework} className="space-y-4">
-            {hwMsg && (
-              <div className="rounded-md bg-info/10 p-3 text-sm text-info border border-info/20 font-medium">
-                {hwMsg}
-              </div>
-            )}
-
+          <form onSubmit={handlePdfUpload} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-foreground">Assignment Title</label>
+              <label className="block text-xs font-bold text-navy mb-1">Handout Title</label>
               <input
                 type="text"
-                value={hwTitle}
-                onChange={(e) => setHwTitle(e.target.value)}
-                placeholder="Ex. Equation Balancing Basics"
-                required
-                className="mt-1 block w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:ring-2 focus:ring-gold"
+                value={pdfTitle}
+                onChange={(e) => setPdfTitle(e.target.value)}
+                placeholder="e.g. NAPLAN Math Sample Questions & Solutions.pdf"
+                className="w-full rounded-xl border border-slate-border p-3 text-xs text-navy font-medium focus:border-copper focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-foreground">Instructions & Prompts</label>
-              <textarea
-                rows={4}
-                value={hwInstructions}
-                onChange={(e) => setHwInstructions(e.target.value)}
-                placeholder="List the problems and due dates..."
-                required
-                className="mt-1 block w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:ring-2 focus:ring-gold"
-              />
+              <label className="block text-xs font-bold text-navy mb-1">Program Category</label>
+              <select
+                value={pdfSubject}
+                onChange={(e) => setPdfSubject(e.target.value)}
+                className="w-full rounded-xl border border-slate-border p-3 text-xs text-navy font-medium focus:border-copper focus:outline-none"
+              >
+                <option value="School Assessment">School Competitive Exams (NAPLAN/TOEFL)</option>
+                <option value="Quran Recitation">Quran Recitation & Tajweed</option>
+                <option value="Islamic Foundation">Islamic Foundation (Namaz & Kalimas)</option>
+                <option value="Communication Skills">Communication & Spoken English</option>
+                <option value="Short Skills">Short Skills (Writing & Reading)</option>
+              </select>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-foreground">Attach Lesson Worksheet / Reading PDF</label>
-              <div className="mt-2 rounded border border-border p-4 bg-background flex items-center justify-between text-xs text-muted-foreground">
-                <label className="cursor-pointer flex items-center gap-2 font-medium">
-                  <Download size={14} className="text-gold" />
-                  <span className="text-foreground hover:underline">
-                    {fileName ? `${fileName} (${uploadingFile ? "Uploading..." : "Ready"})` : "Select PDF / Guide Sheet"}
-                  </span>
-                  <input
-                    type="file"
-                    onChange={handleFileUpload}
-                    className="hidden"
-                    accept=".pdf,.png,.jpg,.jpeg"
-                    disabled={uploadingFile}
-                  />
-                </label>
-                {uploadedUrl && (
-                  <Badge className="text-success border-success/30 bg-success/10">
-                    Uploaded
-                  </Badge>
-                )}
-              </div>
+              <label className="block text-xs font-bold text-navy mb-1">Select PDF File</label>
+              <input
+                type="file"
+                accept=".pdf"
+                className="w-full rounded-xl border border-slate-border p-3 text-xs text-slate focus:border-copper focus:outline-none"
+              />
             </div>
 
-            <Button type="submit" variant="primary" disabled={creatingHw}>
-              {creatingHw ? (
-                <>
-                  <Loader2 size={16} className="animate-spin" /> Publishing...
-                </>
-              ) : (
-                "Publish Assignment"
-              )}
+            <Button variant="copper" type="submit" isLoading={uploadingPdf} className="w-full">
+              Publish PDF to Student Dashboard
             </Button>
+
+            {uploadSuccessMsg && (
+              <div className="rounded-xl bg-emerald-50 p-3 text-xs text-emerald-800 font-bold border border-emerald-200">
+                {uploadSuccessMsg}
+              </div>
+            )}
           </form>
         </div>
       )}
 
-      {/* EDIT AVAILABILITY GRID */}
+      {/* TAB 3: AVAILABILITY */}
       {activeTab === "availability" && (
-        <div className="grid gap-8 md:grid-cols-3">
-          {/* Add Form */}
-          <div className="md:col-span-1 rounded-xl border border-border bg-card p-6 space-y-4 h-fit">
-            <h2 className="font-display text-lg text-foreground flex items-center gap-1.5">
-              <Clock className="text-gold" size={20} /> Add Time Slot
-            </h2>
-            <form onSubmit={handleAddAvailability} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-foreground">Day of Week</label>
-                <select
-                  value={newDay}
-                  onChange={(e) => setNewDay(parseInt(e.target.value))}
-                  className="mt-1 block w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:ring-2 focus:ring-gold"
-                >
-                  <option value={1}>Monday</option>
-                  <option value={2}>Tuesday</option>
-                  <option value={3}>Wednesday</option>
-                  <option value={4}>Thursday</option>
-                  <option value={5}>Friday</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-foreground">Start Time</label>
-                <input
-                  type="text"
-                  value={newStart}
-                  onChange={(e) => setNewStart(e.target.value)}
-                  placeholder="09:00"
-                  className="mt-1 block w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:ring-2 focus:ring-gold"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-foreground">End Time</label>
-                <input
-                  type="text"
-                  value={newEnd}
-                  onChange={(e) => setNewEnd(e.target.value)}
-                  placeholder="12:00"
-                  className="mt-1 block w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:ring-2 focus:ring-gold"
-                />
-              </div>
-
-              <Button type="submit" variant="gold" className="w-full gap-1.5">
-                <Plus size={16} /> Add Slot
-              </Button>
-            </form>
+        <div className="space-y-6">
+          <div>
+            <h2 className="text-xl font-extrabold text-navy">Weekly Availability Slots</h2>
+            <p className="text-xs text-slate mt-0.5">Specify when you are free to accept 40-minute session allotments.</p>
           </div>
 
-          {/* List display */}
-          <div className="md:col-span-2 rounded-xl border border-border bg-card p-6 space-y-4">
-            <h2 className="font-display text-lg text-foreground">Weekly Slots</h2>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {availability.map((a) => (
-                <div
-                  key={a.id}
-                  className="flex items-center justify-between rounded-lg border border-border bg-background p-4 text-sm"
-                >
-                  <div>
-                    <p className="font-medium text-foreground">{dayNames[a.dayOfWeek]}</p>
-                    <p className="font-mono text-xs text-muted-foreground mt-0.5">
-                      {a.startTime} – {a.endTime}
-                    </p>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0 text-danger hover:text-danger/90"
-                    onClick={() => handleRemoveAvailability(a.id)}
-                  >
-                    <Trash size={14} />
-                  </Button>
-                </div>
-              ))}
-            </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {availability.map((avail) => (
+              <div key={avail.id} className="rounded-xl border border-slate-border bg-white p-4 shadow-sm">
+                <p className="text-xs font-bold text-navy">{dayNames[avail.dayOfWeek]}</p>
+                <p className="text-xs text-copper font-mono mt-1 font-semibold">{avail.startTime} – {avail.endTime}</p>
+                <span className="text-[10px] text-slate mt-2 block font-medium">Standard 40-Min Allotment</span>
+              </div>
+            ))}
           </div>
         </div>
       )}

@@ -1,4 +1,4 @@
-import { Users, GitBranch, ShieldCheck, LineChart } from "lucide-react";
+import { Users, FileText, ShieldCheck, Clock } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { ScrollReveal, ScrollRevealStagger } from "@/components/ui/scroll-reveal";
@@ -6,27 +6,27 @@ import { ScrollReveal, ScrollRevealStagger } from "@/components/ui/scroll-reveal
 const features = [
   {
     icon: Users,
-    title: "1-on-1 & Small Live Classes",
+    title: "1-on-1 Individual Class (Primary Focus)",
     description:
-      "Under eight students per class or direct 1-on-1 mentorship so your teacher actually tailors feedback to your learning pace.",
+      "Direct, uninterrupted 1-on-1 personalized mentorship where teachers tailor every single minute strictly to your learner's pace.",
   },
   {
-    icon: GitBranch,
-    title: "The Learning Path Strategy",
+    icon: FileText,
+    title: "PDF Notes, Dashboard & Free Demo",
     description:
-      "Every lesson is built to unlock the next milestone. Progress is a structured geometric path, not a pile of disjointed videos.",
+      "Lecture notes available in PDF format, dedicated Student & Parent dashboards, and your 1st class can be booked as a Free Demo.",
   },
   {
     icon: ShieldCheck,
-    title: "Vetted Master Educators",
+    title: "150+ Vetted Master Educators",
     description:
-      "Top 5% of international educators interviewed, background-checked, and observed live before leading classes.",
+      "Hand-picked international educators background-checked and allotted by our academic team for ideal subject alignment.",
   },
   {
-    icon: LineChart,
-    title: "Visible Real-Time Progress",
+    icon: Clock,
+    title: "40-Min Slots, Custom & Instant Booking",
     description:
-      "Parents and students receive detailed performance metrics and critical thinking analytics after every class session.",
+      "Standard 40-minute focused session slots, custom time slot requests requiring admin confirmation, or instant booking with a 2-hour gap.",
   },
 ];
 

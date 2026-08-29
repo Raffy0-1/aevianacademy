@@ -1,10 +1,10 @@
 import { Container } from "@/components/ui/container";
 
 const stats = [
-  { value: "38,000+", label: "Students taught" },
-  { value: "1,200+", label: "Vetted teachers" },
+  { value: "5K – 10K", label: "Students taught" },
+  { value: "150+", label: "Vetted teachers" },
   { value: "4.9 / 5", label: "Average class rating" },
-  { value: "40+", label: "Countries represented" },
+  { value: "5+", label: "Countries represented" },
 ];
 
 export function Stats() {

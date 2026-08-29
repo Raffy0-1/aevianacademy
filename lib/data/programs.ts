@@ -157,20 +157,39 @@ export const programs: ProgramCategory[] = [
   },
   {
     id: "quran-education",
-    title: "Quran & Arabic Foundations",
-    description: "Dedicated 1-on-1 Quran and Arabic reading classes for overseas families with verified native teachers.",
+    title: "Quran Recitation & Islamic Foundations",
+    description: "Dedicated 1-on-1 Quran Recitation, Tajweed, and essential Islamic teachings for overseas families with verified teachers.",
     courses: [
       {
         slug: "quran-reading",
-        title: "Quran Reading & Tajweed",
-        description: "Learn to read the Quran correctly with proper Tajweed rules from qualified instructors.",
+        title: "Quran Recitation & Tajweed Mastery",
+        description: "Learn to recite the Holy Quran fluently with proper Tajweed rules and precise pronunciation from qualified certified instructors.",
         targetStudents: "Children and Adults",
-        duration: "Ongoing",
-        learningOutcomes: ["Fluent Quran reading", "Correct pronunciation", "Understanding of basic Tajweed"],
-        badges: ["1-on-1 Learning", "Flexible Timings"],
-        curriculumTags: ["Quran"],
+        duration: "Ongoing (40-min sessions)",
+        learningOutcomes: ["Fluent Quran Recitation", "Correct Makharij & Tajweed Rules", "Mazz & Qirat Practice"],
+        badges: ["1-on-1 Learning", "Recitation Focus"],
+        curriculumTags: ["Quran Recitation", "Tajweed"],
         pricing: [
-          { name: "3 Classes / Week", priceGBP: 79, priceUSD: 100, pricePKR: "5,000–10,000", features: ["1-on-1 attention", "Tajweed focus"] },
+          { name: "3 Classes / Week", priceGBP: 79, priceUSD: 100, pricePKR: "5,000–10,000", features: ["1-on-1 Recitation attention", "Tajweed focus", "Dedicated 40-min slots"] },
+        ]
+      },
+      {
+        slug: "islamic-foundation-essential-teachings",
+        title: "Islamic Foundation & Essential Teachings",
+        description: "Fundamental Islamic learning covering Imaan ki Shartein, First 3 Kalimas with translation, Namaz, Azan, and essential daily Duas.",
+        targetStudents: "Young Learners & Beginners",
+        duration: "Flexible (40-min sessions)",
+        learningOutcomes: [
+          "Imaan ki Shartein (Articles of Faith)",
+          "First 3 Kalimas with word-by-word translation",
+          "Complete Namaz (Salah) step-by-step & Azan recitation",
+          "Essential daily Duas & Islamic etiquette"
+        ],
+        badges: ["Essential Foundation", "1-on-1 Mentorship"],
+        curriculumTags: ["Islamic Foundations", "Kalimas & Namaz", "Essential Duas"],
+        pricing: [
+          { name: "3 Classes / Week", priceGBP: 75, priceUSD: 95, pricePKR: "5,000–9,000", features: ["1-on-1 guidance", "Kalima & Namaz practice", "Interactive learning"] },
+          { name: "5 Classes / Week", priceGBP: 110, priceUSD: 140, pricePKR: "8,000–14,000", features: ["Accelerated track", "Daily Duas & Azan", "Parent progress dashboard"] }
         ]
       }
     ]

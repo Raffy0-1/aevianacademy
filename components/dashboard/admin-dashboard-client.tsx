@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,12 +10,20 @@ import {
   Briefcase,
   Layers,
   Search,
-  CheckCircle,
+  CheckCircle2,
   Clock,
   Sparkles,
   ChevronRight,
-  TrendingDown,
-  Percent,
+  ShieldCheck,
+  Zap,
+  Send,
+  BookOpen,
+  UserCheck,
+  Check,
+  X,
+  Sliders,
+  Globe,
+  Award,
 } from "lucide-react";
 
 interface Lead {
@@ -33,8 +42,20 @@ interface User {
   createdAt: string;
 }
 
+interface PendingBooking {
+  id: string;
+  studentName: string;
+  parentEmail: string;
+  courseName: string;
+  bookingMode: "standard" | "custom" | "instant";
+  requestedDate: string;
+  requestedTime: string;
+  assignedTeacher: string | null;
+  status: "PENDING_ALLOTMENT" | "CONFIRMED" | "REJECTED";
+}
+
 interface AdminDashboardClientProps {
-  stats: { label: string; value: number }[];
+  stats: { label: string; value: number | string }[];
   initialLeads: Lead[];
   initialUsers: User[];
 }
@@ -44,15 +65,86 @@ export function AdminDashboardClient({
   initialLeads,
   initialUsers,
 }: AdminDashboardClientProps) {
-  const [activeTab, setActiveTab] = useState("analytics");
-  const [leads, setLeads] = useState<Lead[]>(initialLeads);
+  const [activeTab, setActiveTab] = useState("allotments");
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // CRM status change handler
-  const handleUpdateLeadStatus = (leadId: string, status: string) => {
-    setLeads((prev) =>
-      prev.map((l) => (l.id === leadId ? { ...l, status } : l))
+  // Pending Bookings for Admin Allotment
+  const [pendingBookings, setPendingBookings] = useState<PendingBooking[]>([
+    {
+      id: "b101",
+      studentName: "Oliver Jenkins",
+      parentEmail: "sarah.jenkins@example.com",
+      courseName: "NAPLAN & ACARA Assessment Prep",
+      bookingMode: "standard",
+      requestedDate: "Tomorrow",
+      requestedTime: "10:00 AM - 10:40 AM (40 Mins)",
+      assignedTeacher: null,
+      status: "PENDING_ALLOTMENT",
+    },
+    {
+      id: "b102",
+      studentName: "Zayd Khan",
+      parentEmail: "tariq.khan@example.com",
+      courseName: "Islamic Foundation & Essential Teachings",
+      bookingMode: "custom",
+      requestedDate: "Aug 31, 2026",
+      requestedTime: "05:30 PM (Custom Time Requested)",
+      assignedTeacher: null,
+      status: "PENDING_ALLOTMENT",
+    },
+    {
+      id: "b103",
+      studentName: "Emily Watson",
+      parentEmail: "mark.watson@example.com",
+      courseName: "TOEFL & Spoken English Fluency",
+      bookingMode: "instant",
+      requestedDate: "Today",
+      requestedTime: "Immediate (2-Hour Notice Gap)",
+      assignedTeacher: null,
+      status: "PENDING_ALLOTMENT",
+    },
+  ]);
+
+  // Master Tutors List for Allotment
+  const availableTeachers = [
+    "Dr. Sarah Khan (Math & Assessment Expert)",
+    "Ustadh Ahmad (Quran Recitation & Tajweed)",
+    "Prof. David Miller (IELTS / TOEFL Certified)",
+    "Ustadha Fatima (Islamic Foundations & Duas)",
+  ];
+
+  // Course Catalog Controls State
+  const [catalogCourses, setCatalogCourses] = useState([
+    { id: "c1", title: "NAPLAN & ACARA Assessment Prep", category: "School Assessment", active: true },
+    { id: "c2", title: "UK SATs & CAT4 Exam Masterclass", category: "School Assessment", active: true },
+    { id: "c3", title: "Quran Recitation & Tajweed Mastery", category: "Quran Recitation", active: true },
+    { id: "c4", title: "Islamic Foundation & Essential Teachings", category: "Islamic Foundations", active: true },
+    { id: "c5", title: "Spoken English Fluency & Confidence", category: "Communication Skills", active: true },
+    { id: "c6", title: "Reading Comprehension & Writing", category: "Short Skills", active: true },
+  ]);
+
+  const [notificationMsg, setNotificationMsg] = useState<string | null>(null);
+
+  // Allot Teacher Handler
+  const handleAllotTeacher = (bookingId: string, teacherName: string) => {
+    setPendingBookings((prev) =>
+      prev.map((b) =>
+        b.id === bookingId
+          ? { ...b, assignedTeacher: teacherName, status: "CONFIRMED" }
+          : b
+      )
+    );
+    const booking = pendingBookings.find((b) => b.id === bookingId);
+    setNotificationMsg(
+      `✓ Allotted ${teacherName} to ${booking?.studentName}. Confirmation email sent to ${booking?.parentEmail}!`
+    );
+  };
+
+  // Toggle Course Active Status
+  const handleToggleCourse = (courseId: string) => {
+    setCatalogCourses((prev) =>
+      prev.map((c) => (c.id === courseId ? { ...c, active: !c.active } : c))
     );
   };
 
@@ -64,234 +156,284 @@ export function AdminDashboardClient({
 
   return (
     <div className="space-y-8">
-      {/* Navigation Tab Bar */}
-      <div className="flex flex-wrap gap-2 border-b border-border pb-px font-mono text-xs uppercase tracking-wider">
-        {["analytics", "crm", "users", "discounts"].map((tab) => (
+      {/* Top Admin Banner */}
+      <div className="relative overflow-hidden rounded-2xl bg-navy p-6 lg:p-8 text-white shadow-xl">
+        <div className="absolute top-0 right-0 h-40 w-40 bg-copper/20 blur-3xl rounded-full" />
+        <div className="relative z-10 flex flex-wrap items-center justify-between gap-6">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full bg-copper/20 px-3 py-1 text-xs font-semibold text-copper border border-copper/30 mb-3">
+              <ShieldCheck className="h-3.5 w-3.5" />
+              <span>Full Admin Command Panel</span>
+            </div>
+            <h1 className="text-2xl font-extrabold text-white sm:text-3xl">Aevian Platform Control Center</h1>
+            <p className="mt-1 text-sm text-slate-light max-w-xl">
+              Allot teachers, approve custom slot requests, manage catalog courses, and oversee users across 5+ countries.
+            </p>
+          </div>
+          <div className="flex gap-3">
+            <span className="rounded-xl bg-navy-dark px-4 py-2 text-xs font-bold text-copper border border-navy-light">
+              5K–10K Active Learners
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Global Stat Cards */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="rounded-2xl border border-slate-border bg-white p-5 shadow-sm">
+          <p className="text-xs font-bold text-slate uppercase tracking-wider">Students Taught</p>
+          <p className="mt-2 text-2xl font-extrabold text-navy">5K – 10K</p>
+          <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-1 mt-1">
+            <TrendingUp size={12} /> Active Global Reach
+          </span>
+        </div>
+
+        <div className="rounded-2xl border border-slate-border bg-white p-5 shadow-sm">
+          <p className="text-xs font-bold text-slate uppercase tracking-wider">Vetted Master Tutors</p>
+          <p className="mt-2 text-2xl font-extrabold text-copper">150+</p>
+          <span className="text-[10px] text-slate font-semibold mt-1 block">Certified Faculty</span>
+        </div>
+
+        <div className="rounded-2xl border border-slate-border bg-white p-5 shadow-sm">
+          <p className="text-xs font-bold text-slate uppercase tracking-wider">Countries Represented</p>
+          <p className="mt-2 text-2xl font-extrabold text-navy">5+</p>
+          <span className="text-[10px] text-slate font-semibold mt-1 block">UK, US, AU, Gulf, Asia</span>
+        </div>
+
+        <div className="rounded-2xl border border-slate-border bg-white p-5 shadow-sm">
+          <p className="text-xs font-bold text-slate uppercase tracking-wider">Session Slot Duration</p>
+          <p className="mt-2 text-2xl font-extrabold text-emerald-600">40 Mins</p>
+          <span className="text-[10px] text-slate font-semibold mt-1 block">Individual 1-on-1 Focus</span>
+        </div>
+      </div>
+
+      {/* Action Notification Toast */}
+      {notificationMsg && (
+        <div className="rounded-xl bg-emerald-50 p-4 text-xs font-bold text-emerald-800 border border-emerald-200 flex items-center justify-between">
+          <span>{notificationMsg}</span>
+          <button onClick={() => setNotificationMsg(null)} className="text-emerald-600 hover:text-emerald-900 font-bold">
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {/* Tabs */}
+      <div className="flex flex-wrap gap-2 border-b border-slate-border pb-4">
+        {[
+          { id: "allotments", label: "Teacher Allotment Center", icon: UserCheck },
+          { id: "custom-slots", label: "Custom & Instant Bookings", icon: Zap },
+          { id: "catalog", label: "Program & Course Manager", icon: BookOpen },
+          { id: "users", label: "User Directory", icon: Users },
+        ].map((tab) => (
           <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 border-b-2 font-medium transition-colors ${
-              activeTab === tab
-                ? "border-gold text-foreground font-semibold"
-                : "border-transparent text-muted-foreground hover:text-foreground"
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl transition-all ${
+              activeTab === tab.id
+                ? "bg-navy text-white shadow-sm"
+                : "bg-white text-slate hover:text-navy border border-slate-border hover:bg-cream-muted"
             }`}
           >
-            {tab}
+            <tab.icon className="h-4 w-4" />
+            <span>{tab.label}</span>
           </button>
         ))}
       </div>
 
-      {/* ANALYTICS TAB */}
-      {activeTab === "analytics" && (
-        <div className="space-y-8">
-          {/* Stats Grid */}
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {stats.map((s) => (
-              <div key={s.label} className="rounded-xl border border-border bg-card p-6">
-                <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
-                  {s.label}
-                </p>
-                <div className="mt-2 flex items-baseline justify-between">
-                  <span className="font-display text-3xl text-foreground font-medium">
-                    {s.value.toLocaleString()}
-                  </span>
-                  <span className="text-xs text-success font-medium flex items-center gap-0.5">
-                    <TrendingUp size={12} /> +12.4%
-                  </span>
-                </div>
-              </div>
-            ))}
+      {/* TAB 1: TEACHER ALLOTMENT CENTER */}
+      {activeTab === "allotments" && (
+        <div className="space-y-6">
+          <div>
+            <h2 className="text-xl font-extrabold text-navy">Pending Student Bookings & Teacher Allotment</h2>
+            <p className="text-xs text-slate mt-0.5">
+              Assign top verified master tutors to incoming demo & regular class requests.
+            </p>
           </div>
 
-          {/* Pure CSS Performance Charts */}
-          <div className="grid gap-6 md:grid-cols-2">
-            {/* Revenue Curves */}
-            <div className="rounded-xl border border-border bg-card p-6 space-y-4">
-              <h3 className="font-display text-lg text-foreground">Monthly Enrollment Revenue</h3>
-              <div className="flex items-end gap-2 h-48 pt-6">
-                {[
-                  { month: "Jan", val: "30%" },
-                  { month: "Feb", val: "45%" },
-                  { month: "Mar", val: "40%" },
-                  { month: "Apr", val: "65%" },
-                  { month: "May", val: "85%" },
-                  { month: "Jun", val: "95%" },
-                ].map((bar, idx) => (
-                  <div key={idx} className="flex-1 flex flex-col items-center gap-2 h-full justify-end">
-                    <div
-                      className="w-full bg-meridian rounded-t transition-all duration-500 hover:opacity-90 cursor-pointer"
-                      style={{ height: bar.val }}
-                    />
-                    <span className="font-mono text-[10px] text-muted-foreground">{bar.month}</span>
+          <div className="grid gap-4">
+            {pendingBookings.map((b) => (
+              <motion.div
+                key={b.id}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="rounded-2xl border border-slate-border bg-white p-6 shadow-sm flex flex-wrap items-center justify-between gap-6"
+              >
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base font-bold text-navy">{b.studentName}</span>
+                    <span className="text-xs text-slate">({b.parentEmail})</span>
+                    {b.bookingMode === "instant" && (
+                      <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-[10px] font-bold text-amber-700">
+                        Instant Booking Priority
+                      </span>
+                    )}
+                    {b.bookingMode === "custom" && (
+                      <span className="rounded-full bg-purple-100 px-2.5 py-0.5 text-[10px] font-bold text-purple-700">
+                        Custom Slot Request
+                      </span>
+                    )}
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Growth Curves */}
-            <div className="rounded-xl border border-border bg-card p-6 space-y-4">
-              <h3 className="font-display text-lg text-foreground">New Registrations Growth</h3>
-              <div className="flex items-end gap-2 h-48 pt-6">
-                {[
-                  { month: "Jan", val: "20%" },
-                  { month: "Feb", val: "35%" },
-                  { month: "Mar", val: "50%" },
-                  { month: "Apr", val: "45%" },
-                  { month: "May", val: "70%" },
-                  { month: "Jun", val: "88%" },
-                ].map((bar, idx) => (
-                  <div key={idx} className="flex-1 flex flex-col items-center gap-2 h-full justify-end">
-                    <div
-                      className="w-full bg-gold rounded-t transition-all duration-500 hover:opacity-90 cursor-pointer"
-                      style={{ height: bar.val }}
-                    />
-                    <span className="font-mono text-[10px] text-muted-foreground">{bar.month}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* CRM LEADS BOARD */}
-      {activeTab === "crm" && (
-        <div className="rounded-xl border border-border bg-card p-6 space-y-6">
-          <h2 className="font-display text-lg text-foreground flex items-center gap-2">
-            <Briefcase className="text-gold" size={20} /> Lead Pipeline & CRM Board
-          </h2>
-          
-          <div className="grid gap-6 md:grid-cols-3">
-            {["NEW", "CONTACTED", "QUALIFIED"].map((stage) => (
-              <div key={stage} className="rounded-lg border border-border bg-background p-4 space-y-3">
-                <div className="flex justify-between items-center border-b border-border pb-2">
-                  <h3 className="text-xs font-mono font-medium text-foreground">{stage}</h3>
-                  <Badge>{leads.filter((l) => l.status === stage).length}</Badge>
+                  <p className="text-xs font-semibold text-copper">{b.courseName}</p>
+                  <p className="text-xs text-slate flex items-center gap-1.5 font-medium">
+                    <Clock className="h-3.5 w-3.5 text-copper" /> {b.requestedDate} @ {b.requestedTime}
+                  </p>
                 </div>
-                <div className="space-y-2">
-                  {leads
-                    .filter((l) => l.status === stage)
-                    .map((lead) => (
-                      <div
-                        key={lead.id}
-                        className="rounded-lg border border-border bg-card p-3 text-xs space-y-2"
+
+                <div className="flex items-center gap-3">
+                  {b.status === "CONFIRMED" ? (
+                    <span className="rounded-xl bg-emerald-50 px-4 py-2 text-xs font-bold text-emerald-700 border border-emerald-200">
+                      ✓ Allotted to: {b.assignedTeacher}
+                    </span>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <select
+                        onChange={(e) => {
+                          if (e.target.value) handleAllotTeacher(b.id, e.target.value);
+                        }}
+                        defaultValue=""
+                        className="rounded-xl border border-slate-border bg-cream/40 px-3 py-2 text-xs text-navy font-bold focus:border-copper focus:outline-none"
                       >
-                        <div>
-                          <p className="font-medium text-foreground">{lead.name}</p>
-                          <p className="text-muted-foreground">{lead.email}</p>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="font-mono text-[10px] text-muted-foreground">
-                            {lead.source}
-                          </span>
-                          {stage === "NEW" && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-6 px-1.5 text-[10px] gap-0.5"
-                              onClick={() => handleUpdateLeadStatus(lead.id, "CONTACTED")}
-                            >
-                              Contact <ChevronRight size={10} />
-                            </Button>
-                          )}
-                          {stage === "CONTACTED" && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-6 px-1.5 text-[10px] gap-0.5"
-                              onClick={() => handleUpdateLeadStatus(lead.id, "QUALIFIED")}
-                            >
-                              Qualify <ChevronRight size={10} />
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    ))}
+                        <option value="" disabled>Allot Master Tutor...</option>
+                        {availableTeachers.map((t) => (
+                          <option key={t} value={t}>{t}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
                 </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 2: CUSTOM & INSTANT BOOKINGS */}
+      {activeTab === "custom-slots" && (
+        <div className="space-y-6">
+          <div>
+            <h2 className="text-xl font-extrabold text-navy">Custom Slot & Instant Booking Queue</h2>
+            <p className="text-xs text-slate mt-0.5">Approve free-time requests and dispatch confirmation emails.</p>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="rounded-2xl border border-slate-border bg-white p-6 shadow-sm space-y-4">
+              <h3 className="text-base font-bold text-navy flex items-center gap-2">
+                <Send className="h-4 w-4 text-copper" /> Custom Slot Approvals
+              </h3>
+              <p className="text-xs text-slate">
+                Parents can comfortably request custom free-time slots. Approving dispatches an automatic confirmation email to the booker.
+              </p>
+              <div className="rounded-xl bg-cream-muted p-4 border border-slate-border text-xs space-y-2">
+                <p className="font-bold text-navy">Sample Custom Request: Zayd Khan</p>
+                <p className="text-slate">Requested: Aug 31, 2026 @ 05:30 PM</p>
+                <Button variant="copper" size="sm" onClick={() => setNotificationMsg("✓ Custom slot approved! Confirmation email dispatched to parent.")}>
+                  Approve & Dispatch Confirmation Email
+                </Button>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-slate-border bg-white p-6 shadow-sm space-y-4">
+              <h3 className="text-base font-bold text-navy flex items-center gap-2">
+                <Zap className="h-4 w-4 text-amber-500" /> Instant Booking Queue
+              </h3>
+              <p className="text-xs text-slate">
+                Urgent class requests with a minimum 2-hour notice gap from current system clock.
+              </p>
+              <div className="rounded-xl bg-amber-50 p-4 border border-amber-200 text-xs space-y-2">
+                <p className="font-bold text-amber-900">Sample Instant Request: Emily Watson</p>
+                <p className="text-amber-800">Gap: Minimum 2 Hours • Extra Fee Applied (+£15)</p>
+                <Button variant="copper" size="sm" onClick={() => setNotificationMsg("✓ Instant class dispatched to available tutor room.")}>
+                  Dispatch Immediate Master Tutor
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 3: PROGRAM & COURSE CATALOG MANAGER */}
+      {activeTab === "catalog" && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-extrabold text-navy">Program & Course Catalog Manager</h2>
+              <p className="text-xs text-slate mt-0.5">Toggle course availability across website and trial wizard.</p>
+            </div>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            {catalogCourses.map((c) => (
+              <div key={c.id} className="rounded-2xl border border-slate-border bg-white p-5 shadow-sm flex items-center justify-between">
+                <div>
+                  <span className="rounded-md bg-copper/10 px-2.5 py-0.5 text-[10px] font-bold text-copper">
+                    {c.category}
+                  </span>
+                  <h4 className="text-sm font-bold text-navy mt-2">{c.title}</h4>
+                </div>
+
+                <button
+                  onClick={() => handleToggleCourse(c.id)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                    c.active
+                      ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
+                      : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                  }`}
+                >
+                  {c.active ? "Active" : "Disabled"}
+                </button>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* USER LISTS */}
+      {/* TAB 4: USER DIRECTORY */}
       {activeTab === "users" && (
-        <div className="rounded-xl border border-border bg-card p-6 space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <h2 className="font-display text-lg text-foreground flex items-center gap-2">
-              <Users className="text-gold" size={20} /> User Accounts Directory
-            </h2>
-            <div className="relative w-full sm:max-w-xs">
-              <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+        <div className="space-y-6">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 className="text-xl font-extrabold text-navy">User Directory</h2>
+              <p className="text-xs text-slate mt-0.5">Manage accounts for Students, Parents, Teachers, and Admins.</p>
+            </div>
+            <div className="relative w-full sm:w-64">
+              <Search className="absolute left-3 top-3 h-4 w-4 text-slate" />
               <input
                 type="text"
-                placeholder="Search users..."
+                placeholder="Search user name or email..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-9 w-full rounded-md border border-border bg-background pl-9 pr-4 text-xs text-foreground focus:ring-1 focus:ring-gold"
+                className="w-full rounded-xl border border-slate-border bg-white pl-9 pr-4 py-2 text-xs text-navy font-medium focus:border-copper focus:outline-none"
               />
             </div>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm border-collapse">
-              <thead>
-                <tr className="border-b border-border font-mono text-xs uppercase text-muted-foreground">
-                  <th className="py-2">Name</th>
-                  <th className="py-2">Email</th>
-                  <th className="py-2">Role</th>
-                  <th className="py-2">Created At</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/50">
-                {filteredUsers.map((u) => (
-                  <tr key={u.id} className="hover:bg-muted/30">
-                    <td className="py-3 font-medium text-foreground">{u.name}</td>
-                    <td className="py-3">{u.email}</td>
-                    <td className="py-3">
-                      <Badge>{u.role}</Badge>
-                    </td>
-                    <td className="py-3 font-mono text-xs">
-                      {new Date(u.createdAt).toLocaleDateString()}
-                    </td>
+          <div className="rounded-2xl border border-slate-border bg-white overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-cream-muted text-navy uppercase tracking-wider font-bold border-b border-slate-border">
+                  <tr>
+                    <th className="p-4">Name</th>
+                    <th className="p-4">Email</th>
+                    <th className="p-4">Role</th>
+                    <th className="p-4">Joined</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* DISCOUNT CODES */}
-      {activeTab === "discounts" && (
-        <div className="rounded-xl border border-border bg-card p-6 space-y-6">
-          <h2 className="font-display text-lg text-foreground flex items-center gap-2">
-            <Percent className="text-gold" size={20} /> Tuition Discounts & Coupons
-          </h2>
-
-          <div className="space-y-3">
-            {[
-              { code: "AEVIAN50", discount: "50% off", type: "First month tuition", status: "Active" },
-              { code: "PYTHONSTART", discount: "$25 off", type: "Intro Coding modules", status: "Active" },
-            ].map((d) => (
-              <div
-                key={d.code}
-                className="flex items-center justify-between rounded-lg border border-border p-4 text-sm"
-              >
-                <div>
-                  <h3 className="font-semibold text-foreground">{d.code}</h3>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {d.discount} · {d.type}
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Badge className="bg-success/10 text-success border-success/20">{d.status}</Badge>
-                  <Button variant="ghost" size="sm" className="h-8">
-                    Deactivate
-                  </Button>
-                </div>
-              </div>
-            ))}
+                </thead>
+                <tbody className="divide-y divide-slate-border/60">
+                  {filteredUsers.map((u) => (
+                    <tr key={u.id} className="hover:bg-cream/30">
+                      <td className="p-4 font-bold text-navy">{u.name}</td>
+                      <td className="p-4 text-slate font-medium">{u.email}</td>
+                      <td className="p-4">
+                        <span className="rounded-full bg-navy/10 px-2.5 py-1 text-[10px] font-bold text-navy">
+                          {u.role}
+                        </span>
+                      </td>
+                      <td className="p-4 text-slate font-mono">{new Date(u.createdAt).toLocaleDateString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}
