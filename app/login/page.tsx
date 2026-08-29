@@ -10,7 +10,7 @@ import { signIn } from "@/lib/actions/auth";
 import { Loader2 } from "lucide-react";
 
 const loginSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
+  email: z.string().min(1, "Please enter your email or admin username"),
   password: z.string().min(1, "Password is required"),
 });
 
@@ -72,14 +72,14 @@ export default function LoginPage() {
             htmlFor="email"
             className="block text-sm font-medium text-foreground"
           >
-            Email address
+            Email address or Admin Username
           </label>
           <input
             id="email"
-            type="email"
+            type="text"
             disabled={loading}
             {...register("email")}
-            placeholder="you@example.com"
+            placeholder="you@example.com or Aevian_admin"
             className="mt-1 block w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-meridian focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50"
           />
           {errors.email && (
