@@ -20,7 +20,7 @@ export function AuthCard({
   footerLinkHref,
 }: AuthCardProps) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-cream px-4 py-12 sm:px-6 lg:px-8">
+    <div className="flex min-h-screen items-center justify-center bg-cream/50 backdrop-blur-sm px-4 py-12 sm:px-6 lg:px-8 relative z-10">
       <div className="w-full max-w-md space-y-8 rounded-2xl border border-slate-border bg-white p-8 shadow-xl">
         <div className="text-center flex flex-col items-center">
           <Link href="/" aria-label="Aevian Academy Home">

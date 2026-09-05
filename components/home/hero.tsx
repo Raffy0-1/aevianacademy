@@ -22,7 +22,7 @@ export function Hero() {
   const selectedCategory = categories.find((c) => c.id === activeTab) || categories[0];
 
   return (
-    <section className="relative overflow-hidden bg-cream py-16 lg:py-24 border-b border-slate-border/50">
+    <section className="relative overflow-hidden bg-cream/70 backdrop-blur-xs py-16 lg:py-24 border-b border-slate-border/50">
       {/* Background Subtle Geometric Glow */}
       <div className="absolute top-0 right-1/4 -z-10 h-[500px] w-[500px] rounded-full bg-copper/5 blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 left-10 -z-10 h-[400px] w-[400px] rounded-full bg-navy/5 blur-3xl pointer-events-none" />

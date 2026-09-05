@@ -32,7 +32,7 @@ const features = [
 
 export function Features() {
   return (
-    <section className="py-20 lg:py-28 bg-cream border-b border-slate-border/50">
+    <section className="py-20 lg:py-28 bg-cream/70 backdrop-blur-xs border-b border-slate-border/50">
       <Container>
         <ScrollReveal>
           <SectionHeading

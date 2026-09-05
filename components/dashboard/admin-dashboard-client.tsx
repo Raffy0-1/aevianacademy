@@ -145,77 +145,18 @@ export function AdminDashboardClient({
   const [activeTab, setActiveTab] = useState("allotments");
   const [notificationMsg, setNotificationMsg] = useState<string | null>(null);
 
-  // Leads state
-  const defaultLeads: Lead[] = [
-    {
-      id: "lead-1",
-      name: "Sophia Martinez",
-      email: "sophia.m@example.com",
-      phone: "+44 7911 123456",
-      source: "Google Search",
-      status: "NEW",
-      notes: "Interested in UK SATs prep for 10yo student.",
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: "lead-2",
-      name: "Tariq Al-Mansoor",
-      email: "tariq.m@example.org",
-      phone: "+971 50 987 6543",
-      source: "Referral",
-      status: "CONTACTED",
-      notes: "Looking for 1-on-1 Quran Recitation with certified Tajweed teacher.",
-      createdAt: new Date().toISOString(),
-    },
-  ];
-
-  const [leads, setLeads] = useState<Lead[]>(
-    initialLeads.length > 0 ? initialLeads : defaultLeads
-  );
+  const [leads, setLeads] = useState<Lead[]>(initialLeads);
   const [leadStatusFilter, setLeadStatusFilter] = useState("ALL");
   const [showAddLeadModal, setShowAddLeadModal] = useState(false);
   const [newLeadForm, setNewLeadForm] = useState({ name: "", email: "", phone: "", source: "Website Direct", notes: "" });
 
   // Users state
-  const defaultUsers: User[] = [
-    { id: "u-1", name: "Dr. Sarah Khan", email: "sarah.khan@aevian.edu", role: "TEACHER", createdAt: "2026-01-15" },
-    { id: "u-2", name: "Ustadh Ahmad", email: "ahmad@aevian.edu", role: "TEACHER", createdAt: "2026-02-01" },
-    { id: "u-3", name: "Admin Lead", email: "admin@aevian.com", role: "ADMIN", createdAt: "2026-01-01" },
-    { id: "u-4", name: "Oliver Jenkins (Parent)", email: "sarah.jenkins@example.com", role: "PARENT", createdAt: "2026-03-10" },
-    { id: "u-5", name: "Zayd Khan (Student)", email: "zayd.k@example.com", role: "STUDENT", createdAt: "2026-04-02" },
-  ];
-  const [users, setUsers] = useState<User[]>(
-    initialUsers.length > 0 ? initialUsers : defaultUsers
-  );
+  const [users, setUsers] = useState<User[]>(initialUsers);
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("ALL");
 
   // Support Tickets / Parent Enquiries state
-  const defaultTickets: SupportTicket[] = [
-    {
-      id: "t-101",
-      subject: "Custom Slot Timezone Confusion",
-      description: "Parent in Sydney requested 5:30 PM AEST but received UTC confirmation email.",
-      status: "OPEN",
-      priority: "high",
-      userName: "Oliver Jenkins",
-      userEmail: "sarah.jenkins@example.com",
-      createdAt: "2-Hours Ago",
-    },
-    {
-      id: "t-102",
-      subject: "Homework Submission File Upload Error",
-      description: "PDF upload size limit warning triggered on 12MB ACARA practice paper.",
-      status: "IN_PROGRESS",
-      priority: "medium",
-      userName: "Emily Watson",
-      userEmail: "mark.watson@example.com",
-      createdAt: "1-Day Ago",
-    },
-  ];
-  const [tickets, setTickets] = useState<SupportTicket[]>(
-    initialTickets.length > 0 ? initialTickets : defaultTickets
-  );
+  const [tickets, setTickets] = useState<SupportTicket[]>(initialTickets);
   const [parentReplyText, setParentReplyText] = useState<{ [ticketId: string]: string }>({});
 
   // Media & Images state
@@ -227,62 +168,24 @@ export function AdminDashboardClient({
   const [newMediaForm, setNewMediaForm] = useState({ filename: "", url: "", altText: "" });
 
   // Courses state
-  const defaultCourses: CourseItem[] = [
-    { id: "c1", title: "NAPLAN & ACARA Assessment Prep", slug: "naplan-acara-prep", programArea: "School Assessment", published: true, difficulty: "INTERMEDIATE", durationWeeks: 8 },
-    { id: "c2", title: "UK SATs & CAT4 Exam Masterclass", slug: "uk-sats-cat4-masterclass", programArea: "School Assessment", published: true, difficulty: "ADVANCED", durationWeeks: 10 },
-    { id: "c3", title: "Quran Recitation & Tajweed Mastery", slug: "quran-recitation-tajweed", programArea: "Quran Programs", published: true, difficulty: "BEGINNER", durationWeeks: 12 },
-    { id: "c4", title: "Islamic Foundation & Essential Teachings", slug: "islamic-foundations", programArea: "Islamic Foundations", published: true, difficulty: "BEGINNER", durationWeeks: 6 },
-    { id: "c5", title: "Spoken English Fluency & Confidence", slug: "spoken-english-fluency", programArea: "Language Skills", published: true, difficulty: "INTERMEDIATE", durationWeeks: 8 },
-  ];
-  const [courses, setCourses] = useState<CourseItem[]>(
-    initialCourses.length > 0 ? initialCourses : defaultCourses
-  );
+  const [courses, setCourses] = useState<CourseItem[]>(initialCourses);
 
   // Bookings state
-  const defaultBookings: BookingItem[] = [
-    {
-      id: "b101",
-      studentName: "Oliver Jenkins",
-      parentEmail: "sarah.jenkins@example.com",
-      courseName: "NAPLAN & ACARA Assessment Prep",
-      type: "TRIAL",
-      scheduledAt: "Tomorrow @ 10:00 AM - 10:40 AM",
-      assignedTeacher: null,
-      status: "PENDING",
-      durationMinutes: 40,
-    },
-    {
-      id: "b102",
-      studentName: "Zayd Khan",
-      parentEmail: "tariq.khan@example.com",
-      courseName: "Islamic Foundation & Essential Teachings",
-      type: "REGULAR",
-      scheduledAt: "Aug 31, 2026 @ 05:30 PM",
-      assignedTeacher: null,
-      status: "PENDING",
-      durationMinutes: 40,
-    },
-  ];
-  const [bookings, setBookings] = useState<BookingItem[]>(
-    initialBookings.length > 0 ? initialBookings : defaultBookings
-  );
-
-  const availableTeachers = [
-    "Dr. Sarah Khan (Math & Assessment Expert)",
-    "Ustadh Ahmad (Quran Recitation & Tajweed)",
-    "Prof. David Miller (IELTS / TOEFL Certified)",
-    "Ustadha Fatima (Islamic Foundations & Duas)",
-    "Mr. Robert Taylor (UK Curriculum Specialist)",
-  ];
+  const [bookings, setBookings] = useState<BookingItem[]>(initialBookings);
 
   // Discounts state
-  const defaultDiscounts: DiscountItem[] = [
-    { id: "d1", code: "WELCOME10", description: "10% Off First Trial Class", discountPercent: 10, currentUses: 42, maxUses: 100, active: true },
-    { id: "d2", code: "GLOBAL2026", description: "$25 Flat Discount on Package Enrollments", discountAmount: 25, currentUses: 19, maxUses: 50, active: true },
-  ];
-  const [discounts, setDiscounts] = useState<DiscountItem[]>(
-    initialDiscounts.length > 0 ? initialDiscounts : defaultDiscounts
-  );
+  const [discounts, setDiscounts] = useState<DiscountItem[]>(initialDiscounts);
+
+  const teacherUsers = users.filter((u) => u.role === "TEACHER");
+  const availableTeachers = teacherUsers.length > 0
+    ? teacherUsers.map((t) => t.name)
+    : [
+        "Dr. Sarah Khan (Math & Assessment Expert)",
+        "Ustadh Ahmad (Quran Recitation & Tajweed)",
+        "Prof. David Miller (IELTS / TOEFL Certified)",
+        "Ustadha Fatima (Islamic Foundations & Duas)",
+        "Mr. Robert Taylor (UK Curriculum Specialist)",
+      ];
   const [showAddDiscountModal, setShowAddDiscountModal] = useState(false);
   const [newDiscountForm, setNewDiscountForm] = useState({
     code: "",

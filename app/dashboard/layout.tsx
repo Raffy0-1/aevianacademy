@@ -23,9 +23,9 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background/70 backdrop-blur-sm relative z-10">
       {/* Stage 2 will add a full sidebar/nav shell here */}
-      <header className="border-b border-border bg-card px-6 py-4">
+      <header className="border-b border-border bg-card/80 backdrop-blur-md px-6 py-4">
         <div className="mx-auto flex max-w-6xl items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/" className="font-display text-xl text-foreground">

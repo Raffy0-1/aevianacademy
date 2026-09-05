@@ -73,12 +73,12 @@ export default async function AdminDashboardPage() {
     try { discountsList = await prisma.discountCode.findMany({ orderBy: { validFrom: "desc" } }); } catch (e) { console.warn("Failed to fetch discounts:", e); }
 
     const stats = [
-      { label: "Active Users", value: userCount || 158 },
-      { label: "Course Modules", value: courseCount || 24 },
-      { label: "Syllabus Enrollments", value: enrollmentCount || 342 },
-      { label: "Live Bookings", value: bookingCount || 89 },
-      { label: "CRM Leads", value: leadCount || 45 },
-      { label: "Support Tickets", value: ticketCount || 12 },
+      { label: "Active Users", value: userCount },
+      { label: "Course Modules", value: courseCount },
+      { label: "Syllabus Enrollments", value: enrollmentCount },
+      { label: "Live Bookings", value: bookingCount },
+      { label: "CRM Leads", value: leadCount },
+      { label: "Support Tickets", value: ticketCount },
     ];
 
     const safeIsoString = (val: any) => {

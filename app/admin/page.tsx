@@ -71,12 +71,12 @@ export default async function AdminDirectPage() {
     try { discountsList = await prisma.discountCode.findMany({ orderBy: { validFrom: "desc" } }); } catch (e) { console.warn("Failed to fetch discounts:", e); }
 
     const stats = [
-      { label: "Active Users", value: userCount || 158 },
-      { label: "Course Modules", value: courseCount || 24 },
-      { label: "Syllabus Enrollments", value: enrollmentCount || 342 },
-      { label: "Live Bookings", value: bookingCount || 89 },
-      { label: "CRM Leads", value: leadCount || 45 },
-      { label: "Support Tickets", value: ticketCount || 12 },
+      { label: "Active Users", value: userCount },
+      { label: "Course Modules", value: courseCount },
+      { label: "Syllabus Enrollments", value: enrollmentCount },
+      { label: "Live Bookings", value: bookingCount },
+      { label: "CRM Leads", value: leadCount },
+      { label: "Support Tickets", value: ticketCount },
     ];
 
     const safeIsoString = (val: any) => {
@@ -150,7 +150,7 @@ export default async function AdminDirectPage() {
     }));
 
     return (
-      <div className="min-h-screen bg-cream p-6 lg:p-10">
+      <div className="min-h-screen bg-cream/70 backdrop-blur-sm p-6 lg:p-10 relative z-10">
         <div className="max-w-7xl mx-auto space-y-8">
           <div>
             <span className="rounded-full bg-copper/10 px-3 py-1 text-xs font-bold text-copper border border-copper/30">
@@ -177,7 +177,7 @@ export default async function AdminDirectPage() {
   } catch (pageErr) {
     console.warn("AdminDirectPage rendering fallback warning:", pageErr);
     return (
-      <div className="min-h-screen bg-cream p-6 lg:p-10">
+      <div className="min-h-screen bg-cream/70 backdrop-blur-sm p-6 lg:p-10 relative z-10">
         <div className="max-w-7xl mx-auto space-y-8">
           <div>
             <span className="rounded-full bg-copper/10 px-3 py-1 text-xs font-bold text-copper border border-copper/30">

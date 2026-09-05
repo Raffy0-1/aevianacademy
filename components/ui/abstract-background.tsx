@@ -3,26 +3,27 @@
 import React from "react";
 
 /**
- * Minimal abstract background overlay.
- * Renders low-intensity ambient glowing meshes, subtle geometric grid lines,
- * and particle rings (3%–6% opacity) creating a refined visual depth across pages.
+ * High-visibility abstract architectural background overlay.
+ * Renders radiant ambient glowing mesh spheres, a crisp architectural grid pattern,
+ * and particle rings that create visual depth across all website pages and portals.
  */
 export function AbstractBackground() {
   return (
-    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden select-none opacity-40">
-      {/* Ambient Gradient Mesh Spheres */}
-      <div className="absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full bg-copper/10 blur-[120px]" />
-      <div className="absolute top-1/3 -right-40 h-[600px] w-[600px] rounded-full bg-navy/15 blur-[140px]" />
-      <div className="absolute -bottom-40 left-1/4 h-[550px] w-[550px] rounded-full bg-emerald-500/10 blur-[130px]" />
+    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden select-none">
+      {/* Radiant Ambient Gradient Mesh Orbs */}
+      <div className="absolute -top-32 -left-32 h-[650px] w-[650px] rounded-full bg-gradient-to-br from-copper/40 via-amber-500/25 to-transparent blur-[90px] animate-pulse" />
+      <div className="absolute top-1/4 -right-32 h-[750px] w-[750px] rounded-full bg-gradient-to-bl from-navy/35 via-indigo-900/25 to-transparent blur-[100px]" />
+      <div className="absolute bottom-10 left-1/3 h-[650px] w-[650px] rounded-full bg-gradient-to-tr from-emerald-500/30 via-teal-600/25 to-transparent blur-[95px]" />
+      <div className="absolute -bottom-20 right-1/4 h-[550px] w-[550px] rounded-full bg-gradient-to-t from-copper/30 via-rose-500/20 to-transparent blur-[85px]" />
 
-      {/* Subtle Geometric Grid Lines Overlay */}
+      {/* Architectural High-Contrast Line Grid & Dot Matrix Overlay */}
       <svg
-        className="absolute inset-0 h-full w-full opacity-[0.035]"
+        className="absolute inset-0 h-full w-full opacity-65"
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
           <pattern
-            id="abstract-grid"
+            id="abstract-grid-pattern"
             width="60"
             height="60"
             patternUnits="userSpaceOnUse"
@@ -30,19 +31,22 @@ export function AbstractBackground() {
             <path
               d="M 60 0 L 0 0 0 60"
               fill="none"
-              stroke="currentColor"
-              strokeWidth="0.8"
-              className="text-navy dark:text-cream"
+              stroke="#1C2A38"
+              strokeWidth="1.2"
+              opacity="0.25"
             />
-            <circle cx="60" cy="60" r="1.5" fill="currentColor" className="text-copper" />
+            <circle cx="60" cy="60" r="3" fill="#C86D51" opacity="0.65" />
+            <circle cx="0" cy="0" r="1.5" fill="#1C2A38" opacity="0.3" />
           </pattern>
         </defs>
-        <rect width="100%" height="100%" fill="url(#abstract-grid)" />
+        <rect width="100%" height="100%" fill="url(#abstract-grid-pattern)" />
       </svg>
 
-      {/* Minimal Floating Particle Rings */}
-      <div className="absolute top-1/4 left-10 h-72 w-72 rounded-full border border-copper/10 animate-pulse" />
-      <div className="absolute top-2/3 right-12 h-96 w-96 rounded-full border border-navy/10 animate-pulse" />
+      {/* Floating Animated Geometric Particle Rings */}
+      <div className="absolute top-1/6 left-12 h-80 w-80 rounded-full border-2 border-dashed border-copper/30 animate-spin-slow" />
+      <div className="absolute top-2/3 right-16 h-[400px] w-[400px] rounded-full border border-navy/30 animate-pulse" />
+      <div className="absolute bottom-1/5 left-1/4 h-56 w-56 rounded-full border border-copper/25" />
     </div>
   );
 }
+

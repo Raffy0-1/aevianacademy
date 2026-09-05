@@ -12,7 +12,7 @@ const teachers = [
 
 export function TeacherSpotlight() {
   return (
-    <section className="border-y border-slate-border/50 bg-cream py-20 lg:py-28">
+    <section className="border-y border-slate-border/50 bg-cream/70 backdrop-blur-xs py-20 lg:py-28">
       <Container>
         <SectionHeading
           eyebrow="Master Faculty"
