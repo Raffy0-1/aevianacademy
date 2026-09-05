@@ -72,6 +72,13 @@ export default async function AdminDashboardPage() {
     { label: "Support Tickets", value: ticketCount },
   ];
 
+  const safeIsoString = (val: any) => {
+    if (!val) return new Date().toISOString();
+    if (typeof val === "string") return val;
+    if (val instanceof Date) return val.toISOString();
+    try { return new Date(val).toISOString(); } catch (e) { return new Date().toISOString(); }
+  };
+
   const mappedLeads = (leadsList || []).map((l) => ({
     id: l.id,
     name: l.name,
@@ -80,7 +87,7 @@ export default async function AdminDashboardPage() {
     source: l.source || "Direct",
     status: l.status,
     notes: l.notes || null,
-    createdAt: l.createdAt ? l.createdAt.toISOString() : new Date().toISOString(),
+    createdAt: safeIsoString(l.createdAt),
   }));
 
   const mappedUsers = (usersList || []).map((u) => ({
@@ -88,7 +95,7 @@ export default async function AdminDashboardPage() {
     name: u.name,
     email: u.email,
     role: u.role,
-    createdAt: u.createdAt ? u.createdAt.toISOString() : new Date().toISOString(),
+    createdAt: safeIsoString(u.createdAt),
   }));
 
   const mappedTickets = (ticketsList || []).map((t) => ({
@@ -99,7 +106,7 @@ export default async function AdminDashboardPage() {
     priority: t.priority || "medium",
     userName: t.user?.name || "Anonymous",
     userEmail: t.user?.email || "N/A",
-    createdAt: t.createdAt ? t.createdAt.toISOString() : new Date().toISOString(),
+    createdAt: safeIsoString(t.createdAt),
   }));
 
   const mappedCourses = (coursesList || []).map((c) => ({
@@ -112,18 +119,18 @@ export default async function AdminDashboardPage() {
     durationWeeks: c.durationWeeks,
   }));
 
-
   const mappedBookings = (bookingsList || []).map((b) => ({
     id: b.id,
     studentName: b.student?.user?.name || "Student",
     parentEmail: b.student?.user?.email || "parent@example.com",
     courseName: b.course?.title || "1-on-1 Personalized Tutoring",
     type: b.type,
-    scheduledAt: b.scheduledAt ? b.scheduledAt.toISOString() : new Date().toISOString(),
+    scheduledAt: safeIsoString(b.scheduledAt),
     assignedTeacher: b.teacher?.user?.name || null,
     status: b.status,
     durationMinutes: b.durationMinutes,
   }));
+
 
   const mappedDiscounts = (discountsList || []).map((d) => ({
     id: d.id,

@@ -968,8 +968,16 @@ export function AdminDashboardClient({
                         </span>
                       </td>
                       <td className="p-4 text-slate font-mono">
-                        {new Date(u.createdAt).toLocaleDateString()}
+                        {(() => {
+                          try {
+                            const d = new Date(u.createdAt);
+                            return isNaN(d.getTime()) ? String(u.createdAt || "N/A") : d.toLocaleDateString();
+                          } catch (e) {
+                            return String(u.createdAt || "N/A");
+                          }
+                        })()}
                       </td>
+
                       <td className="p-4 text-right">
                         <select
                           value={u.role}
