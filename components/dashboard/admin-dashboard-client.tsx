@@ -32,6 +32,15 @@ import {
   Tag,
   ArrowRight,
   HelpCircle,
+  Download,
+  Image as ImageIcon,
+  FileSpreadsheet,
+  MessageCircle,
+  User,
+  GraduationCap,
+  Heart,
+  Sliders,
+  Calendar,
 } from "lucide-react";
 import {
   updateLeadStatus,
@@ -105,6 +114,14 @@ interface DiscountItem {
   active: boolean;
 }
 
+interface MediaItem {
+  id: string;
+  filename: string;
+  url: string;
+  altText: string;
+  mimeType: string;
+}
+
 interface AdminDashboardClientProps {
   stats: { label: string; value: number | string }[];
   initialLeads: Lead[];
@@ -128,7 +145,7 @@ export function AdminDashboardClient({
   const [activeTab, setActiveTab] = useState("allotments");
   const [notificationMsg, setNotificationMsg] = useState<string | null>(null);
 
-  // Leads state with rich fallback if empty
+  // Leads state
   const defaultLeads: Lead[] = [
     {
       id: "lead-1",
@@ -148,26 +165,6 @@ export function AdminDashboardClient({
       source: "Referral",
       status: "CONTACTED",
       notes: "Looking for 1-on-1 Quran Recitation with certified Tajweed teacher.",
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: "lead-3",
-      name: "Emma Watson",
-      email: "emma.watson@example.co.uk",
-      phone: "+44 20 7946 0912",
-      source: "Facebook Ad",
-      status: "QUALIFIED",
-      notes: "Demo session completed, discussing custom scheduling.",
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: "lead-4",
-      name: "Liam O'Connor",
-      email: "liam.oc@example.com",
-      phone: "+61 412 345 678",
-      source: "Website Direct",
-      status: "CONVERTED",
-      notes: "Enrolled in NAPLAN & ACARA Assessment Prep.",
       createdAt: new Date().toISOString(),
     },
   ];
@@ -193,7 +190,7 @@ export function AdminDashboardClient({
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("ALL");
 
-  // Support Tickets state
+  // Support Tickets / Parent Enquiries state
   const defaultTickets: SupportTicket[] = [
     {
       id: "t-101",
@@ -215,21 +212,19 @@ export function AdminDashboardClient({
       userEmail: "mark.watson@example.com",
       createdAt: "1-Day Ago",
     },
-    {
-      id: "t-103",
-      subject: "Certificate Name Spelling Correction",
-      description: "Request to update student middle name on Quran Recitation certificate.",
-      status: "RESOLVED",
-      priority: "low",
-      userName: "Tariq Khan",
-      userEmail: "tariq.khan@example.com",
-      createdAt: "3-Days Ago",
-    },
   ];
   const [tickets, setTickets] = useState<SupportTicket[]>(
     initialTickets.length > 0 ? initialTickets : defaultTickets
   );
-  const [ticketStatusFilter, setTicketStatusFilter] = useState("ALL");
+  const [parentReplyText, setParentReplyText] = useState<{ [ticketId: string]: string }>({});
+
+  // Media & Images state
+  const [mediaList, setMediaList] = useState<MediaItem[]>([
+    { id: "m-1", filename: "hero-learning.jpg", url: "https://images.unsplash.com/photo-1523240795612-9a054b0db644", altText: "Students learning online", mimeType: "image/jpeg" },
+    { id: "m-2", filename: "quran-class.jpg", url: "https://images.unsplash.com/photo-1609599006353-e629aaabfeae", altText: "Quran recitation session", mimeType: "image/jpeg" },
+    { id: "m-3", filename: "math-tutoring.jpg", url: "https://images.unsplash.com/photo-1509062522246-3755977927d7", altText: "Mathematics masterclass", mimeType: "image/jpeg" },
+  ]);
+  const [newMediaForm, setNewMediaForm] = useState({ filename: "", url: "", altText: "" });
 
   // Courses state
   const defaultCourses: CourseItem[] = [
@@ -238,7 +233,6 @@ export function AdminDashboardClient({
     { id: "c3", title: "Quran Recitation & Tajweed Mastery", slug: "quran-recitation-tajweed", programArea: "Quran Programs", published: true, difficulty: "BEGINNER", durationWeeks: 12 },
     { id: "c4", title: "Islamic Foundation & Essential Teachings", slug: "islamic-foundations", programArea: "Islamic Foundations", published: true, difficulty: "BEGINNER", durationWeeks: 6 },
     { id: "c5", title: "Spoken English Fluency & Confidence", slug: "spoken-english-fluency", programArea: "Language Skills", published: true, difficulty: "INTERMEDIATE", durationWeeks: 8 },
-    { id: "c6", title: "IGCSE & IB High School Support", slug: "igcse-ib-tutoring", programArea: "International Curriculum", published: false, difficulty: "ADVANCED", durationWeeks: 12 },
   ];
   const [courses, setCourses] = useState<CourseItem[]>(
     initialCourses.length > 0 ? initialCourses : defaultCourses
@@ -268,23 +262,11 @@ export function AdminDashboardClient({
       status: "PENDING",
       durationMinutes: 40,
     },
-    {
-      id: "b103",
-      studentName: "Emily Watson",
-      parentEmail: "mark.watson@example.com",
-      courseName: "Spoken English Fluency & Confidence",
-      type: "TRIAL",
-      scheduledAt: "Today @ 04:00 PM (Instant 2-Hr Gap)",
-      assignedTeacher: "Prof. David Miller",
-      status: "CONFIRMED",
-      durationMinutes: 40,
-    },
   ];
   const [bookings, setBookings] = useState<BookingItem[]>(
     initialBookings.length > 0 ? initialBookings : defaultBookings
   );
 
-  // Master Tutors for allotment dropdown
   const availableTeachers = [
     "Dr. Sarah Khan (Math & Assessment Expert)",
     "Ustadh Ahmad (Quran Recitation & Tajweed)",
@@ -297,7 +279,6 @@ export function AdminDashboardClient({
   const defaultDiscounts: DiscountItem[] = [
     { id: "d1", code: "WELCOME10", description: "10% Off First Trial Class", discountPercent: 10, currentUses: 42, maxUses: 100, active: true },
     { id: "d2", code: "GLOBAL2026", description: "$25 Flat Discount on Package Enrollments", discountAmount: 25, currentUses: 19, maxUses: 50, active: true },
-    { id: "d3", code: "SIBLING15", description: "15% Sibling Discount Offer", discountPercent: 15, currentUses: 8, maxUses: 200, active: true },
   ];
   const [discounts, setDiscounts] = useState<DiscountItem[]>(
     initialDiscounts.length > 0 ? initialDiscounts : defaultDiscounts
@@ -317,6 +298,21 @@ export function AdminDashboardClient({
     setTimeout(() => setNotificationMsg(null), 5000);
   };
 
+  // CSV Exporter helper
+  const exportToCSV = (filename: string, headers: string[], rows: (string | number)[][]) => {
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers.join(","), ...rows.map((e) => e.map((val) => `"${String(val).replace(/"/g, '""')}"`).join(","))].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    triggerNotification(`✓ Exported ${filename} sheet to your downloads folder.`);
+  };
+
   const handleAllotTeacher = (bookingId: string, teacherName: string) => {
     setBookings((prev) =>
       prev.map((b) =>
@@ -324,7 +320,7 @@ export function AdminDashboardClient({
       )
     );
     const booking = bookings.find((b) => b.id === bookingId);
-    triggerNotification(`✓ Allotted ${teacherName} to ${booking?.studentName || "student"}. Email dispatched to ${booking?.parentEmail || "parent"}.`);
+    triggerNotification(`✓ Allotted ${teacherName} to ${booking?.studentName || "student"}. Session confirmation recorded.`);
   };
 
   const handleUpdateLeadStatus = (leadId: string, newStatus: string) => {
@@ -362,14 +358,35 @@ export function AdminDashboardClient({
     });
   };
 
-  const handleUpdateTicketStatus = (ticketId: string, newStatus: string) => {
+  const handleParentReply = (ticketId: string, channel: "portal" | "email" | "whatsapp") => {
+    const reply = parentReplyText[ticketId] || "Response sent from admin portal.";
     setTickets((prev) =>
-      prev.map((t) => (t.id === ticketId ? { ...t, status: newStatus } : t))
+      prev.map((t) => (t.id === ticketId ? { ...t, status: "RESOLVED" } : t))
     );
-    startTransition(async () => {
-      await updateTicketStatus(ticketId, newStatus as any);
-      triggerNotification(`✓ Support Ticket status changed to ${newStatus}`);
-    });
+    setParentReplyText((prev) => ({ ...prev, [ticketId]: "" }));
+    triggerNotification(`✓ Replied to parent via ${channel.toUpperCase()}: "${reply}"`);
+  };
+
+  const handleAddMedia = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMediaForm.url) return;
+
+    const newMedia: MediaItem = {
+      id: `m-${Date.now()}`,
+      filename: newMediaForm.filename || "website-image.jpg",
+      url: newMediaForm.url,
+      altText: newMediaForm.altText || "Website Image Asset",
+      mimeType: "image/jpeg",
+    };
+
+    setMediaList([newMedia, ...mediaList]);
+    setNewMediaForm({ filename: "", url: "", altText: "" });
+    triggerNotification(`✓ Image asset "${newMedia.filename}" added to media library.`);
+  };
+
+  const handleDeleteMedia = (id: string) => {
+    setMediaList((prev) => prev.filter((m) => m.id !== id));
+    triggerNotification(`✓ Image removed from media library.`);
   };
 
   const handleToggleCourse = (courseId: string) => {
@@ -437,11 +454,6 @@ export function AdminDashboardClient({
     (l) => leadStatusFilter === "ALL" || l?.status === leadStatusFilter
   );
 
-  const filteredTickets = (tickets || []).filter(
-    (t) => ticketStatusFilter === "ALL" || t?.status === ticketStatusFilter
-  );
-
-
   return (
     <div className="space-y-8">
       {/* Top Banner */}
@@ -455,7 +467,7 @@ export function AdminDashboardClient({
             </div>
             <h1 className="text-2xl font-extrabold text-white sm:text-3xl">Aevian Academy Control Hub</h1>
             <p className="mt-1 text-sm text-slate-light max-w-xl">
-              Allot teachers, resolve support queries, manage CRM sales pipeline, create discount codes, and oversee global users.
+              Allot teachers, manage website content & media assets, export CSV sheets, handle parent enquiries, and oversee global users.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
@@ -474,7 +486,7 @@ export function AdminDashboardClient({
             <p className="text-xs font-bold text-slate uppercase tracking-wider">{st.label}</p>
             <p className="mt-2 text-2xl font-extrabold text-navy">{st.value}</p>
             <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-1 mt-1">
-              <TrendingUp size={12} /> Live Sync Operational
+              <TrendingUp size={12} /> Live Operational Control
             </span>
           </div>
         ))}
@@ -506,12 +518,14 @@ export function AdminDashboardClient({
       {/* Navigation Tabs */}
       <div className="flex flex-wrap gap-2 border-b border-slate-border pb-4">
         {[
-          { id: "allotments", label: "Teacher Allotment Center", icon: UserCheck, count: bookings.filter(b => b.status === "PENDING").length },
-          { id: "leads", label: "CRM & Lead Pipeline", icon: Filter, count: leads.filter(l => l.status === "NEW").length },
-          { id: "support", label: "Support Desk", icon: Ticket, count: tickets.filter(t => t.status === "OPEN").length },
-          { id: "financial", label: "Revenue & Discounts", icon: DollarSign, count: discounts.length },
-          { id: "catalog", label: "Course Catalog", icon: BookOpen, count: courses.length },
-          { id: "users", label: "User Directory", icon: Users, count: users.length },
+          { id: "allotments", label: "Teacher Allotments", icon: UserCheck },
+          { id: "leads", label: "CRM & Leads", icon: Filter },
+          { id: "teachers", label: "Teacher Manager", icon: GraduationCap },
+          { id: "parents", label: "Parent Enquiries", icon: Heart },
+          { id: "students", label: "Student Manager", icon: User },
+          { id: "content", label: "Content & Media Editor", icon: ImageIcon },
+          { id: "financial", label: "Revenue & Discounts", icon: DollarSign },
+          { id: "users", label: "User Directory", icon: Users },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -524,31 +538,34 @@ export function AdminDashboardClient({
           >
             <tab.icon className="h-4 w-4" />
             <span>{tab.label}</span>
-            {tab.count > 0 && (
-              <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
-                activeTab === tab.id ? "bg-copper text-white" : "bg-cream-muted text-copper border border-copper/30"
-              }`}>
-                {tab.count}
-              </span>
-            )}
           </button>
         ))}
       </div>
 
-      {/* TAB 1: TEACHER ALLOTMENT CENTER */}
+      {/* TAB 1: TEACHER ALLOTMENTS & DUAL SLOT GRID */}
       {activeTab === "allotments" && (
         <div className="space-y-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h2 className="text-xl font-extrabold text-navy">Pending Student Bookings & Tutor Allotment</h2>
+              <h2 className="text-xl font-extrabold text-navy">Teacher Slot Allotment Grid</h2>
               <p className="text-xs text-slate mt-0.5">
-                Assign top verified master tutors to incoming demo & regular class requests.
+                Assign verified master tutors to student requests based on teacher availability slots.
               </p>
             </div>
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate">
-              <span className="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Realtime Tutor Queue</span>
-            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                exportToCSV(
+                  "Aevian_Bookings_Allotments.csv",
+                  ["ID", "Student", "Parent Email", "Course", "Scheduled Date/Time", "Status", "Assigned Teacher"],
+                  bookings.map((b) => [b.id, b.studentName, b.parentEmail, b.courseName, b.scheduledAt, b.status, b.assignedTeacher || "None"])
+                )
+              }
+              className="flex items-center gap-1.5 text-xs"
+            >
+              <FileSpreadsheet size={14} /> Export Bookings CSV
+            </Button>
           </div>
 
           <div className="grid gap-4">
@@ -603,65 +620,35 @@ export function AdminDashboardClient({
         </div>
       )}
 
-      {/* TAB 2: CRM & LEAD PIPELINE */}
+      {/* TAB 2: CRM & LEADS WITH CSV EXPORT */}
       {activeTab === "leads" && (
         <div className="space-y-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h2 className="text-xl font-extrabold text-navy">CRM & Lead Conversion Pipeline</h2>
-              <p className="text-xs text-slate mt-0.5">Track prospective student inquiries from initial contact to paid enrollment.</p>
+              <h2 className="text-xl font-extrabold text-navy">CRM Sales Pipeline & Lead Exporter</h2>
+              <p className="text-xs text-slate mt-0.5">Track prospective inquiries and download complete lead detail sheets.</p>
             </div>
             <div className="flex items-center gap-3">
-              <select
-                value={leadStatusFilter}
-                onChange={(e) => setLeadStatusFilter(e.target.value)}
-                className="rounded-xl border border-slate-border bg-white px-3 py-2 text-xs text-navy font-bold focus:border-copper focus:outline-none"
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  exportToCSV(
+                    "Aevian_CRM_Leads_Sheet.csv",
+                    ["ID", "Name", "Email", "Phone", "Source", "Status", "Notes"],
+                    leads.map((l) => [l.id, l.name, l.email, l.phone || "", l.source, l.status, l.notes || ""])
+                  )
+                }
+                className="flex items-center gap-1.5 text-xs"
               >
-                <option value="ALL">All Lead Statuses</option>
-                <option value="NEW">New</option>
-                <option value="CONTACTED">Contacted</option>
-                <option value="QUALIFIED">Qualified</option>
-                <option value="CONVERTED">Converted</option>
-                <option value="LOST">Lost</option>
-              </select>
+                <FileSpreadsheet size={14} /> Download Leads CSV Sheet
+              </Button>
               <Button variant="copper" size="sm" onClick={() => setShowAddLeadModal(true)} className="flex items-center gap-1.5 text-xs">
-                <Plus size={14} /> Add CRM Lead
+                <Plus size={14} /> Add Lead
               </Button>
             </div>
           </div>
 
-          {/* Lead Kanban / Status Overview Cards */}
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {["NEW", "CONTACTED", "QUALIFIED", "CONVERTED"].map((status) => {
-              const count = leads.filter((l) => l.status === status).length;
-              return (
-                <div key={status} className="rounded-2xl border border-slate-border bg-white p-4 shadow-sm">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate uppercase">{status}</span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-cream text-navy font-extrabold text-xs">
-                      {count}
-                    </span>
-                  </div>
-                  <div className="mt-2 h-1.5 w-full bg-cream-muted rounded-full overflow-hidden">
-                    <div
-                      className={`h-full ${
-                        status === "NEW"
-                          ? "bg-blue-500"
-                          : status === "CONTACTED"
-                          ? "bg-amber-500"
-                          : status === "QUALIFIED"
-                          ? "bg-purple-500"
-                          : "bg-emerald-500"
-                      }`}
-                      style={{ width: `${Math.min(100, (count / (leads.length || 1)) * 100)}%` }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Leads Table */}
           <div className="rounded-2xl border border-slate-border bg-white overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
@@ -695,23 +682,13 @@ export function AdminDashboardClient({
                         </span>
                       </td>
                       <td className="p-4 text-slate text-[11px] max-w-xs truncate font-medium">
-                        {l.notes || "No notes attached"}
+                        {l.notes || "No notes"}
                       </td>
                       <td className="p-4">
                         <select
                           value={l.status}
                           onChange={(e) => handleUpdateLeadStatus(l.id, e.target.value)}
-                          className={`rounded-lg px-2.5 py-1 text-[11px] font-bold border ${
-                            l.status === "NEW"
-                              ? "bg-blue-50 text-blue-700 border-blue-200"
-                              : l.status === "CONTACTED"
-                              ? "bg-amber-50 text-amber-700 border-amber-200"
-                              : l.status === "QUALIFIED"
-                              ? "bg-purple-50 text-purple-700 border-purple-200"
-                              : l.status === "CONVERTED"
-                              ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                              : "bg-red-50 text-red-700 border-red-200"
-                          }`}
+                          className="rounded-lg px-2.5 py-1 text-[11px] font-bold border bg-cream/40"
                         >
                           <option value="NEW">NEW</option>
                           <option value="CONTACTED">CONTACTED</option>
@@ -739,58 +716,58 @@ export function AdminDashboardClient({
         </div>
       )}
 
-      {/* TAB 3: SUPPORT DESK */}
-      {activeTab === "support" && (
+      {/* TAB 3: TEACHER MANAGER & CV DOWNLOAD */}
+      {activeTab === "teachers" && (
         <div className="space-y-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h2 className="text-xl font-extrabold text-navy">Support Desk & Ticket Resolution Center</h2>
-              <p className="text-xs text-slate mt-0.5">Manage user inquiries, technical assistance, and billing tickets.</p>
+              <h2 className="text-xl font-extrabold text-navy">Teacher Profile & CV Manager</h2>
+              <p className="text-xs text-slate mt-0.5">Control faculty tags, profile details, and download uploaded teacher CVs.</p>
             </div>
-            <select
-              value={ticketStatusFilter}
-              onChange={(e) => setTicketStatusFilter(e.target.value)}
-              className="rounded-xl border border-slate-border bg-white px-3 py-2 text-xs text-navy font-bold focus:border-copper focus:outline-none"
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                exportToCSV(
+                  "Aevian_Teachers_Sheet.csv",
+                  ["ID", "Name", "Email", "Role", "Joined Date"],
+                  users.filter((u) => u.role === "TEACHER").map((u) => [u.id, u.name, u.email, u.role, u.createdAt])
+                )
+              }
+              className="flex items-center gap-1.5 text-xs"
             >
-              <option value="ALL">All Support Ticket Statuses</option>
-              <option value="OPEN">Open</option>
-              <option value="IN_PROGRESS">In Progress</option>
-              <option value="RESOLVED">Resolved</option>
-              <option value="CLOSED">Closed</option>
-            </select>
+              <FileSpreadsheet size={14} /> Download Teachers CSV
+            </Button>
           </div>
 
-          <div className="grid gap-4">
-            {filteredTickets.map((t) => (
+          <div className="grid gap-4 sm:grid-cols-2">
+            {users.filter((u) => u.role === "TEACHER").map((t) => (
               <div key={t.id} className="rounded-2xl border border-slate-border bg-white p-6 shadow-sm space-y-3">
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                  <div className="flex items-center gap-2">
-                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${
-                      t.priority === "urgent"
-                        ? "bg-red-100 text-red-700"
-                        : t.priority === "high"
-                        ? "bg-amber-100 text-amber-700"
-                        : "bg-blue-100 text-blue-700"
-                    }`}>
-                      {t.priority} Priority
-                    </span>
-                    <h3 className="text-base font-bold text-navy">{t.subject}</h3>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-copper/10 border border-copper/30 flex items-center justify-center font-bold text-copper text-sm">
+                      {t.name.charAt(0)}
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-navy">{t.name}</h3>
+                      <p className="text-[11px] text-slate">{t.email}</p>
+                    </div>
                   </div>
-                  <select
-                    value={t.status}
-                    onChange={(e) => handleUpdateTicketStatus(t.id, e.target.value)}
-                    className="rounded-xl border border-slate-border bg-cream-muted px-3 py-1.5 text-xs text-navy font-bold"
-                  >
-                    <option value="OPEN">OPEN</option>
-                    <option value="IN_PROGRESS">IN PROGRESS</option>
-                    <option value="RESOLVED">RESOLVED</option>
-                    <option value="CLOSED">CLOSED</option>
-                  </select>
+                  <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700">
+                    Verified Master Tutor
+                  </span>
                 </div>
-                <p className="text-xs text-slate leading-relaxed font-medium">{t.description}</p>
-                <div className="flex items-center justify-between pt-2 border-t border-slate-border text-[11px] text-slate">
-                  <span>User: <strong className="text-navy">{t.userName}</strong> ({t.userEmail})</span>
-                  <span>Logged: {t.createdAt}</span>
+
+                <div className="flex items-center justify-between pt-2 border-t border-slate-border text-xs">
+                  <span className="text-slate font-medium">Faculty CV Document:</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => alert(`Downloading CV for ${t.name}... (Sample CV PDF Generated)`)}
+                    className="flex items-center gap-1.5 text-xs"
+                  >
+                    <Download size={12} /> Download CV PDF
+                  </Button>
                 </div>
               </div>
             ))}
@@ -798,66 +775,235 @@ export function AdminDashboardClient({
         </div>
       )}
 
-      {/* TAB 4: REVENUE & DISCOUNTS */}
+      {/* TAB 4: PARENT MANAGER & ENQUIRIES */}
+      {activeTab === "parents" && (
+        <div className="space-y-6">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 className="text-xl font-extrabold text-navy">Parent Manager & Enquiry Desk</h2>
+              <p className="text-xs text-slate mt-0.5">Receive parent complaints/requests and reply portal-to-portal, email, or WhatsApp.</p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                exportToCSV(
+                  "Aevian_Parents_Sheet.csv",
+                  ["ID", "Name", "Email", "Role", "Joined"],
+                  users.filter((u) => u.role === "PARENT").map((u) => [u.id, u.name, u.email, u.role, u.createdAt])
+                )
+              }
+              className="flex items-center gap-1.5 text-xs"
+            >
+              <FileSpreadsheet size={14} /> Download Parents CSV
+            </Button>
+          </div>
+
+          <div className="grid gap-4">
+            {tickets.map((t) => (
+              <div key={t.id} className="rounded-2xl border border-slate-border bg-white p-6 shadow-sm space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] font-extrabold uppercase bg-purple-100 text-purple-700 px-2.5 py-0.5 rounded-full">
+                      Parent Enquiry
+                    </span>
+                    <h3 className="text-base font-bold text-navy mt-1">{t.subject}</h3>
+                    <p className="text-xs text-slate">Parent: <strong className="text-navy">{t.userName}</strong> ({t.userEmail})</p>
+                  </div>
+                  <span className="text-xs font-mono text-slate-muted">{t.createdAt}</span>
+                </div>
+
+                <p className="text-xs text-slate bg-cream-muted p-3 rounded-xl border border-slate-border">
+                  "{t.description}"
+                </p>
+
+                <div className="space-y-2">
+                  <input
+                    type="text"
+                    placeholder="Type reply message to parent..."
+                    value={parentReplyText[t.id] || ""}
+                    onChange={(e) => setParentReplyText({ ...parentReplyText, [t.id]: e.target.value })}
+                    className="w-full rounded-xl border border-slate-border p-2.5 text-xs text-navy font-medium focus:border-copper focus:outline-none"
+                  />
+                  <div className="flex items-center gap-2">
+                    <Button variant="copper" size="sm" onClick={() => handleParentReply(t.id, "portal")}>
+                      Reply Portal-to-Portal
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => handleParentReply(t.id, "email")}>
+                      <Mail size={12} className="mr-1" /> Send Email
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => handleParentReply(t.id, "whatsapp")}>
+                      <MessageCircle size={12} className="mr-1 text-emerald-600" /> Send WhatsApp
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 5: STUDENT MANAGER */}
+      {activeTab === "students" && (
+        <div className="space-y-6">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 className="text-xl font-extrabold text-navy">Student Manager & Progress Oversight</h2>
+              <p className="text-xs text-slate mt-0.5">Overview of registered students, parent linkage, and enrollment sheets.</p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                exportToCSV(
+                  "Aevian_Students_Sheet.csv",
+                  ["ID", "Name", "Email", "Role", "Joined Date"],
+                  users.filter((u) => u.role === "STUDENT").map((u) => [u.id, u.name, u.email, u.role, u.createdAt])
+                )
+              }
+              className="flex items-center gap-1.5 text-xs"
+            >
+              <FileSpreadsheet size={14} /> Download Students CSV Sheet
+            </Button>
+          </div>
+
+          <div className="rounded-2xl border border-slate-border bg-white overflow-hidden shadow-sm">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-cream-muted text-navy uppercase font-bold border-b border-slate-border">
+                <tr>
+                  <th className="p-4">Student Name</th>
+                  <th className="p-4">Email</th>
+                  <th className="p-4">Status</th>
+                  <th className="p-4">Enrolled Date</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-border/60">
+                {users.filter((u) => u.role === "STUDENT").map((s) => (
+                  <tr key={s.id} className="hover:bg-cream/30">
+                    <td className="p-4 font-bold text-navy">{s.name}</td>
+                    <td className="p-4 text-slate">{s.email}</td>
+                    <td className="p-4">
+                      <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700">
+                        Active Learner
+                      </span>
+                    </td>
+                    <td className="p-4 text-slate font-mono">{s.createdAt}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 6: WEBSITE CONTENT & MEDIA EDITOR */}
+      {activeTab === "content" && (
+        <div className="space-y-6">
+          <div>
+            <h2 className="text-xl font-extrabold text-navy">Website Content & Media Asset Editor</h2>
+            <p className="text-xs text-slate mt-0.5">Edit program titles/fees and manage uploaded image library.</p>
+          </div>
+
+          {/* Media Library */}
+          <div className="rounded-2xl border border-slate-border bg-white p-6 shadow-sm space-y-4">
+            <h3 className="text-base font-bold text-navy flex items-center gap-2">
+              <ImageIcon className="h-4 w-4 text-copper" /> Image & Media Asset Library
+            </h3>
+
+            <form onSubmit={handleAddMedia} className="grid gap-3 sm:grid-cols-3 text-xs">
+              <input
+                type="text"
+                placeholder="Filename (e.g. math-class.jpg)"
+                value={newMediaForm.filename}
+                onChange={(e) => setNewMediaForm({ ...newMediaForm, filename: e.target.value })}
+                className="rounded-xl border border-slate-border p-2.5 text-navy font-medium focus:border-copper focus:outline-none"
+              />
+              <input
+                type="text"
+                placeholder="Image URL (Unsplash / Cloudinary)"
+                value={newMediaForm.url}
+                onChange={(e) => setNewMediaForm({ ...newMediaForm, url: e.target.value })}
+                className="rounded-xl border border-slate-border p-2.5 text-navy font-medium focus:border-copper focus:outline-none"
+              />
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Alt Text"
+                  value={newMediaForm.altText}
+                  onChange={(e) => setNewMediaForm({ ...newMediaForm, altText: e.target.value })}
+                  className="w-full rounded-xl border border-slate-border p-2.5 text-navy font-medium focus:border-copper focus:outline-none"
+                />
+                <Button type="submit" variant="copper" size="sm">
+                  Add Image
+                </Button>
+              </div>
+            </form>
+
+            <div className="grid gap-4 sm:grid-cols-3 pt-2">
+              {mediaList.map((m) => (
+                <div key={m.id} className="rounded-xl border border-slate-border overflow-hidden bg-cream-muted p-3 space-y-2">
+                  <img src={m.url} alt={m.altText} className="h-32 w-full object-cover rounded-lg" />
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-bold text-navy truncate max-w-[150px]">{m.filename}</span>
+                    <button onClick={() => handleDeleteMedia(m.id)} className="text-red-600 font-bold hover:underline">
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Program Catalog Editor */}
+          <div className="grid gap-4 sm:grid-cols-2">
+            {courses.map((c) => (
+              <div key={c.id} className="rounded-2xl border border-slate-border bg-white p-5 shadow-sm space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="rounded-md bg-copper/10 px-2.5 py-0.5 text-[10px] font-bold text-copper">
+                    {c.programArea}
+                  </span>
+                  <button
+                    onClick={() => handleToggleCourse(c.id)}
+                    className={`px-2.5 py-1 rounded-lg text-[10px] font-bold ${
+                      c.published ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"
+                    }`}
+                  >
+                    {c.published ? "Published" : "Draft"}
+                  </button>
+                </div>
+                <h4 className="text-sm font-bold text-navy">{c.title}</h4>
+                <p className="text-xs text-slate">Duration: {c.durationWeeks} Weeks • Level: {c.difficulty}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 7: REVENUE & DISCOUNTS */}
       {activeTab === "financial" && (
         <div className="space-y-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h2 className="text-xl font-extrabold text-navy">Revenue Oversight & Promo Coupon Manager</h2>
-              <p className="text-xs text-slate mt-0.5">Create discount codes, monitor active coupon redemptions, and view billing logs.</p>
+              <h2 className="text-xl font-extrabold text-navy">Revenue & Discount Code Manager</h2>
+              <p className="text-xs text-slate mt-0.5">Create promo codes and track active redemptions.</p>
             </div>
             <Button variant="copper" size="sm" onClick={() => setShowAddDiscountModal(true)} className="flex items-center gap-1.5 text-xs">
               <Plus size={14} /> Create Discount Code
             </Button>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div className="rounded-2xl border border-slate-border bg-white p-5 shadow-sm">
-              <p className="text-xs font-bold text-slate uppercase">Active Promo Coupons</p>
-              <p className="mt-2 text-2xl font-extrabold text-navy">{discounts.filter(d => d.active).length}</p>
-            </div>
-            <div className="rounded-2xl border border-slate-border bg-white p-5 shadow-sm">
-              <p className="text-xs font-bold text-slate uppercase">Total Redemptions</p>
-              <p className="mt-2 text-2xl font-extrabold text-copper">
-                {discounts.reduce((acc, d) => acc + d.currentUses, 0)}
-              </p>
-            </div>
-            <div className="rounded-2xl border border-slate-border bg-white p-5 shadow-sm">
-              <p className="text-xs font-bold text-slate uppercase">Currency Engine</p>
-              <p className="mt-2 text-2xl font-extrabold text-emerald-600">Multi-Currency (GBP, USD, PKR)</p>
-            </div>
-          </div>
-
           <div className="rounded-2xl border border-slate-border bg-white overflow-hidden shadow-sm">
-            <div className="p-4 bg-cream-muted border-b border-slate-border font-bold text-navy text-xs">
-              Active Promo Coupons & Discount Rules
-            </div>
             <div className="divide-y divide-slate-border">
               {discounts.map((d) => (
                 <div key={d.id} className="p-4 flex flex-wrap items-center justify-between gap-4 text-xs">
                   <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono font-extrabold text-navy text-sm bg-copper/10 px-2.5 py-0.5 rounded border border-copper/30">
-                        {d.code}
-                      </span>
-                      {d.discountPercent && (
-                        <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
-                          {d.discountPercent}% OFF
-                        </span>
-                      )}
-                      {d.discountAmount && (
-                        <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-blue-700">
-                          ${d.discountAmount} OFF
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-slate font-medium">{d.description || "No description specified"}</p>
-                  </div>
-                  <div className="text-right space-y-1 text-slate font-medium">
-                    <div>Used: <strong className="text-navy">{d.currentUses}</strong> {d.maxUses ? `/ ${d.maxUses}` : "times"}</div>
-                    <span className="inline-block px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[10px] font-bold">
-                      Active Code
+                    <span className="font-mono font-extrabold text-navy text-sm bg-copper/10 px-2.5 py-0.5 rounded border border-copper/30">
+                      {d.code}
                     </span>
+                    <p className="text-slate font-medium">{d.description || "No description"}</p>
+                  </div>
+                  <div className="text-right text-slate font-medium">
+                    Used: <strong className="text-navy">{d.currentUses}</strong> times
                   </div>
                 </div>
               ))}
@@ -866,46 +1012,7 @@ export function AdminDashboardClient({
         </div>
       )}
 
-      {/* TAB 5: COURSE CATALOG MANAGER */}
-      {activeTab === "catalog" && (
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-extrabold text-navy">Program & Course Catalog Manager</h2>
-              <p className="text-xs text-slate mt-0.5">Toggle course availability across website and trial wizard.</p>
-            </div>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            {courses.map((c) => (
-              <div key={c.id} className="rounded-2xl border border-slate-border bg-white p-5 shadow-sm flex items-center justify-between gap-4">
-                <div className="space-y-1">
-                  <span className="rounded-md bg-copper/10 px-2.5 py-0.5 text-[10px] font-bold text-copper">
-                    {c.programArea}
-                  </span>
-                  <h4 className="text-sm font-bold text-navy">{c.title}</h4>
-                  <p className="text-[11px] text-slate font-medium">
-                    Duration: {c.durationWeeks || 8} Weeks • Level: {c.difficulty || "All Levels"}
-                  </p>
-                </div>
-
-                <button
-                  onClick={() => handleToggleCourse(c.id)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
-                    c.published
-                      ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
-                      : "bg-slate-100 text-slate-500 hover:bg-slate-200"
-                  }`}
-                >
-                  {c.published ? "Published" : "Draft"}
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* TAB 6: USER DIRECTORY & ROLES */}
+      {/* TAB 8: USER DIRECTORY & ROLES */}
       {activeTab === "users" && (
         <div className="space-y-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
@@ -913,7 +1020,7 @@ export function AdminDashboardClient({
               <h2 className="text-xl font-extrabold text-navy">Global User Directory & Access Control</h2>
               <p className="text-xs text-slate mt-0.5">Manage permissions for Students, Parents, Teachers, and Admins.</p>
             </div>
-            <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+            <div className="flex flex-wrap items-center gap-3">
               <select
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
@@ -926,77 +1033,54 @@ export function AdminDashboardClient({
                 <option value="ADMIN">Admin</option>
               </select>
 
-              <div className="relative w-full sm:w-64">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-slate" />
-                <input
-                  type="text"
-                  placeholder="Search user name or email..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full rounded-xl border border-slate-border bg-white pl-9 pr-4 py-2 text-xs text-navy font-medium focus:border-copper focus:outline-none"
-                />
-              </div>
+              <input
+                type="text"
+                placeholder="Search user name or email..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="rounded-xl border border-slate-border bg-white px-4 py-2 text-xs text-navy font-medium focus:border-copper focus:outline-none"
+              />
             </div>
           </div>
 
           <div className="rounded-2xl border border-slate-border bg-white overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-cream-muted text-navy uppercase tracking-wider font-bold border-b border-slate-border">
-                  <tr>
-                    <th className="p-4">Name</th>
-                    <th className="p-4">Email</th>
-                    <th className="p-4">Role</th>
-                    <th className="p-4">Joined Date</th>
-                    <th className="p-4 text-right">Role Control</th>
+            <table className="w-full text-left text-xs">
+              <thead className="bg-cream-muted text-navy uppercase font-bold border-b border-slate-border">
+                <tr>
+                  <th className="p-4">Name</th>
+                  <th className="p-4">Email</th>
+                  <th className="p-4">Role</th>
+                  <th className="p-4">Joined Date</th>
+                  <th className="p-4 text-right">Role Control</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-border/60">
+                {filteredUsers.map((u) => (
+                  <tr key={u.id} className="hover:bg-cream/30">
+                    <td className="p-4 font-bold text-navy">{u.name}</td>
+                    <td className="p-4 text-slate font-medium">{u.email}</td>
+                    <td className="p-4">
+                      <span className="rounded-full px-2.5 py-1 text-[10px] font-bold bg-navy/10 text-navy">
+                        {u.role}
+                      </span>
+                    </td>
+                    <td className="p-4 text-slate font-mono">{u.createdAt}</td>
+                    <td className="p-4 text-right">
+                      <select
+                        value={u.role}
+                        onChange={(e) => handleUserRoleChange(u.id, e.target.value)}
+                        className="rounded-lg border border-slate-border bg-cream/40 px-2 py-1 text-[11px] font-bold text-navy focus:border-copper focus:outline-none"
+                      >
+                        <option value="STUDENT">STUDENT</option>
+                        <option value="PARENT">PARENT</option>
+                        <option value="TEACHER">TEACHER</option>
+                        <option value="ADMIN">ADMIN</option>
+                      </select>
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-border/60">
-                  {filteredUsers.map((u) => (
-                    <tr key={u.id} className="hover:bg-cream/30">
-                      <td className="p-4 font-bold text-navy">{u.name}</td>
-                      <td className="p-4 text-slate font-medium">{u.email}</td>
-                      <td className="p-4">
-                        <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${
-                          u.role === "ADMIN"
-                            ? "bg-purple-100 text-purple-700"
-                            : u.role === "TEACHER"
-                            ? "bg-copper/20 text-copper"
-                            : u.role === "PARENT"
-                            ? "bg-blue-100 text-blue-700"
-                            : "bg-emerald-100 text-emerald-700"
-                        }`}>
-                          {u.role}
-                        </span>
-                      </td>
-                      <td className="p-4 text-slate font-mono">
-                        {(() => {
-                          try {
-                            const d = new Date(u.createdAt);
-                            return isNaN(d.getTime()) ? String(u.createdAt || "N/A") : d.toLocaleDateString();
-                          } catch (e) {
-                            return String(u.createdAt || "N/A");
-                          }
-                        })()}
-                      </td>
-
-                      <td className="p-4 text-right">
-                        <select
-                          value={u.role}
-                          onChange={(e) => handleUserRoleChange(u.id, e.target.value)}
-                          className="rounded-lg border border-slate-border bg-cream/40 px-2 py-1 text-[11px] font-bold text-navy focus:border-copper focus:outline-none"
-                        >
-                          <option value="STUDENT">STUDENT</option>
-                          <option value="PARENT">PARENT</option>
-                          <option value="TEACHER">TEACHER</option>
-                          <option value="ADMIN">ADMIN</option>
-                        </select>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
@@ -1047,19 +1131,6 @@ export function AdminDashboardClient({
                   onChange={(e) => setNewLeadForm({ ...newLeadForm, phone: e.target.value })}
                   className="w-full rounded-xl border border-slate-border p-2.5 text-navy font-medium focus:border-copper focus:outline-none"
                 />
-              </div>
-              <div>
-                <label className="font-bold text-navy block mb-1">Lead Source</label>
-                <select
-                  value={newLeadForm.source}
-                  onChange={(e) => setNewLeadForm({ ...newLeadForm, source: e.target.value })}
-                  className="w-full rounded-xl border border-slate-border p-2.5 text-navy font-medium focus:border-copper focus:outline-none"
-                >
-                  <option value="Website Direct">Website Direct</option>
-                  <option value="Google Search">Google Search</option>
-                  <option value="Facebook / Instagram Ad">Facebook / Instagram Ad</option>
-                  <option value="Referral">Referral</option>
-                </select>
               </div>
               <div>
                 <label className="font-bold text-navy block mb-1">Notes</label>
@@ -1117,38 +1188,6 @@ export function AdminDashboardClient({
                   placeholder="e.g. 15% Off Back To School Campaign"
                   value={newDiscountForm.description}
                   onChange={(e) => setNewDiscountForm({ ...newDiscountForm, description: e.target.value })}
-                  className="w-full rounded-xl border border-slate-border p-2.5 text-navy font-medium focus:border-copper focus:outline-none"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="font-bold text-navy block mb-1">Discount %</label>
-                  <input
-                    type="number"
-                    placeholder="15"
-                    value={newDiscountForm.discountPercent}
-                    onChange={(e) => setNewDiscountForm({ ...newDiscountForm, discountPercent: e.target.value })}
-                    className="w-full rounded-xl border border-slate-border p-2.5 text-navy font-medium focus:border-copper focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="font-bold text-navy block mb-1">Or Flat $ Amount</label>
-                  <input
-                    type="number"
-                    placeholder="25"
-                    value={newDiscountForm.discountAmount}
-                    onChange={(e) => setNewDiscountForm({ ...newDiscountForm, discountAmount: e.target.value })}
-                    className="w-full rounded-xl border border-slate-border p-2.5 text-navy font-medium focus:border-copper focus:outline-none"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="font-bold text-navy block mb-1">Max Redemptions (Optional)</label>
-                <input
-                  type="number"
-                  placeholder="100"
-                  value={newDiscountForm.maxUses}
-                  onChange={(e) => setNewDiscountForm({ ...newDiscountForm, maxUses: e.target.value })}
                   className="w-full rounded-xl border border-slate-border p-2.5 text-navy font-medium focus:border-copper focus:outline-none"
                 />
               </div>

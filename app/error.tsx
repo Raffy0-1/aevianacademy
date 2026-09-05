@@ -3,6 +3,7 @@
 import React, { useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { AbstractBackground } from "@/components/ui/abstract-background";
 
 export default function Error({
   error,
@@ -16,12 +17,14 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center space-y-6">
-      <div className="w-16 h-16 rounded-2xl bg-copper/10 border border-copper/20 flex items-center justify-center text-copper font-display text-2xl font-bold">
+    <div className="relative min-h-[70vh] flex flex-col items-center justify-center p-6 text-center space-y-6 overflow-hidden">
+      <AbstractBackground />
+
+      <div className="relative z-10 w-16 h-16 rounded-2xl bg-copper/10 border border-copper/20 flex items-center justify-center text-copper font-display text-2xl font-bold shadow-lg backdrop-blur-md">
         A
       </div>
 
-      <div className="max-w-md space-y-2">
+      <div className="relative z-10 max-w-md space-y-2">
         <h2 className="font-display text-2xl md:text-3xl text-foreground font-semibold">
           Something went wrong
         </h2>
@@ -35,7 +38,7 @@ export default function Error({
         )}
       </div>
 
-      <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
+      <div className="relative z-10 flex flex-wrap items-center justify-center gap-4 pt-2">
         <Button onClick={() => reset()} variant="copper" size="sm">
           Try Again
         </Button>

@@ -1,7 +1,6 @@
-import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { AdminDashboardClient } from "@/components/dashboard/admin-dashboard-client";
+import { AdminDashboardWrapper } from "@/components/dashboard/admin-dashboard-wrapper";
 
 export const dynamic = "force-dynamic";
 
@@ -163,7 +162,7 @@ export default async function AdminDirectPage() {
             </p>
           </div>
 
-          <AdminDashboardClient
+          <AdminDashboardWrapper
             stats={stats}
             initialLeads={mappedLeads}
             initialUsers={mappedUsers}
@@ -190,7 +189,7 @@ export default async function AdminDirectPage() {
             </p>
           </div>
 
-          <AdminDashboardClient
+          <AdminDashboardWrapper
             stats={fallbackStats}
             initialLeads={[]}
             initialUsers={[]}

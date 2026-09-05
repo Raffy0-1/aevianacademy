@@ -15,9 +15,13 @@ export default function GlobalError({
 
   return (
     <html lang="en">
-      <body className="bg-[#1C2A38] text-[#FAF7F2] font-sans min-h-screen flex flex-col items-center justify-center p-6 text-center">
-        <div className="max-w-md space-y-6 bg-[#253545] p-8 rounded-2xl border border-white/10 shadow-2xl">
-          <div className="w-16 h-16 rounded-2xl bg-[#C86D51]/20 border border-[#C86D51]/40 flex items-center justify-center text-[#C86D51] font-bold text-2xl mx-auto">
+      <body className="bg-[#1C2A38] text-[#FAF7F2] font-sans min-h-screen flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
+        {/* Subtle Ambient Layer */}
+        <div className="absolute top-0 left-0 h-96 w-96 rounded-full bg-[#C86D51]/10 blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-[#1C2A38] blur-[120px] pointer-events-none" />
+
+        <div className="relative z-10 max-w-md space-y-6 bg-[#253545]/90 backdrop-blur-xl p-8 rounded-2xl border border-white/10 shadow-2xl">
+          <div className="w-16 h-16 rounded-2xl bg-[#C86D51]/20 border border-[#C86D51]/40 flex items-center justify-center text-[#C86D51] font-bold text-2xl mx-auto shadow-inner">
             A
           </div>
           <div className="space-y-2">
@@ -33,7 +37,7 @@ export default function GlobalError({
           </div>
           <button
             onClick={() => reset()}
-            className="w-full py-2.5 px-4 rounded-lg bg-[#C86D51] hover:bg-[#b55f45] text-white font-medium transition-colors"
+            className="w-full py-2.5 px-4 rounded-lg bg-[#C86D51] hover:bg-[#b55f45] text-white font-medium transition-colors shadow-md"
           >
             Reload Page
           </button>

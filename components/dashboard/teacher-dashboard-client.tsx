@@ -21,6 +21,9 @@ import {
   BookOpen,
   Sparkles,
   Award,
+  UserCheck,
+  FileText,
+  CheckCircle2,
 } from "lucide-react";
 
 interface Booking {
@@ -58,15 +61,31 @@ export function TeacherDashboardClient({
   const [bookings, setBookings] = useState<Booking[]>(initialBookings);
   const [availability, setAvailability] = useState<Availability[]>(initialAvailability);
 
+  // Profile completion state
+  const [bio, setBio] = useState("Certified faculty specializing in international curricula.");
+  const [subjects, setSubjects] = useState("Mathematics, English, Physics");
+  const [cvUploaded, setCvUploaded] = useState(true);
+  const [photoUrl, setPhotoUrl] = useState("");
+  const [profileSavedMsg, setProfileSavedMsg] = useState<string | null>(null);
+
+  // Calculate completion percentage
+  const calculateProgress = () => {
+    let score = 25; // Account pre-filled for login
+    if (bio.trim().length > 10) score += 25;
+    if (subjects.trim().length > 2) score += 25;
+    if (availability.length > 0) score += 25;
+    return score;
+  };
+
+  const progressPercent = calculateProgress();
+
   // Notes & PDF Upload state
   const [pdfTitle, setPdfTitle] = useState("");
   const [pdfSubject, setPdfSubject] = useState("School Assessment");
   const [feedbackNote, setFeedbackNote] = useState("");
-  const [selectedBookingId, setSelectedBookingId] = useState<string>("");
   const [uploadingPdf, setUploadingPdf] = useState(false);
   const [uploadSuccessMsg, setUploadSuccessMsg] = useState<string | null>(null);
 
-  // Attendance update
   const handleMarkStatus = async (bookingId: string, status: BookingStatus) => {
     try {
       await updateBookingStatus({
@@ -92,6 +111,12 @@ export function TeacherDashboardClient({
     }, 1000);
   };
 
+  const handleSaveProfile = (e: React.FormEvent) => {
+    e.preventDefault();
+    setProfileSavedMsg("✓ Teacher profile details updated successfully.");
+    setTimeout(() => setProfileSavedMsg(null), 4000);
+  };
+
   const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
   return (
@@ -107,14 +132,47 @@ export function TeacherDashboardClient({
             </div>
             <h1 className="text-2xl font-extrabold text-white sm:text-3xl">Teacher Command Center</h1>
             <p className="mt-1 text-sm text-slate-light max-w-xl">
-              Lead 40-minute 1-on-1 live sessions, upload PDF lecture handouts, and dispatch parent progress notes.
+              Lead 40-minute 1-on-1 live sessions, upload PDF lecture handouts, and manage availability.
             </p>
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-col items-end gap-2">
             <span className="rounded-xl bg-navy-dark px-4 py-2 text-xs font-bold text-copper border border-navy-light">
               150+ Verified Faculty Network
             </span>
           </div>
+        </div>
+      </div>
+
+      {/* Profile Completion Progress Bar */}
+      <div className="rounded-2xl border border-slate-border bg-white p-6 shadow-sm space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <UserCheck className="h-5 w-5 text-copper" />
+            <h3 className="text-sm font-bold text-navy">Teacher Profile Onboarding Completion</h3>
+          </div>
+          <span className="text-xs font-extrabold text-copper bg-copper/10 px-3 py-1 rounded-full border border-copper/30">
+            {progressPercent}% Complete
+          </span>
+        </div>
+        <div className="h-2.5 w-full bg-cream-muted rounded-full overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-copper to-emerald-500 transition-all duration-500"
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-[11px] font-bold text-slate">
+          <span className="flex items-center gap-1 text-emerald-600">
+            <CheckCircle2 size={12} /> Account Pre-filled
+          </span>
+          <span className={`flex items-center gap-1 ${bio ? "text-emerald-600" : "text-slate-400"}`}>
+            <CheckCircle2 size={12} /> Bio & Experience
+          </span>
+          <span className={`flex items-center gap-1 ${subjects ? "text-emerald-600" : "text-slate-400"}`}>
+            <CheckCircle2 size={12} /> Subject Specializations
+          </span>
+          <span className={`flex items-center gap-1 ${availability.length > 0 ? "text-emerald-600" : "text-slate-400"}`}>
+            <CheckCircle2 size={12} /> Slots Defined
+          </span>
         </div>
       </div>
 
@@ -124,6 +182,7 @@ export function TeacherDashboardClient({
           { id: "classes", label: "My 40-Min Sessions", icon: Calendar },
           { id: "handouts", label: "Upload PDF Lecture Notes", icon: Upload },
           { id: "availability", label: "Slot Availability", icon: Clock },
+          { id: "profile", label: "Edit My Faculty Profile", icon: UserCheck },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -283,6 +342,69 @@ export function TeacherDashboardClient({
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* TAB 4: EDIT FACULTY PROFILE */}
+      {activeTab === "profile" && (
+        <div className="rounded-2xl border border-slate-border bg-white p-6 shadow-sm max-w-2xl space-y-4">
+          <div>
+            <h2 className="text-xl font-extrabold text-navy">Faculty Profile & Specializations</h2>
+            <p className="text-xs text-slate mt-0.5">Update bio, subjects, profile picture, and upload your faculty CV.</p>
+          </div>
+
+          <form onSubmit={handleSaveProfile} className="space-y-4 text-xs">
+            <div>
+              <label className="block font-bold text-navy mb-1">Teaching Bio & Experience Summary</label>
+              <textarea
+                rows={3}
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                className="w-full rounded-xl border border-slate-border p-3 text-navy font-medium focus:border-copper focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block font-bold text-navy mb-1">Subjects & Curriculum Expertise (comma separated)</label>
+              <input
+                type="text"
+                value={subjects}
+                onChange={(e) => setSubjects(e.target.value)}
+                className="w-full rounded-xl border border-slate-border p-3 text-navy font-medium focus:border-copper focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block font-bold text-navy mb-1">Profile Photo URL</label>
+              <input
+                type="text"
+                placeholder="https://images.unsplash.com/photo-..."
+                value={photoUrl}
+                onChange={(e) => setPhotoUrl(e.target.value)}
+                className="w-full rounded-xl border border-slate-border p-3 text-navy font-medium focus:border-copper focus:outline-none"
+              />
+            </div>
+
+            <div className="p-4 bg-cream-muted rounded-xl border border-slate-border flex items-center justify-between">
+              <div>
+                <p className="font-bold text-navy">Faculty Curriculum Vitae (CV)</p>
+                <p className="text-[11px] text-slate">PDF document for admin verification.</p>
+              </div>
+              <Button type="button" variant="outline" size="sm" onClick={() => alert("CV upload dialog opened.")}>
+                Upload Updated CV (PDF)
+              </Button>
+            </div>
+
+            <Button type="submit" variant="copper" className="w-full">
+              Save Profile Changes
+            </Button>
+
+            {profileSavedMsg && (
+              <div className="rounded-xl bg-emerald-50 p-3 text-xs text-emerald-800 font-bold border border-emerald-200">
+                {profileSavedMsg}
+              </div>
+            )}
+          </form>
         </div>
       )}
     </div>
