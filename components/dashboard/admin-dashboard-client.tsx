@@ -814,8 +814,9 @@ export function AdminDashboardClient({
                 </div>
 
                 <p className="text-xs text-slate bg-cream-muted p-3 rounded-xl border border-slate-border">
-                  "{t.description}"
+                  &quot;{t.description}&quot;
                 </p>
+
 
                 <div className="space-y-2">
                   <input
