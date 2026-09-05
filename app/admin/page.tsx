@@ -79,29 +79,29 @@ export default async function AdminDirectPage() {
   };
 
   const mappedLeads = (leadsList || []).map((l) => ({
-    id: l.id,
-    name: l.name,
-    email: l.email,
+    id: l.id || `lead-${Math.random()}`,
+    name: l.name || "Lead Name",
+    email: l.email || "N/A",
     phone: l.phone || null,
     source: l.source || "Direct",
-    status: l.status,
+    status: l.status || "NEW",
     notes: l.notes || null,
     createdAt: safeIsoString(l.createdAt),
   }));
 
   const mappedUsers = (usersList || []).map((u) => ({
-    id: u.id,
-    name: u.name,
-    email: u.email,
-    role: u.role,
+    id: u.id || `user-${Math.random()}`,
+    name: u.name || "User",
+    email: u.email || "N/A",
+    role: u.role || "STUDENT",
     createdAt: safeIsoString(u.createdAt),
   }));
 
   const mappedTickets = (ticketsList || []).map((t) => ({
-    id: t.id,
-    subject: t.subject,
-    description: t.description,
-    status: t.status,
+    id: t.id || `ticket-${Math.random()}`,
+    subject: t.subject || "Support Inquiry",
+    description: t.description || "",
+    status: t.status || "OPEN",
     priority: t.priority || "medium",
     userName: t.user?.name || "Anonymous",
     userEmail: t.user?.email || "N/A",
@@ -109,38 +109,38 @@ export default async function AdminDirectPage() {
   }));
 
   const mappedCourses = (coursesList || []).map((c) => ({
-    id: c.id,
-    title: c.title,
-    slug: c.slug,
+    id: c.id || `course-${Math.random()}`,
+    title: c.title || "Course Program",
+    slug: c.slug || "course-program",
     programArea: c.programArea || "School Assessment",
-    published: c.published,
-    difficulty: c.difficulty,
-    durationWeeks: c.durationWeeks,
+    published: Boolean(c.published),
+    difficulty: c.difficulty || "BEGINNER",
+    durationWeeks: c.durationWeeks || 8,
   }));
 
   const mappedBookings = (bookingsList || []).map((b) => ({
-    id: b.id,
+    id: b.id || `booking-${Math.random()}`,
     studentName: b.student?.user?.name || "Student",
     parentEmail: b.student?.user?.email || "parent@example.com",
     courseName: b.course?.title || "1-on-1 Personalized Tutoring",
-    type: b.type,
+    type: b.type || "REGULAR",
     scheduledAt: safeIsoString(b.scheduledAt),
     assignedTeacher: b.teacher?.user?.name || null,
-    status: b.status,
-    durationMinutes: b.durationMinutes,
+    status: b.status || "PENDING",
+    durationMinutes: b.durationMinutes || 40,
   }));
 
-
   const mappedDiscounts = (discountsList || []).map((d) => ({
-    id: d.id,
-    code: d.code,
+    id: d.id || `discount-${Math.random()}`,
+    code: d.code || "PROMO",
     description: d.description || null,
     discountPercent: d.discountPercent || null,
     discountAmount: d.discountAmount ? d.discountAmount / 100 : null,
-    currentUses: d.currentUses,
+    currentUses: d.currentUses || 0,
     maxUses: d.maxUses || null,
-    active: d.active,
+    active: Boolean(d.active),
   }));
+
 
   return (
     <div className="min-h-screen bg-cream p-6 lg:p-10">

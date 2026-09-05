@@ -424,21 +424,23 @@ export function AdminDashboardClient({
   };
 
   // Filtered lists
-  const filteredUsers = users.filter((u) => {
-    const matchesSearch =
-      u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      u.email.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesRole = roleFilter === "ALL" || u.role === roleFilter;
+  const filteredUsers = (users || []).filter((u) => {
+    const nameStr = (u?.name || "").toLowerCase();
+    const emailStr = (u?.email || "").toLowerCase();
+    const q = (searchQuery || "").toLowerCase();
+    const matchesSearch = nameStr.includes(q) || emailStr.includes(q);
+    const matchesRole = roleFilter === "ALL" || u?.role === roleFilter;
     return matchesSearch && matchesRole;
   });
 
-  const filteredLeads = leads.filter(
-    (l) => leadStatusFilter === "ALL" || l.status === leadStatusFilter
+  const filteredLeads = (leads || []).filter(
+    (l) => leadStatusFilter === "ALL" || l?.status === leadStatusFilter
   );
 
-  const filteredTickets = tickets.filter(
-    (t) => ticketStatusFilter === "ALL" || t.status === ticketStatusFilter
+  const filteredTickets = (tickets || []).filter(
+    (t) => ticketStatusFilter === "ALL" || t?.status === ticketStatusFilter
   );
+
 
   return (
     <div className="space-y-8">
