@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 
 import { AdminDashboardClient } from "@/components/dashboard/admin-dashboard-client";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminDashboardPage() {
   const user = await getCurrentUser();
   if (!user || user.role !== "ADMIN") redirect("/dashboard");
@@ -16,49 +18,50 @@ export default async function AdminDashboardPage() {
   let bookingsList: any[] = [];
   let discountsList: any[] = [];
 
+  try { userCount = await prisma.user.count(); } catch (e) { console.warn("Failed to fetch userCount:", e); }
+  try { courseCount = await prisma.course.count(); } catch (e) { console.warn("Failed to fetch courseCount:", e); }
+  try { enrollmentCount = await prisma.enrollment.count(); } catch (e) { console.warn("Failed to fetch enrollmentCount:", e); }
+  try { bookingCount = await prisma.booking.count(); } catch (e) { console.warn("Failed to fetch bookingCount:", e); }
+  try { leadCount = await prisma.lead.count(); } catch (e) { console.warn("Failed to fetch leadCount:", e); }
+  try { ticketCount = await prisma.supportTicket.count(); } catch (e) { console.warn("Failed to fetch ticketCount:", e); }
+
+  try { leadsList = await prisma.lead.findMany({ orderBy: { createdAt: "desc" }, take: 50 }); } catch (e) { console.warn("Failed to fetch leads:", e); }
+  try { usersList = await prisma.user.findMany({ orderBy: { createdAt: "desc" }, take: 50 }); } catch (e) { console.warn("Failed to fetch users:", e); }
   try {
-    [
-      userCount,
-      courseCount,
-      enrollmentCount,
-      bookingCount,
-      leadCount,
-      ticketCount,
-      leadsList,
-      usersList,
-      ticketsList,
-      coursesList,
-      bookingsList,
-      discountsList,
-    ] = await Promise.all([
-      prisma.user.count(),
-      prisma.course.count(),
-      prisma.enrollment.count(),
-      prisma.booking.count(),
-      prisma.lead.count(),
-      prisma.supportTicket.count(),
-      prisma.lead.findMany({ orderBy: { createdAt: "desc" }, take: 50 }),
-      prisma.user.findMany({ orderBy: { createdAt: "desc" }, take: 50 }),
-      prisma.supportTicket.findMany({
-        orderBy: { createdAt: "desc" },
-        take: 50,
-        include: { user: { select: { name: true, email: true } } },
-      }),
-      prisma.course.findMany({ orderBy: { createdAt: "desc" } }),
-      prisma.booking.findMany({
-        orderBy: { scheduledAt: "desc" },
-        take: 50,
-        include: {
-          student: { include: { user: { select: { name: true, email: true } } } },
-          teacher: { include: { user: { select: { name: true, email: true } } } },
-          course: { select: { title: true } },
-        },
-      }),
-      prisma.discountCode.findMany({ orderBy: { validFrom: "desc" } }),
-    ]);
-  } catch (e) {
-    console.warn("Failed to fetch admin dashboard stats:", e);
-  }
+    ticketsList = await prisma.supportTicket.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 50,
+      include: { user: { select: { name: true, email: true } } },
+    });
+  } catch (e) { console.warn("Failed to fetch tickets:", e); }
+
+  try {
+    coursesList = await prisma.course.findMany({
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        published: true,
+        difficulty: true,
+        durationWeeks: true,
+      },
+      orderBy: { createdAt: "desc" },
+    });
+  } catch (e) { console.warn("Failed to fetch courses:", e); }
+
+  try {
+    bookingsList = await prisma.booking.findMany({
+      orderBy: { scheduledAt: "desc" },
+      take: 50,
+      include: {
+        student: { include: { user: { select: { name: true, email: true } } } },
+        teacher: { include: { user: { select: { name: true, email: true } } } },
+        course: { select: { title: true } },
+      },
+    });
+  } catch (e) { console.warn("Failed to fetch bookings:", e); }
+
+  try { discountsList = await prisma.discountCode.findMany({ orderBy: { validFrom: "desc" } }); } catch (e) { console.warn("Failed to fetch discounts:", e); }
 
   const stats = [
     { label: "Active Users", value: userCount },
@@ -103,11 +106,12 @@ export default async function AdminDashboardPage() {
     id: c.id,
     title: c.title,
     slug: c.slug,
-    programArea: c.programArea,
+    programArea: c.programArea || "School Assessment",
     published: c.published,
     difficulty: c.difficulty,
     durationWeeks: c.durationWeeks,
   }));
+
 
   const mappedBookings = (bookingsList || []).map((b) => ({
     id: b.id,
