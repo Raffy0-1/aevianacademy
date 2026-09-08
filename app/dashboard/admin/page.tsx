@@ -6,6 +6,11 @@ import { AdminDashboardWrapper } from "@/components/dashboard/admin-dashboard-wr
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboardPage() {
+  const user = await getCurrentUser();
+  if (!user || user.role !== "ADMIN") {
+    redirect("/dashboard");
+  }
+
   const fallbackStats = [
     { label: "Active Users", value: 158 },
     { label: "Course Modules", value: 24 },
@@ -16,9 +21,6 @@ export default async function AdminDashboardPage() {
   ];
 
   try {
-    const user = await getCurrentUser();
-    if (!user || user.role !== "ADMIN") redirect("/dashboard");
-
     let userCount = 0, courseCount = 0, enrollmentCount = 0, bookingCount = 0, leadCount = 0, ticketCount = 0;
     let leadsList: any[] = [];
     let usersList: any[] = [];
