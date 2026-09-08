@@ -47,6 +47,15 @@ interface Child {
   }[];
 }
 
+interface Invoice {
+  id: string;
+  amountCents: number;
+  currency: string;
+  status: string;
+  issuedAt: string;
+  pdfUrl: string | null;
+}
+
 interface ParentDashboardClientProps {
   parentUser: {
     id: string;
@@ -55,14 +64,17 @@ interface ParentDashboardClientProps {
     parentProfile: { id: string; phone: string | null; country: string | null } | null;
   };
   childrenList: Child[];
+  initialInvoices?: Invoice[];
 }
 
 export function ParentDashboardClient({
   parentUser,
   childrenList,
+  initialInvoices = [],
 }: ParentDashboardClientProps) {
   const [activeTab, setActiveTab] = useState("overview");
   const [children, setChildren] = useState<Child[]>(childrenList);
+  const [invoices, setInvoices] = useState<Invoice[]>(initialInvoices);
   const [parentName, setParentName] = useState(parentUser.name);
   const [parentPhone, setParentPhone] = useState(parentUser.parentProfile?.phone || "");
   const [parentCountry, setParentCountry] = useState(parentUser.parentProfile?.country || "");
@@ -145,7 +157,7 @@ export function ParentDashboardClient({
         {[
           { id: "overview", label: "Children Overview", icon: User },
           { id: "bookings", label: "Class Slots & Approvals", icon: Calendar },
-          { id: "billing", label: "Billing & Subscriptions", icon: CreditCard },
+          { id: "billing", label: "Billing & Invoices", icon: CreditCard },
           { id: "profile", label: "Account Settings", icon: FileText },
         ].map((tab) => (
           <button
@@ -171,52 +183,59 @@ export function ParentDashboardClient({
           </div>
 
           <div className="grid gap-6">
-            {children.map((child) => (
-              <div key={child.id} className="rounded-2xl border border-slate-border bg-white p-6 shadow-sm">
-                <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-border/50 pb-4">
-                  <div>
-                    <h3 className="text-lg font-bold text-navy">{child.user.name}</h3>
-                    <p className="text-xs text-slate">{child.user.email} • Level: {child.englishLevel}</p>
-                  </div>
-                  <span className="rounded-full bg-copper/10 px-3 py-1 text-xs font-bold text-copper border border-copper/20">
-                    Active 1-on-1 Student
-                  </span>
-                </div>
-
-                <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-xl bg-cream/40 p-4 border border-slate-border/50">
-                    <h4 className="text-xs font-bold text-navy uppercase tracking-wider">Enrolled Courses</h4>
-                    {child.enrollments.length === 0 ? (
-                      <p className="text-xs text-slate mt-2">No active course enrollments yet.</p>
-                    ) : (
-                      <div className="mt-2 space-y-2">
-                        {child.enrollments.map((en) => (
-                          <div key={en.id} className="flex justify-between text-xs font-semibold text-navy">
-                            <span>{en.course.title}</span>
-                            <span className="text-copper">{en.progressPercent}%</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="rounded-xl bg-cream/40 p-4 border border-slate-border/50">
-                    <h4 className="text-xs font-bold text-navy uppercase tracking-wider">Tutor Feedback & Notes</h4>
-                    {child.bookings.some((b) => b.teacherNotes) ? (
-                      <div className="mt-2 space-y-2 text-xs text-slate">
-                        {child.bookings.filter((b) => b.teacherNotes).map((b) => (
-                          <p key={b.id} className="bg-white p-2 rounded border border-slate-border">
-                            &quot;{b.teacherNotes}&quot; — <span className="font-bold text-navy">{b.teacher.user.name}</span>
-                          </p>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-xs text-slate mt-2">Feedback notes will appear after completed 40-min sessions.</p>
-                    )}
-                  </div>
-                </div>
+            {children.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-slate-border bg-white p-8 text-center">
+                <User className="h-10 w-10 text-slate mx-auto mb-2" />
+                <p className="text-sm font-bold text-navy">No children linked to this parent account yet.</p>
               </div>
-            ))}
+            ) : (
+              children.map((child) => (
+                <div key={child.id} className="rounded-2xl border border-slate-border bg-white p-6 shadow-sm">
+                  <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-border/50 pb-4">
+                    <div>
+                      <h3 className="text-lg font-bold text-navy">{child.user.name}</h3>
+                      <p className="text-xs text-slate">{child.user.email} • Level: {child.englishLevel}</p>
+                    </div>
+                    <span className="rounded-full bg-copper/10 px-3 py-1 text-xs font-bold text-copper border border-copper/20">
+                      Active 1-on-1 Student
+                    </span>
+                  </div>
+
+                  <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                    <div className="rounded-xl bg-cream/40 p-4 border border-slate-border/50">
+                      <h4 className="text-xs font-bold text-navy uppercase tracking-wider">Enrolled Courses</h4>
+                      {child.enrollments.length === 0 ? (
+                        <p className="text-xs text-slate mt-2">No active course enrollments yet.</p>
+                      ) : (
+                        <div className="mt-2 space-y-2">
+                          {child.enrollments.map((en) => (
+                            <div key={en.id} className="flex justify-between text-xs font-semibold text-navy">
+                              <span>{en.course.title}</span>
+                              <span className="text-copper">{en.progressPercent}%</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="rounded-xl bg-cream/40 p-4 border border-slate-border/50">
+                      <h4 className="text-xs font-bold text-navy uppercase tracking-wider">Tutor Feedback & Notes</h4>
+                      {child.bookings.some((b) => b.teacherNotes) ? (
+                        <div className="mt-2 space-y-2 text-xs text-slate">
+                          {child.bookings.filter((b) => b.teacherNotes).map((b) => (
+                            <p key={b.id} className="bg-white p-2 rounded border border-slate-border">
+                              &quot;{b.teacherNotes}&quot; — <span className="font-bold text-navy">{b.teacher.user.name}</span>
+                            </p>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-xs text-slate mt-2">Feedback notes will appear after completed 40-min sessions.</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       )}
@@ -281,21 +300,41 @@ export function ParentDashboardClient({
       {activeTab === "billing" && (
         <div className="space-y-6">
           <div>
-            <h2 className="text-xl font-extrabold text-navy">Billing & Pricing Packages</h2>
-            <p className="text-xs text-slate mt-0.5">Manage course fees and invoice receipts.</p>
+            <h2 className="text-xl font-extrabold text-navy">Billing & Invoices</h2>
+            <p className="text-xs text-slate mt-0.5">View transaction statements and payment receipts.</p>
           </div>
 
-          <div className="rounded-2xl border border-slate-border bg-white p-6 shadow-sm space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-border/50 pb-4">
-              <div>
-                <p className="text-xs font-bold text-slate uppercase tracking-wider">Current Package</p>
-                <p className="text-lg font-bold text-navy">1-on-1 Monthly Learning Plan (12 Sessions / Mo)</p>
+          <div className="grid gap-4">
+            {invoices.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-slate-border bg-white p-8 text-center">
+                <CreditCard className="h-10 w-10 text-slate mx-auto mb-2" />
+                <p className="text-sm font-bold text-navy">No billing invoices recorded yet.</p>
+                <p className="text-xs text-slate mt-1">Receipts will automatically generate upon booking paid 1-on-1 packages.</p>
               </div>
-              <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
-                Active Subscription
-              </span>
-            </div>
-            <p className="text-xs text-slate">All invoices are generated in GBP (£) with multi-currency conversion support.</p>
+            ) : (
+              invoices.map((inv) => (
+                <div key={inv.id} className="rounded-2xl border border-slate-border bg-white p-5 shadow-sm flex flex-wrap items-center justify-between gap-4">
+                  <div>
+                    <h3 className="text-sm font-bold text-navy">Invoice #{inv.id.substring(0, 8).toUpperCase()}</h3>
+                    <p className="text-xs text-slate mt-1">
+                      Issued: {new Date(inv.issuedAt).toLocaleDateString()} • Amount: <span className="font-bold text-navy">{(inv.amountCents / 100).toFixed(2)} {inv.currency}</span>
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                      inv.status === "PAID" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
+                    }`}>
+                      {inv.status}
+                    </span>
+                    {inv.pdfUrl && (
+                      <a href={inv.pdfUrl} target="_blank" rel="noreferrer">
+                        <Button variant="outline" size="sm">Download PDF</Button>
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       )}

@@ -46,31 +46,57 @@ interface Availability {
   endTime: string;
 }
 
+interface Submission {
+  id: string;
+  studentName: string;
+  courseTitle: string;
+  homeworkTitle: string;
+  submittedAt: string;
+  text: string;
+  fileUrl: string | null;
+  grade: string;
+  feedback: string;
+}
+
 interface TeacherDashboardClientProps {
   teacherProfileId: string;
   initialBookings: Booking[];
   initialAvailability: Availability[];
+  initialSubmissions?: Submission[];
 }
 
 export function TeacherDashboardClient({
   teacherProfileId,
   initialBookings,
   initialAvailability,
+  initialSubmissions = [],
 }: TeacherDashboardClientProps) {
   const [activeTab, setActiveTab] = useState("classes");
   const [bookings, setBookings] = useState<Booking[]>(initialBookings);
   const [availability, setAvailability] = useState<Availability[]>(initialAvailability);
+  const [submissions, setSubmissions] = useState<Submission[]>(initialSubmissions);
 
   // Profile completion state
   const [bio, setBio] = useState("Certified faculty specializing in international curricula.");
   const [subjects, setSubjects] = useState("Mathematics, English, Physics");
-  const [cvUploaded, setCvUploaded] = useState(true);
   const [photoUrl, setPhotoUrl] = useState("");
   const [profileSavedMsg, setProfileSavedMsg] = useState<string | null>(null);
 
+  // Grading State
+  const [gradingId, setGradingId] = useState<string | null>(null);
+  const [gradeInput, setGradeInput] = useState("");
+  const [feedbackInput, setFeedbackInput] = useState("");
+  const [gradingSuccess, setGradingSuccess] = useState<string | null>(null);
+
+  const handleSaveProfile = (e: React.FormEvent) => {
+    e.preventDefault();
+    setProfileSavedMsg("✓ Faculty profile updated successfully!");
+    setTimeout(() => setProfileSavedMsg(null), 3000);
+  };
+
   // Calculate completion percentage
   const calculateProgress = () => {
-    let score = 25; // Account pre-filled for login
+    let score = 25;
     if (bio.trim().length > 10) score += 25;
     if (subjects.trim().length > 2) score += 25;
     if (availability.length > 0) score += 25;
@@ -101,6 +127,37 @@ export function TeacherDashboardClient({
     }
   };
 
+  const handleGradeSubmit = async (submissionId: string) => {
+    if (!gradeInput.trim()) return;
+    setGradingId(submissionId);
+    setGradingSuccess(null);
+    try {
+      const { gradeHomework } = await import("@/lib/actions/homework");
+      const res = await gradeHomework({
+        submissionId,
+        grade: gradeInput,
+        feedback: feedbackInput,
+      });
+
+      if (res?.error) {
+        alert(res.error);
+      } else {
+        setSubmissions((prev) =>
+          prev.map((s) =>
+            s.id === submissionId ? { ...s, grade: gradeInput, feedback: feedbackInput } : s
+          )
+        );
+        setGradingSuccess("✓ Student grade & feedback published successfully!");
+        setGradeInput("");
+        setFeedbackInput("");
+      }
+    } catch (err: any) {
+      alert("Failed to record grade.");
+    } finally {
+      setGradingId(null);
+    }
+  };
+
   const handlePdfUpload = (e: React.FormEvent) => {
     e.preventDefault();
     setUploadingPdf(true);
@@ -109,12 +166,6 @@ export function TeacherDashboardClient({
       setUploadSuccessMsg(`✓ Handout "${pdfTitle || 'Lecture Notes.pdf'}" uploaded & attached to student dashboard!`);
       setPdfTitle("");
     }, 1000);
-  };
-
-  const handleSaveProfile = (e: React.FormEvent) => {
-    e.preventDefault();
-    setProfileSavedMsg("✓ Teacher profile details updated successfully.");
-    setTimeout(() => setProfileSavedMsg(null), 4000);
   };
 
   const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -132,47 +183,9 @@ export function TeacherDashboardClient({
             </div>
             <h1 className="text-2xl font-extrabold text-white sm:text-3xl">Teacher Command Center</h1>
             <p className="mt-1 text-sm text-slate-light max-w-xl">
-              Lead 40-minute 1-on-1 live sessions, upload PDF lecture handouts, and manage availability.
+              Lead 40-minute 1-on-1 live sessions, review student homework submissions, and publish grades.
             </p>
           </div>
-          <div className="flex flex-col items-end gap-2">
-            <span className="rounded-xl bg-navy-dark px-4 py-2 text-xs font-bold text-copper border border-navy-light">
-              150+ Verified Faculty Network
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Profile Completion Progress Bar */}
-      <div className="rounded-2xl border border-slate-border bg-white p-6 shadow-sm space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <UserCheck className="h-5 w-5 text-copper" />
-            <h3 className="text-sm font-bold text-navy">Teacher Profile Onboarding Completion</h3>
-          </div>
-          <span className="text-xs font-extrabold text-copper bg-copper/10 px-3 py-1 rounded-full border border-copper/30">
-            {progressPercent}% Complete
-          </span>
-        </div>
-        <div className="h-2.5 w-full bg-cream-muted rounded-full overflow-hidden">
-          <div
-            className="h-full bg-gradient-to-r from-copper to-emerald-500 transition-all duration-500"
-            style={{ width: `${progressPercent}%` }}
-          />
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-[11px] font-bold text-slate">
-          <span className="flex items-center gap-1 text-emerald-600">
-            <CheckCircle2 size={12} /> Account Pre-filled
-          </span>
-          <span className={`flex items-center gap-1 ${bio ? "text-emerald-600" : "text-slate-400"}`}>
-            <CheckCircle2 size={12} /> Bio & Experience
-          </span>
-          <span className={`flex items-center gap-1 ${subjects ? "text-emerald-600" : "text-slate-400"}`}>
-            <CheckCircle2 size={12} /> Subject Specializations
-          </span>
-          <span className={`flex items-center gap-1 ${availability.length > 0 ? "text-emerald-600" : "text-slate-400"}`}>
-            <CheckCircle2 size={12} /> Slots Defined
-          </span>
         </div>
       </div>
 
@@ -180,9 +193,10 @@ export function TeacherDashboardClient({
       <div className="flex flex-wrap gap-2 border-b border-slate-border pb-4">
         {[
           { id: "classes", label: "My 40-Min Sessions", icon: Calendar },
-          { id: "handouts", label: "Upload PDF Lecture Notes", icon: Upload },
+          { id: "grading", label: "My Students & Grading", icon: Users },
+          { id: "handouts", label: "Upload PDF Handouts", icon: Upload },
           { id: "availability", label: "Slot Availability", icon: Clock },
-          { id: "profile", label: "Edit My Faculty Profile", icon: UserCheck },
+          { id: "profile", label: "Faculty Profile", icon: UserCheck },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -270,7 +284,115 @@ export function TeacherDashboardClient({
         </div>
       )}
 
-      {/* TAB 2: UPLOAD PDF HANDOUTS */}
+      {/* TAB 2: MY STUDENTS & GRADING */}
+      {activeTab === "grading" && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-extrabold text-navy">Student Homework Submissions & Grading</h2>
+              <p className="text-xs text-slate mt-0.5">Review homework submitted by enrolled students and issue grades/feedback.</p>
+            </div>
+            {gradingSuccess && (
+              <div className="rounded-xl bg-emerald-50 px-3 py-1.5 text-xs text-emerald-800 font-bold border border-emerald-200">
+                {gradingSuccess}
+              </div>
+            )}
+          </div>
+
+          <div className="grid gap-6">
+            {submissions.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-slate-border bg-white p-8 text-center">
+                <Users className="h-10 w-10 text-slate mx-auto mb-2" />
+                <p className="text-sm font-bold text-navy">No homework submissions pending review.</p>
+                <p className="text-xs text-slate mt-1">Submissions from your course students will appear here in real time.</p>
+              </div>
+            ) : (
+              submissions.map((sub) => (
+                <div key={sub.id} className="rounded-2xl border border-slate-border bg-white p-6 shadow-sm space-y-4">
+                  <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-border pb-3">
+                    <div>
+                      <h3 className="text-base font-bold text-navy">{sub.studentName}</h3>
+                      <p className="text-xs text-slate font-medium">{sub.courseTitle} • <span className="text-copper font-semibold">{sub.homeworkTitle}</span></p>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-xs text-slate font-medium">Submitted: {new Date(sub.submittedAt).toLocaleDateString()}</span>
+                      {sub.grade ? (
+                        <div className="mt-1">
+                          <span className="rounded-full bg-emerald-100 px-3 py-0.5 text-xs font-bold text-emerald-700">
+                            Graded: {sub.grade}
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="mt-1">
+                          <span className="rounded-full bg-amber-100 px-3 py-0.5 text-xs font-bold text-amber-700">
+                            Pending Review
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {sub.text && (
+                    <div className="rounded-xl bg-cream-muted p-4 border border-slate-border text-xs text-navy font-medium">
+                      <p className="font-bold text-slate mb-1 text-[11px] uppercase tracking-wider">Student Submission Text:</p>
+                      <p className="whitespace-pre-wrap">{sub.text}</p>
+                    </div>
+                  )}
+
+                  {sub.fileUrl && (
+                    <div>
+                      <a href={sub.fileUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-xs font-bold text-copper hover:underline">
+                        <Download className="h-4 w-4" /> Download Attached Homework File
+                      </a>
+                    </div>
+                  )}
+
+                  {/* Grading Form */}
+                  <div className="rounded-xl bg-slate-50 p-4 border border-slate-border space-y-3">
+                    <h4 className="text-xs font-bold text-navy flex items-center gap-1.5">
+                      <Sparkles className="h-3.5 w-3.5 text-copper" /> Grade & Feedback Form
+                    </h4>
+                    <div className="grid gap-3 sm:grid-cols-3">
+                      <div className="sm:col-span-1">
+                        <label className="block text-[11px] font-bold text-navy mb-1">Grade (e.g. A+, 95/100, Excellent)</label>
+                        <input
+                          type="text"
+                          defaultValue={sub.grade || ""}
+                          onChange={(e) => setGradeInput(e.target.value)}
+                          placeholder="Grade or Score"
+                          className="w-full rounded-xl border border-slate-border p-2.5 text-xs text-navy font-medium bg-white focus:border-copper focus:outline-none"
+                        />
+                      </div>
+                      <div className="sm:col-span-2">
+                        <label className="block text-[11px] font-bold text-navy mb-1">Teacher Feedback Notes</label>
+                        <input
+                          type="text"
+                          defaultValue={sub.feedback || ""}
+                          onChange={(e) => setFeedbackInput(e.target.value)}
+                          placeholder="Written constructive feedback for student..."
+                          className="w-full rounded-xl border border-slate-border p-2.5 text-xs text-navy font-medium bg-white focus:border-copper focus:outline-none"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex justify-end">
+                      <Button
+                        variant="copper"
+                        size="sm"
+                        isLoading={gradingId === sub.id}
+                        onClick={() => handleGradeSubmit(sub.id)}
+                      >
+                        Publish Grade & Feedback
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 3: UPLOAD PDF HANDOUTS */}
       {activeTab === "handouts" && (
         <div className="rounded-2xl border border-slate-border bg-white p-6 shadow-sm max-w-xl">
           <h2 className="text-xl font-extrabold text-navy mb-1">Upload Lecture Notes & Worksheets</h2>
@@ -325,7 +447,7 @@ export function TeacherDashboardClient({
         </div>
       )}
 
-      {/* TAB 3: AVAILABILITY */}
+      {/* TAB 4: AVAILABILITY */}
       {activeTab === "availability" && (
         <div className="space-y-6">
           <div>
@@ -345,7 +467,7 @@ export function TeacherDashboardClient({
         </div>
       )}
 
-      {/* TAB 4: EDIT FACULTY PROFILE */}
+      {/* TAB 5: EDIT FACULTY PROFILE */}
       {activeTab === "profile" && (
         <div className="rounded-2xl border border-slate-border bg-white p-6 shadow-sm max-w-2xl space-y-4">
           <div>

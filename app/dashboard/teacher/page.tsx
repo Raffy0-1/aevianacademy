@@ -22,9 +22,10 @@ export default async function TeacherDashboardPage() {
 
   let bookings: any[] = [];
   let availability: any[] = [];
+  let homeworkSubmissions: any[] = [];
 
   try {
-    [bookings, availability] = await Promise.all([
+    [bookings, availability, homeworkSubmissions] = await Promise.all([
       prisma.booking.findMany({
         where: { teacherId: teacherProfile.id },
         include: {
@@ -36,6 +37,24 @@ export default async function TeacherDashboardPage() {
       prisma.availability.findMany({
         where: { teacherId: teacherProfile.id },
         orderBy: { dayOfWeek: "asc" },
+      }),
+      prisma.homeworkSubmission.findMany({
+        where: {
+          homework: {
+            lesson: {
+              module: {
+                course: {
+                  teacherId: teacherProfile.id,
+                },
+              },
+            },
+          },
+        },
+        include: {
+          student: { include: { user: true } },
+          homework: { include: { lesson: { include: { module: { include: { course: true } } } } } },
+        },
+        orderBy: { submittedAt: "desc" },
       }),
     ]);
   } catch (e) {
@@ -66,6 +85,17 @@ export default async function TeacherDashboardPage() {
     endTime: a.endTime,
   }));
 
+  const mappedSubmissions = (homeworkSubmissions || []).map((sub) => ({
+    id: sub.id,
+    studentName: sub.student?.user?.name || "Student",
+    courseTitle: sub.homework?.lesson?.module?.course?.title || "Course",
+    homeworkTitle: sub.homework?.title || "Assignment",
+    submittedAt: sub.submittedAt ? new Date(sub.submittedAt).toLocaleString() : "",
+    text: sub.text || "",
+    fileUrl: sub.fileUrl || null,
+    grade: sub.grade || "",
+    feedback: sub.feedback || "",
+  }));
 
   return (
     <div className="space-y-8">
@@ -74,7 +104,7 @@ export default async function TeacherDashboardPage() {
           Welcome back, {user.name ? user.name.split(" ")[0] : "Teacher"}
         </h1>
         <p className="mt-1 text-muted-foreground">
-          Teacher Dashboard — check upcoming schedules, manage class registers, and update schedules.
+          Teacher Dashboard — manage assigned 1-on-1 sessions, grade student homework, and update slot availability.
         </p>
       </div>
 
@@ -82,6 +112,7 @@ export default async function TeacherDashboardPage() {
         teacherProfileId={teacherProfile.id}
         initialBookings={mappedBookings}
         initialAvailability={mappedAvailability}
+        initialSubmissions={mappedSubmissions}
       />
     </div>
   );

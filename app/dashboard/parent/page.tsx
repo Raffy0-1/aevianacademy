@@ -20,29 +20,35 @@ export default async function ParentDashboardPage() {
     );
   }
 
-  // Fetch children and their data
+  // Fetch children and their data (Data ownership: strictly parentId = parentProfile.id)
   let children: any[] = [];
+  let invoices: any[] = [];
   try {
-    children = await prisma.studentProfile.findMany({
-      where: { parentId: parentProfile.id },
-      include: {
-        user: true,
-        enrollments: {
-          include: { course: true },
-        },
-        bookings: {
-          include: {
-            teacher: { include: { user: true } },
-            course: true,
+    [children, invoices] = await Promise.all([
+      prisma.studentProfile.findMany({
+        where: { parentId: parentProfile.id },
+        include: {
+          user: true,
+          enrollments: {
+            include: { course: true },
           },
-          orderBy: { scheduledAt: "desc" },
+          bookings: {
+            include: {
+              teacher: { include: { user: true } },
+              course: true,
+            },
+            orderBy: { scheduledAt: "desc" },
+          },
         },
-      },
-    });
+      }),
+      prisma.invoice.findMany({
+        where: { userId: user.id },
+        orderBy: { issuedAt: "desc" },
+      }),
+    ]);
   } catch (e) {
-    console.warn("Failed to fetch parent children:", e);
+    console.warn("Failed to fetch parent dashboard data:", e);
   }
-
 
   // Map database dates to ISO strings for client compatibility
   const mappedChildren = children.map((child) => ({
@@ -52,7 +58,6 @@ export default async function ParentDashboardPage() {
       email: child.user?.email || "",
     },
     gradeLevel: child.gradeLevel ? String(child.gradeLevel) : null,
-
     englishLevel: child.englishLevel ? child.englishLevel.replace(/_/g, " ") : "STANDARD",
     enrollments: (child.enrollments || []).map((e: any) => ({
       id: e.id,
@@ -61,7 +66,6 @@ export default async function ParentDashboardPage() {
       course: { title: e.course?.title || "Course" },
     })),
     bookings: (child.bookings || []).map((b: any) => ({
-
       id: b.id,
       scheduledAt: b.scheduledAt ? b.scheduledAt.toISOString() : new Date().toISOString(),
       status: b.status,
@@ -75,6 +79,14 @@ export default async function ParentDashboardPage() {
     })),
   }));
 
+  const mappedInvoices = invoices.map((inv) => ({
+    id: inv.id,
+    amountCents: inv.amountCents,
+    currency: inv.currency,
+    status: inv.status,
+    issuedAt: inv.issuedAt.toISOString(),
+    pdfUrl: inv.pdfUrl || null,
+  }));
 
   const mappedParent = {
     id: user.id,
@@ -98,7 +110,8 @@ export default async function ParentDashboardPage() {
         </p>
       </div>
 
-      <ParentDashboardClient parentUser={mappedParent} childrenList={mappedChildren} />
+      <ParentDashboardClient parentUser={mappedParent} childrenList={mappedChildren} initialInvoices={mappedInvoices} />
     </div>
   );
 }
+

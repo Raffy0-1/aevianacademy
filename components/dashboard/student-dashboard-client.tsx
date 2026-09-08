@@ -50,84 +50,48 @@ interface Enrollment {
   };
 }
 
+interface StudentBooking {
+  id: string;
+  title: string;
+  type: string;
+  time: string;
+  duration: string;
+  teacherName: string;
+  status: string;
+  isDemo: boolean;
+}
+
+interface StudentHomework {
+  id: string;
+  title: string;
+  submittedAt: string;
+  grade: string;
+  feedback: string;
+  text: string;
+}
+
 interface StudentDashboardClientProps {
   studentProfileId: string;
   initialEnrollments: Enrollment[];
+  initialBookings?: StudentBooking[];
+  initialHomework?: StudentHomework[];
 }
 
 export function StudentDashboardClient({
   studentProfileId,
   initialEnrollments,
+  initialBookings = [],
+  initialHomework = [],
 }: StudentDashboardClientProps) {
   const [activeTab, setActiveTab] = useState("schedule");
   const [enrollments] = useState<Enrollment[]>(initialEnrollments);
-
-  // PDF Repository Data
-  const pdfResources = [
-    {
-      id: "1",
-      title: "NAPLAN & ACARA Strategy Guide 2026.pdf",
-      subject: "Competitive Assessment",
-      size: "2.4 MB",
-      date: "Aug 28, 2026",
-      desc: "Complete exam rubrics, time allocation tactics, and sample problem sets.",
-    },
-    {
-      id: "2",
-      title: "Quran Recitation Tajweed & Makharij Rules.pdf",
-      subject: "Quran Recitation",
-      size: "3.1 MB",
-      date: "Aug 27, 2026",
-      desc: "Visual diagrams of Makharij (articulation points) and essential Tajweed signs.",
-    },
-    {
-      id: "3",
-      title: "Islamic Essentials - Kalimas, Namaz & Daily Duas.pdf",
-      subject: "Islamic Foundation",
-      size: "1.8 MB",
-      date: "Aug 25, 2026",
-      desc: "Imaan ki Shartein, first 3 Kalimas with translation, Namaz steps, and morning/evening Duas.",
-    },
-    {
-      id: "4",
-      title: "TOEFL & Spoken English Fluency Toolkit.pdf",
-      subject: "Communication Skills",
-      size: "4.2 MB",
-      date: "Aug 24, 2026",
-      desc: "High-frequency vocabulary, sentence structures, and oral confidence exercises.",
-    },
-  ];
-
-  // Upcoming 40-Min Classes Mock Data
-  const upcomingClasses = [
-    {
-      id: "c1",
-      title: "NAPLAN Math & Problem Solving",
-      type: "1-on-1 Demo Class",
-      time: "Today @ 04:00 PM - 04:40 PM",
-      duration: "40 Minutes",
-      teacher: "Allotted Master Tutor (Dr. Sarah Khan)",
-      status: "CONFIRMED",
-      isDemo: true,
-      zoomUrl: "https://zoom.us/j/demo-aevian-101",
-    },
-    {
-      id: "c2",
-      title: "Islamic Foundations: Namaz & 3 Kalimas",
-      type: "Regular 1-on-1 Class",
-      time: "Tomorrow @ 06:00 PM - 06:40 PM",
-      duration: "40 Minutes",
-      teacher: "Allotted Tutor (Ustadh Ahmad)",
-      status: "CONFIRMED",
-      isDemo: false,
-      zoomUrl: "https://zoom.us/j/demo-aevian-102",
-    },
-  ];
+  const [upcomingClasses] = useState<StudentBooking[]>(initialBookings);
+  const [homeworkList, setHomeworkList] = useState<StudentHomework[]>(initialHomework);
 
   // Homework State
   const [homeworkText, setHomeworkText] = useState("");
   const [submittingHw, setSubmittingHw] = useState(false);
-  const [hwSuccess, setHwSuccess] = useState(false);
+  const [hwSuccess, setHwSuccess] = useState<string | null>(null);
 
   // Quiz State
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
@@ -148,14 +112,41 @@ export function StudentDashboardClient({
     },
   ];
 
-  const handleHomeworkSubmit = (e: React.FormEvent) => {
+  const handleHomeworkSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!homeworkText.trim()) return;
     setSubmittingHw(true);
-    setTimeout(() => {
+    setHwSuccess(null);
+    try {
+      // Create homework submission in DB
+      const res = await submitHomework({
+        homeworkId: "hw-general-1",
+        studentId: studentProfileId,
+        text: homeworkText,
+      });
+
+      if (res?.error) {
+        alert(res.error);
+      } else {
+        setHwSuccess("✓ Homework successfully submitted to your tutor!");
+        setHomeworkList((prev) => [
+          {
+            id: `hw-${Date.now()}`,
+            title: "1-on-1 Practice Submission",
+            submittedAt: "Just now",
+            grade: "Pending Grade",
+            feedback: "Tutor review in progress",
+            text: homeworkText,
+          },
+          ...prev,
+        ]);
+        setHomeworkText("");
+      }
+    } catch (err: any) {
+      alert("Failed to submit homework.");
+    } finally {
       setSubmittingHw(false);
-      setHwSuccess(true);
-      setHomeworkText("");
-    }, 1000);
+    }
   };
 
   return (
@@ -221,42 +212,55 @@ export function StudentDashboardClient({
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
-            {upcomingClasses.map((cls) => (
-              <motion.div
-                key={cls.id}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="rounded-2xl border border-slate-border bg-white p-6 shadow-sm hover:shadow-md transition-all"
-              >
-                <div className="flex items-start justify-between">
-                  <span className="rounded-full bg-navy/10 px-3 py-1 text-xs font-bold text-navy">
-                    {cls.type}
-                  </span>
-                  {cls.isDemo && (
-                    <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
-                      1st Class Free Demo
-                    </span>
-                  )}
-                </div>
-
-                <h3 className="mt-4 text-lg font-bold text-navy">{cls.title}</h3>
-                <p className="text-xs text-slate mt-1 flex items-center gap-1.5 font-medium">
-                  <Clock className="h-3.5 w-3.5 text-copper" /> {cls.time} ({cls.duration})
+            {upcomingClasses.length === 0 ? (
+              <div className="col-span-2 rounded-2xl border border-dashed border-slate-border bg-white p-8 text-center space-y-3">
+                <Calendar className="h-10 w-10 text-slate mx-auto mb-2" />
+                <h3 className="text-base font-bold text-navy">No scheduled 1-on-1 classes yet</h3>
+                <p className="text-xs text-slate max-w-sm mx-auto">
+                  Book your 40-minute demo class with our certified master tutors to get started!
                 </p>
-                <p className="text-xs text-slate mt-1 font-medium">{cls.teacher}</p>
+                <a href="/book-trial" className="inline-block pt-1">
+                  <Button variant="copper" size="sm">Book Free 40-Min Trial</Button>
+                </a>
+              </div>
+            ) : (
+              upcomingClasses.map((cls) => (
+                <motion.div
+                  key={cls.id}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="rounded-2xl border border-slate-border bg-white p-6 shadow-sm hover:shadow-md transition-all"
+                >
+                  <div className="flex items-start justify-between">
+                    <span className="rounded-full bg-navy/10 px-3 py-1 text-xs font-bold text-navy">
+                      {cls.type}
+                    </span>
+                    {cls.isDemo && (
+                      <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
+                        1st Class Free Demo
+                      </span>
+                    )}
+                  </div>
 
-                <div className="mt-6 pt-4 border-t border-slate-border/50 flex items-center justify-between">
-                  <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
-                    <CheckCircle2 className="h-4 w-4" /> Allotted & Confirmed
-                  </span>
-                  <a href={cls.zoomUrl} target="_blank" rel="noreferrer">
-                    <Button variant="copper" size="sm" className="gap-1.5 text-xs font-bold">
-                      <Video className="h-3.5 w-3.5" /> Join Live Room
-                    </Button>
-                  </a>
-                </div>
-              </motion.div>
-            ))}
+                  <h3 className="mt-4 text-lg font-bold text-navy">{cls.title}</h3>
+                  <p className="text-xs text-slate mt-1 flex items-center gap-1.5 font-medium">
+                    <Clock className="h-3.5 w-3.5 text-copper" /> {cls.time} ({cls.duration})
+                  </p>
+                  <p className="text-xs text-slate mt-1 font-medium">Allotted Tutor: {cls.teacherName}</p>
+
+                  <div className="mt-6 pt-4 border-t border-slate-border/50 flex items-center justify-between">
+                    <span className="text-xs font-bold text-emerald-600 flex items-center gap-1">
+                      <CheckCircle2 className="h-4 w-4" /> Allotted & Confirmed
+                    </span>
+                    <a href="https://zoom.us" target="_blank" rel="noreferrer">
+                      <Button variant="copper" size="sm" className="gap-1.5 text-xs font-bold">
+                        <Video className="h-3.5 w-3.5" /> Join Live Room
+                      </Button>
+                    </a>
+                  </div>
+                </motion.div>
+              ))
+            )}
           </div>
         </div>
       )}

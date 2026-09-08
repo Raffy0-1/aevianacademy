@@ -14,19 +14,29 @@ ALTER TABLE IF EXISTS "Notification" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS "Invoice" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS "Payment" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE IF EXISTS "Lead" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS "Course" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS "BlogPost" ENABLE ROW LEVEL SECURITY;
 
--- 2. Public Read Policies for Catalog Data
+-- 2. Drop existing policies if re-applying
+DROP POLICY IF EXISTS "Public courses viewable by all" ON "Course";
+DROP POLICY IF EXISTS "Public blog posts viewable by all" ON "BlogPost";
+DROP POLICY IF EXISTS "Users can read own profile" ON "User";
+DROP POLICY IF EXISTS "Users can update own profile" ON "User";
+DROP POLICY IF EXISTS "Students view own bookings" ON "Booking";
+DROP POLICY IF EXISTS "Teachers view assigned bookings" ON "Booking";
+
+-- 3. Public Read Policies for Catalog Data
 CREATE POLICY "Public courses viewable by all" ON "Course" FOR SELECT USING (published = true);
 CREATE POLICY "Public blog posts viewable by all" ON "BlogPost" FOR SELECT USING (published = true);
 
--- 3. Authenticated User Policies (Backstop for Supabase Client SDK)
+-- 4. Authenticated User Policies (Backstop for Supabase Client SDK)
 CREATE POLICY "Users can read own profile" ON "User" FOR SELECT USING (auth.uid()::text = id);
 CREATE POLICY "Users can update own profile" ON "User" FOR UPDATE USING (auth.uid()::text = id);
 
 CREATE POLICY "Students view own bookings" ON "Booking" FOR SELECT USING (
-  student_id IN (SELECT id FROM "StudentProfile" WHERE user_id = auth.uid()::text)
+  "studentId" IN (SELECT id FROM "StudentProfile" WHERE "userId" = auth.uid()::text)
 );
 
 CREATE POLICY "Teachers view assigned bookings" ON "Booking" FOR SELECT USING (
-  teacher_id IN (SELECT id FROM "TeacherProfile" WHERE user_id = auth.uid()::text)
+  "teacherId" IN (SELECT id FROM "TeacherProfile" WHERE "userId" = auth.uid()::text)
 );
