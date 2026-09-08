@@ -62,19 +62,8 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
           },
         });
       } catch (e) {
-        console.warn("Auto-provision user warning:", e);
-        // Return synthetic user object so authentication flow succeeds
-        return {
-          id: supabaseUser.id,
-          email: supabaseUser.email,
-          name: nameStr,
-          role: roleStr,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          parentProfile: roleStr === Role.PARENT ? { id: "temp-parent", userId: supabaseUser.id, phone: null, country: null, createdAt: new Date(), updatedAt: new Date() } : null,
-          studentProfile: roleStr === Role.STUDENT ? { id: "temp-student", userId: supabaseUser.id, parentId: null, gradeLevel: 1, englishLevel: "INTERMEDIATE", createdAt: new Date(), updatedAt: new Date() } : null,
-          teacherProfile: roleStr === Role.TEACHER ? { id: "temp-teacher", userId: supabaseUser.id, bio: null, hourlyRate: 50, rating: 5, subjects: [], isVerified: true, createdAt: new Date(), updatedAt: new Date() } : null,
-        } as AuthUser;
+        console.error("Auto-provision user failed in database:", e);
+        return null;
       }
     }
 
@@ -83,6 +72,21 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
     console.error("getCurrentUser error:", err);
     return null;
   }
+}
+
+/**
+ * Enforce authentication and optional role authorization.
+ * Throws an Error if unauthenticated or if user role is not allowed.
+ */
+export async function requireAuth(allowedRoles?: Role[]): Promise<AuthUser> {
+  const user = await getCurrentUser();
+  if (!user) {
+    throw new Error("Unauthorized: Authentication required.");
+  }
+  if (allowedRoles && allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
+    throw new Error(`Forbidden: Requires role ${allowedRoles.join(", ")}`);
+  }
+  return user;
 }
 
 

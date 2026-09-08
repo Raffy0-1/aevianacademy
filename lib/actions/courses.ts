@@ -2,9 +2,8 @@
 
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { Difficulty, ProgramArea } from "@prisma/client";
-
-// TODO(stage-3): RLS — only admins/teachers can create/edit courses.
+import { Difficulty, ProgramArea, Role } from "@prisma/client";
+import { requireAuth } from "@/lib/auth";
 
 const createCourseSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
@@ -94,11 +93,12 @@ export async function createCourse(
   }
 
   try {
+    await requireAuth([Role.TEACHER, Role.ADMIN]);
     const course = await prisma.course.create({ data: parsed.data });
     return { success: true, courseId: course.id };
-  } catch (e) {
+  } catch (e: any) {
     console.error("Failed to create course:", e);
-    return { error: "Failed to create course." };
+    return { error: e?.message || "Failed to create course." };
   }
 }
 
@@ -116,13 +116,15 @@ export async function updateCourse(
   const { courseId, ...updateData } = parsed.data;
 
   try {
+    await requireAuth([Role.TEACHER, Role.ADMIN]);
+
     await prisma.course.update({
       where: { id: courseId },
       data: updateData,
     });
     return { success: true };
-  } catch (e) {
+  } catch (e: any) {
     console.error("Failed to update course:", e);
-    return { error: "Failed to update course." };
+    return { error: e?.message || "Failed to update course." };
   }
 }

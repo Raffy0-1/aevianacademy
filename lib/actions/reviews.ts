@@ -2,8 +2,8 @@
 
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-
-// TODO(stage-3): RLS — one review per student per course.
+import { Role } from "@prisma/client";
+import { requireAuth } from "@/lib/auth";
 
 const postReviewSchema = z.object({
   studentId: z.string().min(1),
@@ -29,6 +29,11 @@ export async function postReview(
   }
 
   try {
+    const user = await requireAuth([Role.STUDENT, Role.ADMIN]);
+    if (user.role === Role.STUDENT && user.studentProfile?.id !== parsed.data.studentId) {
+      return { error: "Forbidden: Cannot post review on behalf of another student." };
+    }
+
     await prisma.review.create({
       data: {
         studentId: parsed.data.studentId,
@@ -38,9 +43,9 @@ export async function postReview(
       },
     });
     return { success: true };
-  } catch (e) {
+  } catch (e: any) {
     console.error("Failed to post review:", e);
-    return { error: "Failed to post review. You may have already reviewed this course." };
+    return { error: e?.message || "Failed to post review. You may have already reviewed this course." };
   }
 }
 

@@ -2,9 +2,8 @@
 
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-
-// TODO(stage-3): RLS — students only see their own submissions,
-// teachers only see submissions for their courses.
+import { Role } from "@prisma/client";
+import { requireAuth } from "@/lib/auth";
 
 const submitHomeworkSchema = z.object({
   homeworkId: z.string().min(1),
@@ -36,6 +35,11 @@ export async function submitHomework(
   }
 
   try {
+    const user = await requireAuth([Role.STUDENT, Role.ADMIN]);
+    if (user.role === Role.STUDENT && user.studentProfile?.id !== parsed.data.studentId) {
+      return { error: "Forbidden: Cannot submit homework for another student." };
+    }
+
     await prisma.homeworkSubmission.create({
       data: {
         homeworkId: parsed.data.homeworkId,
@@ -45,14 +49,14 @@ export async function submitHomework(
       },
     });
     return { success: true };
-  } catch (e) {
+  } catch (e: any) {
     console.error("Failed to submit homework:", e);
-    return { error: "Failed to submit homework." };
+    return { error: e?.message || "Failed to submit homework." };
   }
 }
 
 /**
- * Grade a homework submission (teacher).
+ * Grade a homework submission (teacher / admin).
  */
 export async function gradeHomework(
   data: z.infer<typeof gradeHomeworkSchema>
@@ -63,6 +67,8 @@ export async function gradeHomework(
   }
 
   try {
+    await requireAuth([Role.TEACHER, Role.ADMIN]);
+
     await prisma.homeworkSubmission.update({
       where: { id: parsed.data.submissionId },
       data: {
@@ -71,9 +77,9 @@ export async function gradeHomework(
       },
     });
     return { success: true };
-  } catch (e) {
+  } catch (e: any) {
     console.error("Failed to grade homework:", e);
-    return { error: "Failed to grade homework." };
+    return { error: e?.message || "Failed to grade homework." };
   }
 }
 
@@ -81,6 +87,11 @@ export async function gradeHomework(
  * Get homework submissions for a student.
  */
 export async function getHomeworkForStudent(studentId: string) {
+  const user = await requireAuth();
+  if (user.role === Role.STUDENT && user.studentProfile?.id !== studentId) {
+    throw new Error("Forbidden: Cannot view homework submissions of another student.");
+  }
+
   return prisma.homeworkSubmission.findMany({
     where: { studentId },
     include: {
@@ -104,6 +115,8 @@ export async function getHomeworkForStudent(studentId: string) {
  * Get homework assignments for a course's lessons.
  */
 export async function getHomeworkForCourse(courseId: string) {
+  await requireAuth([Role.TEACHER, Role.ADMIN]);
+
   return prisma.homework.findMany({
     where: {
       lesson: {

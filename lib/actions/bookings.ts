@@ -2,10 +2,8 @@
 
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { BookingType, BookingStatus } from "@prisma/client";
-
-// TODO(stage-3): Rate limiting on booking creation.
-// TODO(stage-3): RLS — students should only see their own bookings.
+import { BookingType, BookingStatus, Role } from "@prisma/client";
+import { requireAuth } from "@/lib/auth";
 
 const createBookingSchema = z.object({
   studentId: z.string().min(1, "Student is required"),
@@ -40,6 +38,11 @@ export async function createBooking(
   }
 
   try {
+    const user = await requireAuth();
+    if (user.role === Role.STUDENT && user.studentProfile?.id !== parsed.data.studentId) {
+      return { error: "Forbidden: Cannot create booking for another student." };
+    }
+
     const booking = await prisma.booking.create({
       data: {
         studentId: parsed.data.studentId,
@@ -53,9 +56,9 @@ export async function createBooking(
     });
 
     return { success: true, bookingId: booking.id };
-  } catch (e) {
+  } catch (e: any) {
     console.error("Failed to create booking:", e);
-    return { error: "Failed to create booking." };
+    return { error: e?.message || "Failed to create booking." };
   }
 }
 
@@ -71,6 +74,8 @@ export async function updateBookingStatus(
   }
 
   try {
+    await requireAuth([Role.TEACHER, Role.ADMIN]);
+
     await prisma.booking.update({
       where: { id: parsed.data.bookingId },
       data: {
@@ -80,9 +85,9 @@ export async function updateBookingStatus(
     });
 
     return { success: true };
-  } catch (e) {
+  } catch (e: any) {
     console.error("Failed to update booking:", e);
-    return { error: "Failed to update booking." };
+    return { error: e?.message || "Failed to update booking." };
   }
 }
 
@@ -94,6 +99,14 @@ export async function getBookings(filters?: {
   teacherId?: string;
   status?: BookingStatus;
 }) {
+  const user = await requireAuth();
+  if (user.role === Role.STUDENT && filters?.studentId && user.studentProfile?.id !== filters.studentId) {
+    throw new Error("Forbidden: Cannot view bookings of another student.");
+  }
+  if (user.role === Role.TEACHER && filters?.teacherId && user.teacherProfile?.id !== filters.teacherId) {
+    throw new Error("Forbidden: Cannot view bookings of another teacher.");
+  }
+
   return prisma.booking.findMany({
     where: {
       ...(filters?.studentId ? { studentId: filters.studentId } : {}),

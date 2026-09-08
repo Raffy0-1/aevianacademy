@@ -2,9 +2,8 @@
 
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { EnglishLevel } from "@prisma/client";
-
-// TODO(stage-3): RLS — users can only update their own profile.
+import { EnglishLevel, Role } from "@prisma/client";
+import { requireAuth } from "@/lib/auth";
 
 const updateProfileSchema = z.object({
   userId: z.string().min(1),
@@ -52,20 +51,24 @@ export async function updateProfile(
 
   const { userId, ...updateData } = parsed.data;
 
-  // Remove undefined values
-  const cleanData = Object.fromEntries(
-    Object.entries(updateData).filter(([, v]) => v !== undefined)
-  );
-
   try {
+    const user = await requireAuth();
+    if (user.role !== Role.ADMIN && user.id !== userId) {
+      return { error: "Forbidden: Cannot update another user's profile." };
+    }
+
+    const cleanData = Object.fromEntries(
+      Object.entries(updateData).filter(([, v]) => v !== undefined)
+    );
+
     await prisma.user.update({
       where: { id: userId },
       data: cleanData,
     });
     return { success: true };
-  } catch (e) {
+  } catch (e: any) {
     console.error("Failed to update profile:", e);
-    return { error: "Failed to update profile." };
+    return { error: e?.message || "Failed to update profile." };
   }
 }
 
@@ -83,14 +86,19 @@ export async function updateParentProfile(
   const { parentProfileId, ...updateData } = parsed.data;
 
   try {
+    const user = await requireAuth();
+    if (user.role !== Role.ADMIN && user.parentProfile?.id !== parentProfileId) {
+      return { error: "Forbidden: Cannot update another parent profile." };
+    }
+
     await prisma.parentProfile.update({
       where: { id: parentProfileId },
       data: updateData,
     });
     return { success: true };
-  } catch (e) {
+  } catch (e: any) {
     console.error("Failed to update parent profile:", e);
-    return { error: "Failed to update parent profile." };
+    return { error: e?.message || "Failed to update parent profile." };
   }
 }
 
@@ -108,14 +116,19 @@ export async function updateStudentProfile(
   const { studentProfileId, ...updateData } = parsed.data;
 
   try {
+    const user = await requireAuth();
+    if (user.role !== Role.ADMIN && user.studentProfile?.id !== studentProfileId) {
+      return { error: "Forbidden: Cannot update another student profile." };
+    }
+
     await prisma.studentProfile.update({
       where: { id: studentProfileId },
       data: updateData,
     });
     return { success: true };
-  } catch (e) {
+  } catch (e: any) {
     console.error("Failed to update student profile:", e);
-    return { error: "Failed to update student profile." };
+    return { error: e?.message || "Failed to update student profile." };
   }
 }
 
@@ -133,13 +146,18 @@ export async function updateTeacherProfile(
   const { teacherProfileId, ...updateData } = parsed.data;
 
   try {
+    const user = await requireAuth([Role.TEACHER, Role.ADMIN]);
+    if (user.role === Role.TEACHER && user.teacherProfile?.id !== teacherProfileId) {
+      return { error: "Forbidden: Cannot update another teacher profile." };
+    }
+
     await prisma.teacherProfile.update({
       where: { id: teacherProfileId },
       data: updateData,
     });
     return { success: true };
-  } catch (e) {
+  } catch (e: any) {
     console.error("Failed to update teacher profile:", e);
-    return { error: "Failed to update teacher profile." };
+    return { error: e?.message || "Failed to update teacher profile." };
   }
 }

@@ -2,10 +2,8 @@
 
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { EnrollmentStatus } from "@prisma/client";
-
-// TODO(stage-3): RLS — students only see their own enrollments.
-// TODO(stage-3): Payment verification before enrollment.
+import { EnrollmentStatus, Role } from "@prisma/client";
+import { requireAuth } from "@/lib/auth";
 
 const enrollStudentSchema = z.object({
   studentId: z.string().min(1),
@@ -24,8 +22,8 @@ export type EnrollmentActionResult = {
 };
 
 /**
- * Enroll a student in a course.
- * TODO(stage-3): Verify payment before allowing enrollment.
+ * Direct manual enrollment of a student (Admin only).
+ * Paid enrollments are created via Safepay webhook integration.
  */
 export async function enrollStudent(
   data: z.infer<typeof enrollStudentSchema>
@@ -36,6 +34,7 @@ export async function enrollStudent(
   }
 
   try {
+    await requireAuth([Role.ADMIN]);
     const enrollment = await prisma.enrollment.create({
       data: {
         studentId: parsed.data.studentId,
@@ -44,9 +43,9 @@ export async function enrollStudent(
       },
     });
     return { success: true, enrollmentId: enrollment.id };
-  } catch (e) {
+  } catch (e: any) {
     console.error("Failed to enroll student:", e);
-    return { error: "Failed to enroll. Student may already be enrolled in this course." };
+    return { error: e?.message || "Failed to enroll student." };
   }
 }
 
@@ -54,6 +53,11 @@ export async function enrollStudent(
  * Get all enrollments for a student.
  */
 export async function getEnrollmentsForStudent(studentId: string) {
+  const user = await requireAuth();
+  if (user.role === Role.STUDENT && user.studentProfile?.id !== studentId) {
+    throw new Error("Forbidden: Access denied to other student enrollments.");
+  }
+
   return prisma.enrollment.findMany({
     where: { studentId },
     include: {
@@ -80,6 +84,8 @@ export async function updateProgress(
   }
 
   try {
+    await requireAuth([Role.STUDENT, Role.TEACHER, Role.ADMIN]);
+
     const updateData: Record<string, unknown> = {
       progressPercent: parsed.data.progressPercent,
     };
@@ -94,9 +100,9 @@ export async function updateProgress(
       data: updateData,
     });
     return { success: true };
-  } catch (e) {
+  } catch (e: any) {
     console.error("Failed to update progress:", e);
-    return { error: "Failed to update progress." };
+    return { error: e?.message || "Failed to update progress." };
   }
 }
 
@@ -104,6 +110,8 @@ export async function updateProgress(
  * Get all enrollments for a course (teacher/admin view).
  */
 export async function getEnrollmentsForCourse(courseId: string) {
+  await requireAuth([Role.TEACHER, Role.ADMIN]);
+
   return prisma.enrollment.findMany({
     where: { courseId },
     include: {

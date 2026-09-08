@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { LeadStatus, TicketStatus, Role } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { requireAuth } from "@/lib/auth";
 
 export type AdminActionResult = {
   success?: boolean;
@@ -19,6 +20,7 @@ export async function updateLeadStatus(
   notes?: string
 ): Promise<AdminActionResult> {
   try {
+    await requireAuth([Role.ADMIN]);
     const updated = await prisma.lead.update({
       where: { id: leadId },
       data: {
@@ -26,12 +28,11 @@ export async function updateLeadStatus(
         ...(notes !== undefined ? { notes } : {}),
       },
     });
-    revalidatePath("/admin");
     revalidatePath("/dashboard/admin");
     return { success: true, data: updated };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to update lead status:", error);
-    return { error: "Failed to update lead status." };
+    return { error: error?.message || "Failed to update lead status." };
   }
 }
 
@@ -45,6 +46,7 @@ export async function createLead(
   notes?: string
 ): Promise<AdminActionResult> {
   try {
+    await requireAuth([Role.ADMIN]);
     const lead = await prisma.lead.create({
       data: {
         name,
@@ -54,12 +56,11 @@ export async function createLead(
         status: LeadStatus.NEW,
       },
     });
-    revalidatePath("/admin");
     revalidatePath("/dashboard/admin");
     return { success: true, data: lead };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to create lead:", error);
-    return { error: "Failed to create lead." };
+    return { error: error?.message || "Failed to create lead." };
   }
 }
 
@@ -71,16 +72,16 @@ export async function updateTicketStatus(
   status: TicketStatus
 ): Promise<AdminActionResult> {
   try {
+    await requireAuth([Role.ADMIN]);
     const updated = await prisma.supportTicket.update({
       where: { id: ticketId },
       data: { status },
     });
-    revalidatePath("/admin");
     revalidatePath("/dashboard/admin");
     return { success: true, data: updated };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to update ticket status:", error);
-    return { error: "Failed to update ticket status." };
+    return { error: error?.message || "Failed to update ticket status." };
   }
 }
 
@@ -91,6 +92,7 @@ export async function toggleCoursePublished(
   courseId: string
 ): Promise<AdminActionResult> {
   try {
+    await requireAuth([Role.ADMIN]);
     const course = await prisma.course.findUnique({
       where: { id: courseId },
       select: { published: true },
@@ -103,12 +105,11 @@ export async function toggleCoursePublished(
       data: { published: !course.published },
     });
 
-    revalidatePath("/admin");
     revalidatePath("/dashboard/admin");
     return { success: true, data: updated };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to toggle course published:", error);
-    return { error: "Failed to toggle course published status." };
+    return { error: error?.message || "Failed to toggle course published status." };
   }
 }
 
@@ -124,6 +125,7 @@ export async function createDiscountCode(data: {
   maxUses?: number;
 }): Promise<AdminActionResult> {
   try {
+    await requireAuth([Role.ADMIN]);
     const discount = await prisma.discountCode.create({
       data: {
         code: data.code.toUpperCase().trim(),
@@ -135,12 +137,11 @@ export async function createDiscountCode(data: {
         active: true,
       },
     });
-    revalidatePath("/admin");
     revalidatePath("/dashboard/admin");
     return { success: true, data: discount };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to create discount code:", error);
-    return { error: "Failed to create discount code. Code may already exist." };
+    return { error: error?.message || "Failed to create discount code." };
   }
 }
 
@@ -152,15 +153,15 @@ export async function updateUserRole(
   role: Role
 ): Promise<AdminActionResult> {
   try {
+    await requireAuth([Role.ADMIN]);
     const updated = await prisma.user.update({
       where: { id: userId },
       data: { role },
     });
-    revalidatePath("/admin");
     revalidatePath("/dashboard/admin");
     return { success: true, data: updated };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to update user role:", error);
-    return { error: "Failed to update user role." };
+    return { error: error?.message || "Failed to update user role." };
   }
 }

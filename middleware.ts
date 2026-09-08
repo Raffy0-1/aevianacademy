@@ -90,6 +90,13 @@ export async function middleware(request: NextRequest) {
     console.warn("Middleware auth refresh warning:", (err as Error)?.message);
   }
 
+  // Redirect legacy /admin requests to /dashboard/admin
+  if (path === "/admin" || path.startsWith("/admin/")) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/dashboard/admin";
+    return NextResponse.redirect(url);
+  }
+
   // Protect dashboard routes
   if (request.nextUrl.pathname.startsWith("/dashboard") && !user) {
     const url = request.nextUrl.clone();

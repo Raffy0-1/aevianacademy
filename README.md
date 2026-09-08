@@ -80,6 +80,9 @@ components/
                        PricingPreview, Faq, Newsletter
   ui/                 Button, Badge, Container, SectionHeading,
                        LearningConstellation, ConstellationRule
+docs/
+  program-catalog.md Program & pricing content strategy specification
+  automation-plan.md Automated scheduling & Zoom/WhatsApp notification architecture
 lib/
   utils.ts            cn() class helper
   data/               Placeholder content (courses, testimonials, faq) —
