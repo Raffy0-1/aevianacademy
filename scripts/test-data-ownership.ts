@@ -41,6 +41,7 @@ async function testDataOwnershipIsolation() {
       title: "English Mastery with Teacher B",
       slug: "course-b-english",
       description: "Course by Teacher B",
+      programArea: "SCHOOL_ASSESSMENT",
       teacherId: teacherBProfile.id,
       published: true,
     },
