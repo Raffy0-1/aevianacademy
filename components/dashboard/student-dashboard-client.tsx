@@ -97,6 +97,27 @@ export function StudentDashboardClient({
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
   const [quizScore, setQuizScore] = useState<number | null>(null);
 
+  const pdfResources = [
+    {
+      id: "pdf-1",
+      title: "NAPLAN Math & Problem Solving Guide",
+      subject: "School Assessment",
+      size: "2.4 MB",
+      date: "2026-09-01",
+      desc: "Complete reference set containing 40 sample questions, step-by-step solutions, and time-management techniques for Australian NAPLAN exams.",
+      url: "#",
+    },
+    {
+      id: "pdf-2",
+      title: "Tajweed Rules & Quran Recitation Rules",
+      subject: "Quran Recitation",
+      size: "1.8 MB",
+      date: "2026-08-28",
+      desc: "Illustrated guide on Makharij, Ghunna, Noon Sakinah, and Madd rules for standard 40-minute individual live sessions.",
+      url: "#",
+    },
+  ];
+
   const quizQuestions = [
     {
       id: 1,
