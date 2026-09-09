@@ -60,13 +60,13 @@ export default function ContactPage() {
 
             <div className="space-y-4 text-sm">
               <a
-                href="mailto:aeivanacademy@gmail.com"
+                href="mailto:aevianacademy@gmail.com"
                 className="flex items-center gap-3 rounded-lg border border-border bg-card p-3 transition-colors hover:border-gold"
               >
                 <Mail className="text-gold h-5 w-5 shrink-0" />
                 <div>
                   <div className="text-xs text-muted-foreground">Official Email</div>
-                  <span className="font-semibold text-foreground">aeivanacademy@gmail.com</span>
+                  <span className="font-semibold text-foreground">aevianacademy@gmail.com</span>
                 </div>
               </a>
 

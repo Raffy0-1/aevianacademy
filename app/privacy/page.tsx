@@ -40,8 +40,8 @@ export default function PrivacyPage() {
             </h2>
             <p>
               If you have any questions, concerns, or requests regarding your personal data or privacy preferences, please contact our support team at{" "}
-              <a href="mailto:aeivanacademy@gmail.com" className="text-gold font-medium hover:underline">
-                aeivanacademy@gmail.com
+              <a href="mailto:aevianacademy@gmail.com" className="text-gold font-medium hover:underline">
+                aevianacademy@gmail.com
               </a>{" "}
               or via Phone / WhatsApp at{" "}
               <a href="https://wa.me/923704942300" target="_blank" rel="noopener noreferrer" className="text-gold font-medium hover:underline">

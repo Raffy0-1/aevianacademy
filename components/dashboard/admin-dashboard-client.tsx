@@ -260,7 +260,7 @@ export function AdminDashboardClient({
     if (channel === "whatsapp") {
       window.open(`https://wa.me/923704942300?text=${encodeURIComponent(reply)}`, "_blank");
     } else if (channel === "email") {
-      window.open(`mailto:aeivanacademy@gmail.com?subject=Aevian%20Academy%20Support%20Reply&body=${encodeURIComponent(reply)}`, "_blank");
+      window.open(`mailto:aevianacademy@gmail.com?subject=Aevian%20Academy%20Support%20Reply&body=${encodeURIComponent(reply)}`, "_blank");
     }
     triggerNotification(`✓ Replied to parent via ${channel.toUpperCase()}: "${reply}"`);
   };

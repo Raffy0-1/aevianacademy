@@ -36,8 +36,8 @@ export default function CookiesPage() {
             </h2>
             <p>
               If you have any questions regarding cookies or session security, feel free to email us at{" "}
-              <a href="mailto:aeivanacademy@gmail.com" className="text-gold font-medium hover:underline">
-                aeivanacademy@gmail.com
+              <a href="mailto:aevianacademy@gmail.com" className="text-gold font-medium hover:underline">
+                aevianacademy@gmail.com
               </a>{" "}
               or message us on WhatsApp at{" "}
               <a href="https://wa.me/923704942300" target="_blank" rel="noopener noreferrer" className="text-gold font-medium hover:underline">

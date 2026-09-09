@@ -36,8 +36,8 @@ export default function TermsPage() {
             </h2>
             <p>
               For questions regarding these Terms of Service or billing policies, please reach out to our team at{" "}
-              <a href="mailto:aeivanacademy@gmail.com" className="text-gold font-medium hover:underline">
-                aeivanacademy@gmail.com
+              <a href="mailto:aevianacademy@gmail.com" className="text-gold font-medium hover:underline">
+                aevianacademy@gmail.com
               </a>{" "}
               or WhatsApp / Phone at{" "}
               <a href="https://wa.me/923704942300" target="_blank" rel="noopener noreferrer" className="text-gold font-medium hover:underline">
