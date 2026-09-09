@@ -130,6 +130,7 @@ interface AdminDashboardClientProps {
   initialCourses?: CourseItem[];
   initialBookings?: BookingItem[];
   initialDiscounts?: DiscountItem[];
+  initialMedia?: MediaItem[];
 }
 
 export function AdminDashboardClient({
@@ -140,6 +141,7 @@ export function AdminDashboardClient({
   initialCourses = [],
   initialBookings = [],
   initialDiscounts = [],
+  initialMedia = [],
 }: AdminDashboardClientProps) {
   const [isPending, startTransition] = useTransition();
   const [activeTab, setActiveTab] = useState("allotments");
@@ -160,11 +162,7 @@ export function AdminDashboardClient({
   const [parentReplyText, setParentReplyText] = useState<{ [ticketId: string]: string }>({});
 
   // Media & Images state
-  const [mediaList, setMediaList] = useState<MediaItem[]>([
-    { id: "m-1", filename: "hero-learning.jpg", url: "https://images.unsplash.com/photo-1523240795612-9a054b0db644", altText: "Students learning online", mimeType: "image/jpeg" },
-    { id: "m-2", filename: "quran-class.jpg", url: "https://images.unsplash.com/photo-1609599006353-e629aaabfeae", altText: "Quran recitation session", mimeType: "image/jpeg" },
-    { id: "m-3", filename: "math-tutoring.jpg", url: "https://images.unsplash.com/photo-1509062522246-3755977927d7", altText: "Mathematics masterclass", mimeType: "image/jpeg" },
-  ]);
+  const [mediaList, setMediaList] = useState<MediaItem[]>(initialMedia);
   const [newMediaForm, setNewMediaForm] = useState({ filename: "", url: "", altText: "" });
 
   // Courses state
@@ -177,15 +175,7 @@ export function AdminDashboardClient({
   const [discounts, setDiscounts] = useState<DiscountItem[]>(initialDiscounts);
 
   const teacherUsers = users.filter((u) => u.role === "TEACHER");
-  const availableTeachers = teacherUsers.length > 0
-    ? teacherUsers.map((t) => t.name)
-    : [
-        "Dr. Sarah Khan (Math & Assessment Expert)",
-        "Ustadh Ahmad (Quran Recitation & Tajweed)",
-        "Prof. David Miller (IELTS / TOEFL Certified)",
-        "Ustadha Fatima (Islamic Foundations & Duas)",
-        "Mr. Robert Taylor (UK Curriculum Specialist)",
-      ];
+  const availableTeachers = teacherUsers.map((t) => t.name);
   const [showAddDiscountModal, setShowAddDiscountModal] = useState(false);
   const [newDiscountForm, setNewDiscountForm] = useState({
     code: "",
@@ -472,53 +462,65 @@ export function AdminDashboardClient({
           </div>
 
           <div className="grid gap-4">
-            {bookings.map((b) => (
-              <motion.div
-                key={b.id}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="rounded-2xl border border-slate-border bg-white p-6 shadow-sm flex flex-wrap items-center justify-between gap-6"
-              >
-                <div className="space-y-1 max-w-xl">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-base font-bold text-navy">{b.studentName}</span>
-                    <span className="text-xs text-slate">({b.parentEmail})</span>
-                    <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
-                      b.type === "TRIAL" ? "bg-purple-100 text-purple-700" : "bg-emerald-100 text-emerald-700"
-                    }`}>
-                      {b.type === "TRIAL" ? "Free Trial Booking" : "Regular Class"}
-                    </span>
-                  </div>
-                  <p className="text-xs font-semibold text-copper">{b.courseName}</p>
-                  <p className="text-xs text-slate flex items-center gap-1.5 font-medium">
-                    <Clock className="h-3.5 w-3.5 text-copper" /> {b.scheduledAt} ({b.durationMinutes} Mins)
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  {b.status === "CONFIRMED" ? (
-                    <span className="rounded-xl bg-emerald-50 px-4 py-2 text-xs font-bold text-emerald-700 border border-emerald-200 flex items-center gap-1.5">
-                      <CheckCircle2 className="h-4 w-4" /> Allotted: {b.assignedTeacher}
-                    </span>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <select
-                        onChange={(e) => {
-                          if (e.target.value) handleAllotTeacher(b.id, e.target.value);
-                        }}
-                        defaultValue=""
-                        className="rounded-xl border border-slate-border bg-cream/40 px-3 py-2 text-xs text-navy font-bold focus:border-copper focus:outline-none"
-                      >
-                        <option value="" disabled>Allot Master Tutor...</option>
-                        {availableTeachers.map((t) => (
-                          <option key={t} value={t}>{t}</option>
-                        ))}
-                      </select>
+            {bookings.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-slate-border bg-white p-8 text-center">
+                <UserCheck className="h-10 w-10 text-slate mx-auto mb-2" />
+                <p className="text-sm font-bold text-navy">No session bookings requiring allotment found.</p>
+                <p className="text-xs text-slate mt-1">Bookings submitted by students or parents will appear here in real time.</p>
+              </div>
+            ) : (
+              bookings.map((b) => (
+                <motion.div
+                  key={b.id}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="rounded-2xl border border-slate-border bg-white p-6 shadow-sm flex flex-wrap items-center justify-between gap-6"
+                >
+                  <div className="space-y-1 max-w-xl">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-base font-bold text-navy">{b.studentName}</span>
+                      <span className="text-xs text-slate">({b.parentEmail})</span>
+                      <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
+                        b.type === "TRIAL" ? "bg-purple-100 text-purple-700" : "bg-emerald-100 text-emerald-700"
+                      }`}>
+                        {b.type === "TRIAL" ? "Free Trial Booking" : "Regular Class"}
+                      </span>
                     </div>
-                  )}
-                </div>
-              </motion.div>
-            ))}
+                    <p className="text-xs font-semibold text-copper">{b.courseName}</p>
+                    <p className="text-xs text-slate flex items-center gap-1.5 font-medium">
+                      <Clock className="h-3.5 w-3.5 text-copper" /> {b.scheduledAt} ({b.durationMinutes} Mins)
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    {b.status === "CONFIRMED" ? (
+                      <span className="rounded-xl bg-emerald-50 px-4 py-2 text-xs font-bold text-emerald-700 border border-emerald-200 flex items-center gap-1.5">
+                        <CheckCircle2 className="h-4 w-4" /> Allotted: {b.assignedTeacher}
+                      </span>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <select
+                          onChange={(e) => {
+                            if (e.target.value) handleAllotTeacher(b.id, e.target.value);
+                          }}
+                          defaultValue=""
+                          className="rounded-xl border border-slate-border bg-cream/40 px-3 py-2 text-xs text-navy font-bold focus:border-copper focus:outline-none"
+                        >
+                          <option value="" disabled>Allot Master Tutor...</option>
+                          {availableTeachers.length === 0 ? (
+                            <option value="" disabled>No registered teachers found</option>
+                          ) : (
+                            availableTeachers.map((t) => (
+                              <option key={t} value={t}>{t}</option>
+                            ))
+                          )}
+                        </select>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              ))
+            )}
           </div>
         </div>
       )}
@@ -563,55 +565,61 @@ export function AdminDashboardClient({
                     <th className="p-4">Notes</th>
                     <th className="p-4">Status</th>
                     <th className="p-4 text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-border/60">
-                  {filteredLeads.map((l) => (
-                    <tr key={l.id} className="hover:bg-cream/30 transition-colors">
-                      <td className="p-4 font-bold text-navy">{l.name}</td>
-                      <td className="p-4 space-y-0.5">
-                        <div className="flex items-center gap-1.5 text-slate font-medium">
-                          <Mail className="h-3 w-3 text-copper" /> {l.email}
-                        </div>
-                        {l.phone && (
-                          <div className="flex items-center gap-1.5 text-slate-muted text-[11px]">
-                            <Phone className="h-3 w-3 text-slate" /> {l.phone}
-                          </div>
-                        )}
-                      </td>
-                      <td className="p-4 text-slate font-medium">
-                        <span className="rounded-md bg-cream px-2 py-1 text-[10px] font-semibold text-slate-700">
-                          {l.source}
-                        </span>
-                      </td>
-                      <td className="p-4 text-slate text-[11px] max-w-xs truncate font-medium">
-                        {l.notes || "No notes"}
-                      </td>
-                      <td className="p-4">
-                        <select
-                          value={l.status}
-                          onChange={(e) => handleUpdateLeadStatus(l.id, e.target.value)}
-                          className="rounded-lg px-2.5 py-1 text-[11px] font-bold border bg-cream/40"
-                        >
-                          <option value="NEW">NEW</option>
-                          <option value="CONTACTED">CONTACTED</option>
-                          <option value="QUALIFIED">QUALIFIED</option>
-                          <option value="CONVERTED">CONVERTED</option>
-                          <option value="LOST">LOST</option>
-                        </select>
-                      </td>
-                      <td className="p-4 text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleUpdateLeadStatus(l.id, "CONVERTED")}
-                          className="text-[11px] font-bold text-emerald-600 hover:text-emerald-800"
-                        >
-                          Convert Lead
-                        </Button>
+                  </t                <tbody className="divide-y divide-slate-border/60">
+                  {filteredLeads.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="p-8 text-center text-slate font-bold">
+                        No CRM leads found matching criteria.
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    filteredLeads.map((l) => (
+                      <tr key={l.id} className="hover:bg-cream/30 transition-colors">
+                        <td className="p-4 font-bold text-navy">{l.name}</td>
+                        <td className="p-4 space-y-0.5">
+                          <div className="flex items-center gap-1.5 text-slate font-medium">
+                            <Mail className="h-3 w-3 text-copper" /> {l.email}
+                          </div>
+                          {l.phone && (
+                            <div className="flex items-center gap-1.5 text-slate-muted text-[11px]">
+                              <Phone className="h-3 w-3 text-slate" /> {l.phone}
+                            </div>
+                          )}
+                        </td>
+                        <td className="p-4 text-slate font-medium">
+                          <span className="rounded-md bg-cream px-2 py-1 text-[10px] font-semibold text-slate-700">
+                            {l.source}
+                          </span>
+                        </td>
+                        <td className="p-4 text-slate text-[11px] max-w-xs truncate font-medium">
+                          {l.notes || "No notes"}
+                        </td>
+                        <td className="p-4">
+                          <select
+                            value={l.status}
+                            onChange={(e) => handleUpdateLeadStatus(l.id, e.target.value)}
+                            className="rounded-lg px-2.5 py-1 text-[11px] font-bold border bg-cream/40"
+                          >
+                            <option value="NEW">NEW</option>
+                            <option value="CONTACTED">CONTACTED</option>
+                            <option value="QUALIFIED">QUALIFIED</option>
+                            <option value="CONVERTED">CONVERTED</option>
+                            <option value="LOST">LOST</option>
+                          </select>
+                        </td>
+                        <td className="p-4 text-right">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleUpdateLeadStatus(l.id, "CONVERTED")}
+                            className="text-[11px] font-bold text-emerald-600 hover:text-emerald-800"
+                          >
+                            Convert Lead
+                          </Button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -644,36 +652,44 @@ export function AdminDashboardClient({
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            {users.filter((u) => u.role === "TEACHER").map((t) => (
-              <div key={t.id} className="rounded-2xl border border-slate-border bg-white p-6 shadow-sm space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-copper/10 border border-copper/30 flex items-center justify-center font-bold text-copper text-sm">
-                      {t.name.charAt(0)}
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-navy">{t.name}</h3>
-                      <p className="text-[11px] text-slate">{t.email}</p>
-                    </div>
-                  </div>
-                  <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700">
-                    Verified Master Tutor
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between pt-2 border-t border-slate-border text-xs">
-                  <span className="text-slate font-medium">Faculty CV Document:</span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => alert(`Downloading CV for ${t.name}... (Sample CV PDF Generated)`)}
-                    className="flex items-center gap-1.5 text-xs"
-                  >
-                    <Download size={12} /> Download CV PDF
-                  </Button>
-                </div>
+            {users.filter((u) => u.role === "TEACHER").length === 0 ? (
+              <div className="sm:col-span-2 rounded-2xl border border-dashed border-slate-border bg-white p-8 text-center">
+                <GraduationCap className="h-10 w-10 text-slate mx-auto mb-2" />
+                <p className="text-sm font-bold text-navy">No teacher profiles registered yet.</p>
+                <p className="text-xs text-slate mt-1">Users given the TEACHER role will appear here automatically.</p>
               </div>
-            ))}
+            ) : (
+              users.filter((u) => u.role === "TEACHER").map((t) => (
+                <div key={t.id} className="rounded-2xl border border-slate-border bg-white p-6 shadow-sm space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-copper/10 border border-copper/30 flex items-center justify-center font-bold text-copper text-sm">
+                        {t.name.charAt(0)}
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-bold text-navy">{t.name}</h3>
+                        <p className="text-[11px] text-slate">{t.email}</p>
+                      </div>
+                    </div>
+                    <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700">
+                      Verified Master Tutor
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2 border-t border-slate-border text-xs">
+                    <span className="text-slate font-medium">Faculty CV Document:</span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => alert(`Downloading CV for ${t.name}... (Sample CV PDF Generated)`)}
+                      className="flex items-center gap-1.5 text-xs"
+                    >
+                      <Download size={12} /> Download CV PDF
+                    </Button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       )}
@@ -703,46 +719,52 @@ export function AdminDashboardClient({
           </div>
 
           <div className="grid gap-4">
-            {tickets.map((t) => (
-              <div key={t.id} className="rounded-2xl border border-slate-border bg-white p-6 shadow-sm space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-[10px] font-extrabold uppercase bg-purple-100 text-purple-700 px-2.5 py-0.5 rounded-full">
-                      Parent Enquiry
-                    </span>
-                    <h3 className="text-base font-bold text-navy mt-1">{t.subject}</h3>
-                    <p className="text-xs text-slate">Parent: <strong className="text-navy">{t.userName}</strong> ({t.userEmail})</p>
-                  </div>
-                  <span className="text-xs font-mono text-slate-muted">{t.createdAt}</span>
-                </div>
-
-                <p className="text-xs text-slate bg-cream-muted p-3 rounded-xl border border-slate-border">
-                  &quot;{t.description}&quot;
-                </p>
-
-
-                <div className="space-y-2">
-                  <input
-                    type="text"
-                    placeholder="Type reply message to parent..."
-                    value={parentReplyText[t.id] || ""}
-                    onChange={(e) => setParentReplyText({ ...parentReplyText, [t.id]: e.target.value })}
-                    className="w-full rounded-xl border border-slate-border p-2.5 text-xs text-navy font-medium focus:border-copper focus:outline-none"
-                  />
-                  <div className="flex items-center gap-2">
-                    <Button variant="copper" size="sm" onClick={() => handleParentReply(t.id, "portal")}>
-                      Reply Portal-to-Portal
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={() => handleParentReply(t.id, "email")}>
-                      <Mail size={12} className="mr-1" /> Send Email
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={() => handleParentReply(t.id, "whatsapp")}>
-                      <MessageCircle size={12} className="mr-1 text-emerald-600" /> Send WhatsApp
-                    </Button>
-                  </div>
-                </div>
+            {tickets.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-slate-border bg-white p-8 text-center">
+                <Heart className="h-10 w-10 text-slate mx-auto mb-2" />
+                <p className="text-sm font-bold text-navy">No active parent enquiries or tickets found.</p>
               </div>
-            ))}
+            ) : (
+              tickets.map((t) => (
+                <div key={t.id} className="rounded-2xl border border-slate-border bg-white p-6 shadow-sm space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] font-extrabold uppercase bg-purple-100 text-purple-700 px-2.5 py-0.5 rounded-full">
+                        Parent Enquiry
+                      </span>
+                      <h3 className="text-base font-bold text-navy mt-1">{t.subject}</h3>
+                      <p className="text-xs text-slate">Parent: <strong className="text-navy">{t.userName}</strong> ({t.userEmail})</p>
+                    </div>
+                    <span className="text-xs font-mono text-slate-muted">{t.createdAt}</span>
+                  </div>
+
+                  <p className="text-xs text-slate bg-cream-muted p-3 rounded-xl border border-slate-border">
+                    &quot;{t.description}&quot;
+                  </p>
+
+                  <div className="space-y-2">
+                    <input
+                      type="text"
+                      placeholder="Type reply message to parent..."
+                      value={parentReplyText[t.id] || ""}
+                      onChange={(e) => setParentReplyText({ ...parentReplyText, [t.id]: e.target.value })}
+                      className="w-full rounded-xl border border-slate-border p-2.5 text-xs text-navy font-medium focus:border-copper focus:outline-none"
+                    />
+                    <div className="flex items-center gap-2">
+                      <Button variant="copper" size="sm" onClick={() => handleParentReply(t.id, "portal")}>
+                        Reply Portal-to-Portal
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => handleParentReply(t.id, "email")}>
+                        <Mail size={12} className="mr-1" /> Send Email
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => handleParentReply(t.id, "whatsapp")}>
+                        <MessageCircle size={12} className="mr-1 text-emerald-600" /> Send WhatsApp
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       )}
@@ -782,18 +804,26 @@ export function AdminDashboardClient({
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-border/60">
-                {users.filter((u) => u.role === "STUDENT").map((s) => (
-                  <tr key={s.id} className="hover:bg-cream/30">
-                    <td className="p-4 font-bold text-navy">{s.name}</td>
-                    <td className="p-4 text-slate">{s.email}</td>
-                    <td className="p-4">
-                      <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700">
-                        Active Learner
-                      </span>
+                {users.filter((u) => u.role === "STUDENT").length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="p-8 text-center text-slate font-bold">
+                      No student accounts found.
                     </td>
-                    <td className="p-4 text-slate font-mono">{s.createdAt}</td>
                   </tr>
-                ))}
+                ) : (
+                  users.filter((u) => u.role === "STUDENT").map((s) => (
+                    <tr key={s.id} className="hover:bg-cream/30">
+                      <td className="p-4 font-bold text-navy">{s.name}</td>
+                      <td className="p-4 text-slate">{s.email}</td>
+                      <td className="p-4">
+                        <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700">
+                          Active Learner
+                        </span>
+                      </td>
+                      <td className="p-4 text-slate font-mono">{s.createdAt}</td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -844,41 +874,54 @@ export function AdminDashboardClient({
             </form>
 
             <div className="grid gap-4 sm:grid-cols-3 pt-2">
-              {mediaList.map((m) => (
-                <div key={m.id} className="rounded-xl border border-slate-border overflow-hidden bg-cream-muted p-3 space-y-2">
-                  <img src={m.url} alt={m.altText} className="h-32 w-full object-cover rounded-lg" />
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-navy truncate max-w-[150px]">{m.filename}</span>
-                    <button onClick={() => handleDeleteMedia(m.id)} className="text-red-600 font-bold hover:underline">
-                      Delete
-                    </button>
-                  </div>
+              {mediaList.length === 0 ? (
+                <div className="sm:col-span-3 p-6 text-center text-xs font-bold text-slate bg-cream/30 rounded-xl border border-dashed border-slate-border">
+                  No media assets uploaded yet. Use the form above to add custom image URLs.
                 </div>
-              ))}
+              ) : (
+                mediaList.map((m) => (
+                  <div key={m.id} className="rounded-xl border border-slate-border overflow-hidden bg-cream-muted p-3 space-y-2">
+                    <img src={m.url} alt={m.altText} className="h-32 w-full object-cover rounded-lg" />
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold text-navy truncate max-w-[150px]">{m.filename}</span>
+                      <button onClick={() => handleDeleteMedia(m.id)} className="text-red-600 font-bold hover:underline">
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 
           {/* Program Catalog Editor */}
           <div className="grid gap-4 sm:grid-cols-2">
-            {courses.map((c) => (
-              <div key={c.id} className="rounded-2xl border border-slate-border bg-white p-5 shadow-sm space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="rounded-md bg-copper/10 px-2.5 py-0.5 text-[10px] font-bold text-copper">
-                    {c.programArea}
-                  </span>
-                  <button
-                    onClick={() => handleToggleCourse(c.id)}
-                    className={`px-2.5 py-1 rounded-lg text-[10px] font-bold ${
-                      c.published ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"
-                    }`}
-                  >
-                    {c.published ? "Published" : "Draft"}
-                  </button>
-                </div>
-                <h4 className="text-sm font-bold text-navy">{c.title}</h4>
-                <p className="text-xs text-slate">Duration: {c.durationWeeks} Weeks • Level: {c.difficulty}</p>
+            {courses.length === 0 ? (
+              <div className="sm:col-span-2 rounded-2xl border border-dashed border-slate-border bg-white p-8 text-center">
+                <BookOpen className="h-10 w-10 text-slate mx-auto mb-2" />
+                <p className="text-sm font-bold text-navy">No course programs cataloged.</p>
               </div>
-            ))}
+            ) : (
+              courses.map((c) => (
+                <div key={c.id} className="rounded-2xl border border-slate-border bg-white p-5 shadow-sm space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="rounded-md bg-copper/10 px-2.5 py-0.5 text-[10px] font-bold text-copper">
+                      {c.programArea}
+                    </span>
+                    <button
+                      onClick={() => handleToggleCourse(c.id)}
+                      className={`px-2.5 py-1 rounded-lg text-[10px] font-bold ${
+                        c.published ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"
+                      }`}
+                    >
+                      {c.published ? "Published" : "Draft"}
+                    </button>
+                  </div>
+                  <h4 className="text-sm font-bold text-navy">{c.title}</h4>
+                  <p className="text-xs text-slate">Duration: {c.durationWeeks} Weeks • Level: {c.difficulty}</p>
+                </div>
+              ))
+            )}
           </div>
         </div>
       )}
@@ -898,21 +941,29 @@ export function AdminDashboardClient({
 
           <div className="rounded-2xl border border-slate-border bg-white overflow-hidden shadow-sm">
             <div className="divide-y divide-slate-border">
-              {discounts.map((d) => (
-                <div key={d.id} className="p-4 flex flex-wrap items-center justify-between gap-4 text-xs">
-                  <div className="space-y-1">
-                    <span className="font-mono font-extrabold text-navy text-sm bg-copper/10 px-2.5 py-0.5 rounded border border-copper/30">
-                      {d.code}
-                    </span>
-                    <p className="text-slate font-medium">{d.description || "No description"}</p>
-                  </div>
-                  <div className="text-right text-slate font-medium">
-                    Used: <strong className="text-navy">{d.currentUses}</strong> times
-                  </div>
+              {discounts.length === 0 ? (
+                <div className="p-8 text-center text-xs font-bold text-slate">
+                  No active discount codes created yet. Click &apos;Create Discount Code&apos; above to generate one.
                 </div>
-              ))}
+              ) : (
+                discounts.map((d) => (
+                  <div key={d.id} className="p-4 flex flex-wrap items-center justify-between gap-4 text-xs">
+                    <div className="space-y-1">
+                      <span className="font-mono font-extrabold text-navy text-sm bg-copper/10 px-2.5 py-0.5 rounded border border-copper/30">
+                        {d.code}
+                      </span>
+                      <p className="text-slate font-medium">{d.description || "No description"}</p>
+                    </div>
+                    <div className="text-right text-slate font-medium">
+                      Used: <strong className="text-navy">{d.currentUses}</strong> times
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
+        </div>
+      )}</div>
         </div>
       )}
 
