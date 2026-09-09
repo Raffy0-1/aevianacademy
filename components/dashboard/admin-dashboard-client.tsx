@@ -565,7 +565,9 @@ export function AdminDashboardClient({
                     <th className="p-4">Notes</th>
                     <th className="p-4">Status</th>
                     <th className="p-4 text-right">Action</th>
-                  </t                <tbody className="divide-y divide-slate-border/60">
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-border/60">
                   {filteredLeads.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="p-8 text-center text-slate font-bold">
@@ -962,8 +964,6 @@ export function AdminDashboardClient({
               )}
             </div>
           </div>
-        </div>
-      )}</div>
         </div>
       )}
 
