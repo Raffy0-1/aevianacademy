@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Mail, Phone, MessageCircle } from "lucide-react";
+import { Mail, PhoneCall, MessageCircle } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { BrandLogo } from "@/components/ui/brand-logo";
 
@@ -53,31 +53,48 @@ export function Footer() {
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-slate-light">
               Premier global ed-tech academy connecting students worldwide with top international teachers across IB, IGCSE, SAT, and critical thinking curricula.
             </p>
-            <div className="mt-5 space-y-2 text-xs text-slate-light">
+            {/* Quick Contact Icon Action Bar - Hidden raw text, interactive icons with subtle animation */}
+            <div className="mt-6 flex items-center gap-3">
               <a
                 href="mailto:aevianacademy@gmail.com"
-                className="flex items-center gap-2 hover:text-white transition-colors"
+                title="Send Email (aevianacademy@gmail.com)"
+                aria-label="Email Aevian Academy"
+                className="group relative flex h-10 w-10 items-center justify-center rounded-full border border-gold/30 bg-navy-light/80 text-gold shadow-sm transition-all duration-300 hover:scale-110 hover:-translate-y-0.5 hover:border-gold hover:bg-gold/10 hover:shadow-gold/20"
               >
-                <Mail size={14} className="text-gold shrink-0" />
-                <span>aevianacademy@gmail.com</span>
+                <Mail size={18} className="transition-transform duration-300 group-hover:scale-110" />
+                <span className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-navy-dark px-2 py-0.5 text-[10px] font-medium text-cream opacity-0 shadow-md transition-opacity duration-200 group-hover:opacity-100 border border-slate-700">
+                  Email
+                </span>
               </a>
+
               <a
                 href="tel:+923704942300"
-                className="flex items-center gap-2 hover:text-white transition-colors"
+                title="Call Support (+92 370 4942300)"
+                aria-label="Call Aevian Academy Support"
+                className="group relative flex h-10 w-10 items-center justify-center rounded-full border border-gold/30 bg-navy-light/80 text-gold shadow-sm transition-all duration-300 hover:scale-110 hover:-translate-y-0.5 hover:border-gold hover:bg-gold/10 hover:shadow-gold/20"
               >
-                <Phone size={14} className="text-gold shrink-0" />
-                <span>03704942300 (PAK) / +92 370 4942300</span>
+                <PhoneCall size={18} className="transition-transform duration-300 group-hover:scale-110" />
+                <span className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-navy-dark px-2 py-0.5 text-[10px] font-medium text-cream opacity-0 shadow-md transition-opacity duration-200 group-hover:opacity-100 border border-slate-700">
+                  Call
+                </span>
               </a>
+
               <a
                 href="https://wa.me/923704942300"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 text-emerald-400 font-medium hover:underline transition-colors"
+                title="Chat on WhatsApp (+92 370 4942300)"
+                aria-label="Chat on WhatsApp"
+                className="group relative flex h-10 w-10 items-center justify-center rounded-full border border-emerald-500/40 bg-emerald-950/40 text-emerald-400 shadow-sm transition-all duration-300 hover:scale-110 hover:-translate-y-0.5 hover:border-emerald-400 hover:bg-emerald-500/20 hover:shadow-emerald-500/25"
               >
-                <MessageCircle size={14} className="shrink-0" />
-                <span>WhatsApp: 03704942300</span>
+                <span className="absolute inset-0 rounded-full bg-emerald-500/20 animate-ping opacity-25 group-hover:opacity-40" />
+                <MessageCircle size={18} className="relative z-10 transition-transform duration-300 group-hover:scale-110" />
+                <span className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-navy-dark px-2 py-0.5 text-[10px] font-medium text-emerald-300 opacity-0 shadow-md transition-opacity duration-200 group-hover:opacity-100 border border-emerald-800/50">
+                  WhatsApp
+                </span>
               </a>
             </div>
+
             <div className="mt-6 flex items-center gap-3 text-xs text-copper">
               <span className="h-2 w-2 rounded-full bg-copper animate-pulse" />
               <span className="font-semibold tracking-wide uppercase">The Learning Path Strategy</span>
