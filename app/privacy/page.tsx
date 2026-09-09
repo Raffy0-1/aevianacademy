@@ -35,6 +35,19 @@ export default function PrivacyPage() {
             <p>
               We do not share student profiles or live recording feeds with external third-party advertisers.
             </p>
+            <h2 className="font-display text-xl text-foreground pt-4">
+              3. Contact Us Regarding Your Privacy
+            </h2>
+            <p>
+              If you have any questions, concerns, or requests regarding your personal data or privacy preferences, please contact our support team at{" "}
+              <a href="mailto:aeivanacademy@gmail.com" className="text-gold font-medium hover:underline">
+                aeivanacademy@gmail.com
+              </a>{" "}
+              or via Phone / WhatsApp at{" "}
+              <a href="https://wa.me/923704942300" target="_blank" rel="noopener noreferrer" className="text-gold font-medium hover:underline">
+                +92 370 4942300 (03704942300)
+              </a>.
+            </p>
           </div>
         </Container>
       </main>

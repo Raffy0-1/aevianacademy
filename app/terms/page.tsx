@@ -31,6 +31,19 @@ export default function TermsPage() {
             <p>
               Students and teachers must treat all members of Aevian classrooms with respect. Disruptive, hostile, or harassing behavior during live sessions will result in immediate suspension without refund.
             </p>
+            <h2 className="font-display text-xl text-foreground pt-4">
+              3. Questions & Contact Information
+            </h2>
+            <p>
+              For questions regarding these Terms of Service or billing policies, please reach out to our team at{" "}
+              <a href="mailto:aeivanacademy@gmail.com" className="text-gold font-medium hover:underline">
+                aeivanacademy@gmail.com
+              </a>{" "}
+              or WhatsApp / Phone at{" "}
+              <a href="https://wa.me/923704942300" target="_blank" rel="noopener noreferrer" className="text-gold font-medium hover:underline">
+                +92 370 4942300 (03704942300)
+              </a>.
+            </p>
           </div>
         </Container>
       </main>

@@ -9,7 +9,7 @@ import { Footer } from "@/components/layout/footer";
 import { Container } from "@/components/ui/container";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Button } from "@/components/ui/button";
-import { Mail, Phone, MapPin, Loader2 } from "lucide-react";
+import { Mail, Phone, MapPin, Loader2, MessageCircle } from "lucide-react";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -35,7 +35,7 @@ export default function ContactPage() {
     setLoading(true);
     setSuccessMsg(null);
     try {
-      // TODO(stage-3): Store support ticket or trigger auto email campaigns.
+      // Store support ticket or trigger auto email campaigns.
       await new Promise((resolve) => setTimeout(resolve, 1000));
       setSuccessMsg("Thank you! Your message has been received. We will get back to you shortly.");
     } catch (err) {
@@ -54,23 +54,45 @@ export default function ContactPage() {
           <div className="space-y-8">
             <SectionHeading
               eyebrow="Contact Us"
-              title="Get in touch with Aevian"
-              description="Have questions about matching teachers, syllabus contents, trial bookings, or pricing tiers? Drop us a line and we will reply within 12 hours."
+              title="Get in touch with Aevian Academy"
+              description="Have questions about matching teachers, syllabus contents, trial bookings, or pricing tiers? Drop us a line or connect directly on WhatsApp."
             />
 
-            <div className="space-y-4 text-sm text-muted-foreground">
-              <div className="flex items-center gap-3">
-                <Mail className="text-gold h-5 w-5" />
-                <span>support@aevian.com</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Phone className="text-gold h-5 w-5" />
-                <span>+1 (800) 555-0199</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <MapPin className="text-gold h-5 w-5" />
-                <span>London, United Kingdom</span>
-              </div>
+            <div className="space-y-4 text-sm">
+              <a
+                href="mailto:aeivanacademy@gmail.com"
+                className="flex items-center gap-3 rounded-lg border border-border bg-card p-3 transition-colors hover:border-gold"
+              >
+                <Mail className="text-gold h-5 w-5 shrink-0" />
+                <div>
+                  <div className="text-xs text-muted-foreground">Official Email</div>
+                  <span className="font-semibold text-foreground">aeivanacademy@gmail.com</span>
+                </div>
+              </a>
+
+              <a
+                href="tel:+923704942300"
+                className="flex items-center gap-3 rounded-lg border border-border bg-card p-3 transition-colors hover:border-gold"
+              >
+                <Phone className="text-gold h-5 w-5 shrink-0" />
+                <div>
+                  <div className="text-xs text-muted-foreground">Direct Phone Contact (PAK)</div>
+                  <span className="font-semibold text-foreground">03704942300 (+92 370 4942300)</span>
+                </div>
+              </a>
+
+              <a
+                href="https://wa.me/923704942300"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3 text-emerald-600 transition-colors hover:bg-emerald-500/20 dark:text-emerald-400"
+              >
+                <MessageCircle className="h-5 w-5 shrink-0 text-emerald-500" />
+                <div>
+                  <div className="text-xs font-semibold uppercase tracking-wider">WhatsApp Contact</div>
+                  <div className="text-sm font-bold">03704942300 (Click to Chat)</div>
+                </div>
+              </a>
             </div>
           </div>
 

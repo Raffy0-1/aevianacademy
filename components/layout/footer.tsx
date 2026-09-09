@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Mail, Phone, MessageCircle } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { BrandLogo } from "@/components/ui/brand-logo";
 
@@ -52,6 +53,31 @@ export function Footer() {
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-slate-light">
               Premier global ed-tech academy connecting students worldwide with top international teachers across IB, IGCSE, SAT, and critical thinking curricula.
             </p>
+            <div className="mt-5 space-y-2 text-xs text-slate-light">
+              <a
+                href="mailto:aeivanacademy@gmail.com"
+                className="flex items-center gap-2 hover:text-white transition-colors"
+              >
+                <Mail size={14} className="text-gold shrink-0" />
+                <span>aeivanacademy@gmail.com</span>
+              </a>
+              <a
+                href="tel:+923704942300"
+                className="flex items-center gap-2 hover:text-white transition-colors"
+              >
+                <Phone size={14} className="text-gold shrink-0" />
+                <span>03704942300 (PAK) / +92 370 4942300</span>
+              </a>
+              <a
+                href="https://wa.me/923704942300"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-emerald-400 font-medium hover:underline transition-colors"
+              >
+                <MessageCircle size={14} className="shrink-0" />
+                <span>WhatsApp: 03704942300</span>
+              </a>
+            </div>
             <div className="mt-6 flex items-center gap-3 text-xs text-copper">
               <span className="h-2 w-2 rounded-full bg-copper animate-pulse" />
               <span className="font-semibold tracking-wide uppercase">The Learning Path Strategy</span>

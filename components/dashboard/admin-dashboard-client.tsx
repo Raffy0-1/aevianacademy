@@ -257,6 +257,11 @@ export function AdminDashboardClient({
       prev.map((t) => (t.id === ticketId ? { ...t, status: "RESOLVED" } : t))
     );
     setParentReplyText((prev) => ({ ...prev, [ticketId]: "" }));
+    if (channel === "whatsapp") {
+      window.open(`https://wa.me/923704942300?text=${encodeURIComponent(reply)}`, "_blank");
+    } else if (channel === "email") {
+      window.open(`mailto:aeivanacademy@gmail.com?subject=Aevian%20Academy%20Support%20Reply&body=${encodeURIComponent(reply)}`, "_blank");
+    }
     triggerNotification(`✓ Replied to parent via ${channel.toUpperCase()}: "${reply}"`);
   };
 

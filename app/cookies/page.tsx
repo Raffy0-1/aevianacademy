@@ -31,6 +31,19 @@ export default function CookiesPage() {
             <p>
               We store preferences such as chosen timezone, dashboard layouts, and course filters. These settings customize your experience so you don&apos;t have to reset them on every visit.
             </p>
+            <h2 className="font-display text-xl text-foreground pt-4">
+              3. Managing Preferences
+            </h2>
+            <p>
+              If you have any questions regarding cookies or session security, feel free to email us at{" "}
+              <a href="mailto:aeivanacademy@gmail.com" className="text-gold font-medium hover:underline">
+                aeivanacademy@gmail.com
+              </a>{" "}
+              or message us on WhatsApp at{" "}
+              <a href="https://wa.me/923704942300" target="_blank" rel="noopener noreferrer" className="text-gold font-medium hover:underline">
+                +92 370 4942300 (03704942300)
+              </a>.
+            </p>
           </div>
         </Container>
       </main>
