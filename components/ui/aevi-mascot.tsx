@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Sparkles, ArrowRight, MessageCircle } from "lucide-react";
+import { X, ArrowRight, MessageCircle } from "lucide-react";
 
 /**
  * "Aevi" the Intelligent Owl-Bot Guide

@@ -18,7 +18,6 @@ import {
   Clock,
   Globe,
   ArrowLeft,
-  Sparkles,
   BookOpen,
   Zap,
   UserCheck,
@@ -304,7 +303,7 @@ export function BookTrialWizard({ teachers }: Props) {
         <div className="mb-8 border-b border-slate-border/50 pb-6">
           <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-slate">
             <span className="flex items-center gap-1.5 text-copper">
-              <Sparkles className="h-4 w-4" /> Step {step} of 5
+              <span className="h-1.5 w-1.5 rounded-full bg-copper" /> Step {step} of 5
             </span>
             <span className="text-navy font-bold">
               {step === 1 && "1. Parent Contact"}

@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Pause, Volume2, VolumeX, Maximize2, X, Star, Sparkles, CheckCircle2 } from "lucide-react";
+import { Play, Pause, Volume2, VolumeX, Maximize2, X, Star, CheckCircle2 } from "lucide-react";
 import Image from "next/image";
 
 export function HeroVideoPreview() {
@@ -143,7 +143,7 @@ export function HeroVideoPreview() {
           {/* Bottom Card Summary Pill */}
           <div className="mt-2.5 flex items-center justify-between px-3 py-1.5 text-xs text-slate-light">
             <span className="flex items-center gap-1.5 text-copper font-semibold">
-              <Sparkles className="h-3.5 w-3.5" />
+              <span className="h-2 w-2 rounded-full bg-emerald-400" />
               <span>HD 1080p Studio Broadcast Quality</span>
             </span>
             <span className="text-white/80 font-medium">Click to watch full session demo &rarr;</span>

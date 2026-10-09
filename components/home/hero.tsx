@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Sparkles, CheckCircle2, TrendingUp, Award, Users, ArrowRight } from "lucide-react";
+import { Play, CheckCircle2, TrendingUp, Award, Users, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { HeroVideoPreview } from "@/components/home/hero-video-preview";
@@ -38,7 +38,7 @@ export function Hero() {
         >
           {/* Badge */}
           <div className="inline-flex items-center gap-2 self-start rounded-full border border-copper/30 bg-copper/10 px-3.5 py-1.5 text-xs font-semibold text-copper">
-            <Sparkles className="h-3.5 w-3.5 text-copper" />
+            <span className="h-1.5 w-1.5 rounded-full bg-copper" />
             <span>The Learning Path Strategy</span>
           </div>
 

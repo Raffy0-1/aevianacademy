@@ -4,7 +4,7 @@ import { Footer } from "@/components/layout/footer";
 import { Container } from "@/components/ui/container";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Button } from "@/components/ui/button";
-import { Heart, Sparkles, Smile } from "lucide-react";
+import { Heart, Gift, Smile } from "lucide-react";
 
 export default function ReferralPage() {
   return (
@@ -21,7 +21,7 @@ export default function ReferralPage() {
 
           <div className="grid gap-6 sm:grid-cols-2 text-left w-full">
             <div className="rounded-lg border border-border bg-card p-6 space-y-2">
-              <Sparkles size={20} className="text-gold" />
+              <Gift size={20} className="text-copper" />
               <h3 className="text-lg font-medium text-foreground">For your friends</h3>
               <p className="text-sm text-muted-foreground">
                 They will receive a $50 tuition credit towards their first course enrollment when they sign up.

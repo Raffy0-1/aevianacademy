@@ -106,6 +106,7 @@ export default function RootLayout({
         />
       </head>
       <body
+        suppressHydrationWarning
         className={`${display.variable} ${body.variable} ${mono.variable} font-body bg-background text-foreground min-h-screen flex flex-col antialiased relative overflow-x-hidden`}
       >
         <ToastProvider>

@@ -19,7 +19,6 @@ import {
   Calendar,
   Clock,
   Zap,
-  Sparkles,
   ArrowUpRight,
   CheckCircle2,
 } from "lucide-react";
@@ -183,7 +182,7 @@ export function StudentDashboardClient({
         <div className="relative z-10 flex flex-wrap items-center justify-between gap-6">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full bg-copper/20 px-3 py-1 text-xs font-semibold text-copper border border-copper/30 mb-3">
-              <Sparkles className="h-3.5 w-3.5" />
+              <span className="h-1.5 w-1.5 rounded-full bg-copper" />
               <span>Interactive Student Portal</span>
             </div>
             <h1 className="text-2xl font-extrabold text-white sm:text-3xl">Welcome Back, Learner!</h1>

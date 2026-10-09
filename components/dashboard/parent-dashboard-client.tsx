@@ -21,7 +21,6 @@ import {
   CheckCircle,
   XCircle,
   Loader2,
-  Sparkles,
   ShieldCheck,
   Send,
 } from "lucide-react";

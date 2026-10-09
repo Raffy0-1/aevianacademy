@@ -20,7 +20,6 @@ import {
   Download,
   Upload,
   BookOpen,
-  Sparkles,
   Award,
   UserCheck,
   FileText,
@@ -356,7 +355,7 @@ export function TeacherDashboardClient({
                   {/* Grading Form */}
                   <div className="rounded-xl bg-slate-50 p-4 border border-slate-border space-y-3">
                     <h4 className="text-xs font-bold text-navy flex items-center gap-1.5">
-                      <Sparkles className="h-3.5 w-3.5 text-copper" /> Grade & Feedback Form
+                      <FileText className="h-3.5 w-3.5 text-copper" /> Grade & Feedback Form
                     </h4>
                     <div className="grid gap-3 sm:grid-cols-3">
                       <div className="sm:col-span-1">
