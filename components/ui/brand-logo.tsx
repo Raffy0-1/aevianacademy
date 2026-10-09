@@ -23,9 +23,12 @@ export function BrandLogo({ className = "", iconOnly = false, size = "md" }: Bra
   return (
     <div className={`inline-flex items-center gap-2.5 select-none ${className}`}>
       {/* Brand Icon: Uploaded Aevian logo (1).svg without background */}
-      <img
+      <Image
         src="/aevian-logo.svg"
         alt="Aevian Academy Logo Icon"
+        width={size === "lg" ? 56 : size === "sm" ? 32 : 40}
+        height={size === "lg" ? 56 : size === "sm" ? 32 : 40}
+        priority
         className={`${iconSizes[size]} object-contain shrink-0`}
       />
 

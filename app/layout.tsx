@@ -25,12 +25,15 @@ const mono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://aevianacademy.com"),
+  alternates: {
+    canonical: "/",
+  },
   title: {
-    default: "Aevian Academy — Premium Modern Ed-Tech & Global Tutoring",
+    default: "Aevian Academy — Global Live Online Tutoring & Test Prep",
     template: "%s · Aevian Academy",
   },
   description:
-    "Aevian Academy is a premier live online academy connecting students worldwide with top international teachers across IB, IGCSE, SAT, AP, and critical thinking curricula.",
+    "Live 1-on-1 online tutoring for IB, Cambridge, SAT & competitive exams with certified international teachers. Book a free 40-minute demo class today.",
   keywords: [
     "Aevian Academy",
     "Online Tutoring",
@@ -41,7 +44,18 @@ export const metadata: Metadata = {
     "1-on-1 Tutoring",
     "Critical Thinking Education",
   ],
-  authors: [{ name: "Aevian Academy" }],
+  authors: [{ name: "Aevian Academy Faculty" }],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   openGraph: {
     title: "Aevian Academy — The Learning Path to Academic Excellence",
     description:
@@ -76,8 +90,6 @@ export const metadata: Metadata = {
   },
 };
 
-
-
 export default function RootLayout({
   children,
 }: {
@@ -91,6 +103,20 @@ export default function RootLayout({
     logo: "https://aevianacademy.com/icon.png",
     description:
       "Global ed-tech platform connecting students worldwide with expert live tutors for IB, IGCSE, SAT, AP, and critical thinking advancement.",
+    email: "aevianacademy@gmail.com",
+    telephone: "+92-370-4942300",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "London",
+      addressCountry: "GB",
+    },
+    contactPoint: {
+      "@type": "ContactPoint",
+      telephone: "+92-370-4942300",
+      contactType: "customer service",
+      email: "aevianacademy@gmail.com",
+      availableLanguage: ["English", "Urdu", "Arabic"],
+    },
     sameAs: [
       "https://instagram.com/aevianacademy",
       "https://linkedin.com/company/aevianacademy",
@@ -100,6 +126,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <head>
+        <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM Context" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -109,6 +136,13 @@ export default function RootLayout({
         suppressHydrationWarning
         className={`${display.variable} ${body.variable} ${mono.variable} font-body bg-background text-foreground min-h-screen flex flex-col antialiased relative overflow-x-hidden`}
       >
+        {/* Accessible Skip Navigation Link for Screen Readers and Keyboard Navigation */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-lg focus:bg-navy focus:px-4 focus:py-2.5 focus:text-white focus:shadow-2xl focus:outline-none focus:ring-2 focus:ring-copper font-semibold text-xs"
+        >
+          Skip to main content
+        </a>
         <ToastProvider>
           <AbstractBackground />
           <div className="relative z-10 flex-1 flex flex-col">{children}</div>

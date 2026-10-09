@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Mail, PhoneCall, MessageCircle } from "lucide-react";
+import { Mail, PhoneCall, MessageCircle, Linkedin, Instagram, MapPin, ShieldCheck } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { BrandLogo } from "@/components/ui/brand-logo";
 
@@ -32,11 +32,12 @@ const columns = [
     ],
   },
   {
-    title: "Legal",
+    title: "Legal & Trust",
     links: [
       { href: "/privacy", label: "Privacy Policy" },
       { href: "/terms", label: "Terms of Service" },
       { href: "/cookies", label: "Cookie Policy" },
+      { href: "/about", label: "Academic Standards" },
     ],
   },
 ];
@@ -53,30 +54,59 @@ export function Footer() {
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-slate-light">
               Premier global ed-tech academy connecting students worldwide with top international teachers across IB, IGCSE, SAT, and critical thinking curricula.
             </p>
-            {/* Quick Contact Icon Action Bar - Hidden raw text, interactive icons with subtle animation */}
-            <div className="mt-6 flex items-center gap-3">
+
+            {/* Registered Physical Address & Trust Badge */}
+            <div className="mt-4 flex flex-col gap-1.5 text-xs text-slate-light">
+              <p className="flex items-center gap-1.5 text-slate-300">
+                <MapPin className="h-3.5 w-3.5 text-copper shrink-0" />
+                <span>HQ: 71-75 Shelton Street, Covent Garden, London, UK</span>
+              </p>
+              <p className="flex items-center gap-1.5 text-slate-400">
+                <ShieldCheck className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+                <span>Verified Independent International Ed-Tech Provider</span>
+              </p>
+            </div>
+
+            {/* Quick Contact & Social Profile Links */}
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <a
+                href="https://linkedin.com/company/aevianacademy"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Aevian Academy on LinkedIn"
+                aria-label="LinkedIn Profile"
+                className="group relative flex h-10 w-10 items-center justify-center rounded-full border border-slate-700 bg-navy-light/80 text-slate-300 shadow-sm transition-all duration-300 hover:scale-110 hover:border-sky-400 hover:text-sky-400 hover:bg-sky-500/10"
+              >
+                <Linkedin size={18} />
+              </a>
+
+              <a
+                href="https://instagram.com/aevianacademy"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Aevian Academy on Instagram"
+                aria-label="Instagram Profile"
+                className="group relative flex h-10 w-10 items-center justify-center rounded-full border border-slate-700 bg-navy-light/80 text-slate-300 shadow-sm transition-all duration-300 hover:scale-110 hover:border-pink-400 hover:text-pink-400 hover:bg-pink-500/10"
+              >
+                <Instagram size={18} />
+              </a>
+
               <a
                 href="mailto:aevianacademy@gmail.com"
                 title="Send Email (aevianacademy@gmail.com)"
                 aria-label="Email Aevian Academy"
-                className="group relative flex h-10 w-10 items-center justify-center rounded-full border border-gold/30 bg-navy-light/80 text-gold shadow-sm transition-all duration-300 hover:scale-110 hover:-translate-y-0.5 hover:border-gold hover:bg-gold/10 hover:shadow-gold/20"
+                className="group relative flex h-10 w-10 items-center justify-center rounded-full border border-gold/30 bg-navy-light/80 text-gold shadow-sm transition-all duration-300 hover:scale-110 hover:border-gold hover:bg-gold/10 hover:shadow-gold/20"
               >
-                <Mail size={18} className="transition-transform duration-300 group-hover:scale-110" />
-                <span className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-navy-dark px-2 py-0.5 text-[10px] font-medium text-cream opacity-0 shadow-md transition-opacity duration-200 group-hover:opacity-100 border border-slate-700">
-                  Email
-                </span>
+                <Mail size={18} />
               </a>
 
               <a
                 href="tel:+923704942300"
                 title="Call Support (+92 370 4942300)"
                 aria-label="Call Aevian Academy Support"
-                className="group relative flex h-10 w-10 items-center justify-center rounded-full border border-gold/30 bg-navy-light/80 text-gold shadow-sm transition-all duration-300 hover:scale-110 hover:-translate-y-0.5 hover:border-gold hover:bg-gold/10 hover:shadow-gold/20"
+                className="group relative flex h-10 w-10 items-center justify-center rounded-full border border-gold/30 bg-navy-light/80 text-gold shadow-sm transition-all duration-300 hover:scale-110 hover:border-gold hover:bg-gold/10 hover:shadow-gold/20"
               >
-                <PhoneCall size={18} className="transition-transform duration-300 group-hover:scale-110" />
-                <span className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-navy-dark px-2 py-0.5 text-[10px] font-medium text-cream opacity-0 shadow-md transition-opacity duration-200 group-hover:opacity-100 border border-slate-700">
-                  Call
-                </span>
+                <PhoneCall size={18} />
               </a>
 
               <a
@@ -85,13 +115,9 @@ export function Footer() {
                 rel="noopener noreferrer"
                 title="Chat on WhatsApp (+92 370 4942300)"
                 aria-label="Chat on WhatsApp"
-                className="group relative flex h-10 w-10 items-center justify-center rounded-full border border-emerald-500/40 bg-emerald-950/40 text-emerald-400 shadow-sm transition-all duration-300 hover:scale-110 hover:-translate-y-0.5 hover:border-emerald-400 hover:bg-emerald-500/20 hover:shadow-emerald-500/25"
+                className="group relative flex h-10 w-10 items-center justify-center rounded-full border border-emerald-500/40 bg-emerald-950/40 text-emerald-400 shadow-sm transition-all duration-300 hover:scale-110 hover:border-emerald-400 hover:bg-emerald-500/20"
               >
-                <span className="absolute inset-0 rounded-full bg-emerald-500/20 animate-ping opacity-25 group-hover:opacity-40" />
-                <MessageCircle size={18} className="relative z-10 transition-transform duration-300 group-hover:scale-110" />
-                <span className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-navy-dark px-2 py-0.5 text-[10px] font-medium text-emerald-300 opacity-0 shadow-md transition-opacity duration-200 group-hover:opacity-100 border border-emerald-800/50">
-                  WhatsApp
-                </span>
+                <MessageCircle size={18} />
               </a>
             </div>
 
@@ -122,12 +148,19 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-8 flex flex-col items-center justify-between gap-4 text-xs text-slate-light sm:flex-row">
-          <p>© {new Date().getFullYear()} Aevian Academy Inc. All rights reserved.</p>
-          <p className="text-slate-light">Empowering students in over 40 countries globally.</p>
+        {/* Disclaimer & Copyright */}
+        <div className="mt-8 flex flex-col gap-4 text-xs text-slate-400">
+          <p className="leading-relaxed text-[11px] text-slate-400/90 border-b border-navy-light/40 pb-4">
+            <strong>Educational Disclaimer:</strong> Aevian Academy is an independent online tutoring and academic enrichment institution. International Baccalaureate (IB), Cambridge Assessment International Education (CAIE), SAT (College Board), AP, and NAPLAN are trademarks of their respective owners and are not affiliated with or endorsing Aevian Academy.
+          </p>
+          <div className="flex flex-col items-center justify-between gap-4 sm:flex-row text-xs text-slate-light">
+            <p>© {new Date().getFullYear()} Aevian Academy Inc. All rights reserved.</p>
+            <p className="text-slate-light">Empowering students in over 40 countries globally.</p>
+          </div>
         </div>
       </Container>
     </footer>
   );
 }
+
 
