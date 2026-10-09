@@ -97,16 +97,13 @@ export function AeviMascot() {
         onClick={() => setIsOpen(!isOpen)}
         onMouseEnter={() => setIsWaving(true)}
         onMouseLeave={() => setIsWaving(false)}
-        className="group relative flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-copper/50 bg-navy p-1 shadow-2xl transition-all hover:border-copper hover:shadow-copper/30 focus:outline-none"
+        className="group relative flex items-center justify-center bg-transparent border-0 p-0 focus:outline-none cursor-pointer filter drop-shadow-xl hover:drop-shadow-2xl transition-all"
         aria-label="Toggle Aevi Academic Guide"
       >
-        {/* Soft Ambient Glow */}
-        <span className="absolute -inset-1 rounded-2xl bg-copper/30 blur-md group-hover:bg-copper/50 transition-all" />
-
         {/* Studio-Grade Vector Owl-Bot ("Aevi") */}
         <svg
           viewBox="0 0 100 100"
-          className="relative h-14 w-14 drop-shadow-md"
+          className="relative h-16 w-16 transition-transform duration-300 group-hover:scale-105"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
