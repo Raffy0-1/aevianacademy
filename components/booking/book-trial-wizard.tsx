@@ -6,6 +6,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { PhoneInput } from "@/components/ui/phone-input";
+import { useToast } from "@/components/ui/toast";
+import { scrollToFirstError } from "@/lib/utils/form-errors";
 import { createBooking } from "@/lib/actions/bookings";
 import { BookingType, EnglishLevel } from "@prisma/client";
 import {
@@ -104,7 +107,19 @@ const wizardSchema = z.object({
   // Parent
   parentName: z.string().min(2, "Parent name must be at least 2 characters"),
   parentEmail: z.string().email("Please enter a valid parent email address"),
-  parentPhone: z.string().min(6, "Please enter a valid phone number"),
+  parentPhone: z
+    .string()
+    .min(1, "Phone number is required")
+    .refine(
+      (val) => {
+        const digits = val.replace(/[^0-9]/g, "");
+        return digits.length >= 7 && digits.length <= 15;
+      },
+      {
+        message:
+          "Please enter a valid phone number (at least 7 to 15 digits including country code).",
+      }
+    ),
 
   // Student
   studentName: z.string().min(2, "Student name must be at least 2 characters"),
@@ -143,6 +158,7 @@ export function BookTrialWizard({ teachers }: Props) {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successBooking, setSuccessBooking] = useState<any>(null);
+  const toast = useToast();
 
   const detectedTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
 
@@ -207,6 +223,9 @@ export function BookTrialWizard({ teachers }: Props) {
     const isValid = await trigger(fieldsToValidate);
     if (isValid) {
       setStep((prev) => prev + 1);
+    } else {
+      scrollToFirstError(errors);
+      toast.error("Please complete the required fields with valid details.");
     }
   };
 
@@ -248,7 +267,9 @@ export function BookTrialWizard({ teachers }: Props) {
 
       if (res.error) {
         setErrorMsg(res.error);
+        toast.error(res.error);
       } else {
+        toast.success("Demo class requested successfully!");
         const selectedSubProg = selectedCategoryObj?.courses.find((c) => c.id === data.subProgramId);
         setSuccessBooking({
           date: scheduledTime.toLocaleDateString(undefined, {
@@ -268,7 +289,9 @@ export function BookTrialWizard({ teachers }: Props) {
         setStep(6);
       }
     } catch (err) {
-      setErrorMsg("An error occurred while creating your trial booking. Please try again.");
+      const msg = "An error occurred while creating your trial booking. Please try again.";
+      setErrorMsg(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -307,7 +330,7 @@ export function BookTrialWizard({ teachers }: Props) {
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit, (formErrors) => { scrollToFirstError(formErrors); toast.error("Please fill in the required fields correctly."); })}>
         {/* STEP 1: Parent Contact */}
         {step === 1 && (
           <div className="space-y-5">
@@ -343,13 +366,11 @@ export function BookTrialWizard({ teachers }: Props) {
 
               <div>
                 <label className="block text-sm font-bold text-navy mb-1">Phone Number (with Country Code)</label>
-                <input
-                  type="tel"
-                  {...register("parentPhone")}
-                  placeholder="+44 7911 123456"
-                  className="w-full rounded-xl border border-slate-border bg-cream/30 px-4 py-3 text-sm text-navy font-medium focus:border-copper focus:bg-white focus:outline-none transition-all"
+                <PhoneInput
+                  value={watch("parentPhone")}
+                  onChange={(val) => setValue("parentPhone", val, { shouldValidate: true })}
+                  error={errors.parentPhone?.message}
                 />
-                {errors.parentPhone && <p className="mt-1 text-xs text-red-600">{errors.parentPhone.message}</p>}
               </div>
             </div>
           </div>
@@ -711,21 +732,21 @@ export function BookTrialWizard({ teachers }: Props) {
 
         {/* Action Buttons */}
         {step < 6 && (
-          <div className="mt-8 flex justify-between border-t border-slate-border/50 pt-6">
+          <div className="mt-8 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 border-t border-slate-border/50 pt-6">
             {step > 1 ? (
-              <Button type="button" variant="outline" onClick={prevStep} className="gap-2">
+              <Button type="button" variant="outline" onClick={prevStep} className="w-full sm:w-auto justify-center gap-2">
                 <ArrowLeft size={16} /> Back
               </Button>
             ) : (
-              <div />
+              <div className="hidden sm:block" />
             )}
 
             {step < 5 ? (
-              <Button type="button" variant="copper" onClick={nextStep} className="gap-2">
+              <Button type="button" variant="copper" onClick={nextStep} className="w-full sm:w-auto justify-center gap-2">
                 Continue
               </Button>
             ) : (
-              <Button type="submit" variant="copper" isLoading={loading} className="gap-2">
+              <Button type="submit" variant="copper" isLoading={loading} className="w-full sm:w-auto justify-center gap-2">
                 Confirm 40-Min Demo Trial
               </Button>
             )}

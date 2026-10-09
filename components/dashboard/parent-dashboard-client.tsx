@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { PhoneInput, validatePhoneNumber } from "@/components/ui/phone-input";
+import { useToast } from "@/components/ui/toast";
 import { updateProfile, updateParentProfile } from "@/lib/actions/profiles";
 import { updateBookingStatus } from "@/lib/actions/bookings";
 import { BookingStatus } from "@prisma/client";
@@ -80,9 +82,18 @@ export function ParentDashboardClient({
   const [parentCountry, setParentCountry] = useState(parentUser.parentProfile?.country || "");
   const [updatingProfile, setUpdatingProfile] = useState(false);
   const [profileMsg, setProfileMsg] = useState<string | null>(null);
+  const toast = useToast();
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (parentPhone.trim()) {
+      const check = validatePhoneNumber(parentPhone);
+      if (!check.isValid) {
+        toast.error(check.error || "Please enter a valid phone number (7-15 digits).");
+        return;
+      }
+    }
+
     setUpdatingProfile(true);
     setProfileMsg(null);
     try {
@@ -98,9 +109,13 @@ export function ParentDashboardClient({
           country: parentCountry,
         });
       }
-      setProfileMsg("Profile updated successfully!");
-    } catch (err) {
-      setProfileMsg("Failed to update profile details.");
+      const success = "Profile updated successfully!";
+      setProfileMsg(success);
+      toast.success(success);
+    } catch (err: any) {
+      const errText = "Failed to update profile details. Please try again.";
+      setProfileMsg(errText);
+      toast.error(errText);
     } finally {
       setUpdatingProfile(false);
     }
@@ -354,12 +369,10 @@ export function ParentDashboardClient({
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-navy mb-1">Phone Number</label>
-              <input
-                type="tel"
+              <label className="block text-xs font-bold text-navy mb-1">Phone Number (with Country Code)</label>
+              <PhoneInput
                 value={parentPhone}
-                onChange={(e) => setParentPhone(e.target.value)}
-                className="w-full rounded-xl border border-slate-border p-3 text-xs text-navy font-medium focus:border-copper focus:outline-none"
+                onChange={(val) => setParentPhone(val)}
               />
             </div>
             <div>

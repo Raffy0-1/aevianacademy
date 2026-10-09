@@ -63,13 +63,13 @@ export function PricingPreview() {
             className="mx-auto"
           />
         </ScrollReveal>
-        <div className="mt-14 grid gap-8 lg:grid-cols-3">
+        <div className="mt-14 grid gap-8 lg:grid-cols-3 items-stretch">
           <ScrollRevealStagger>
             {plans.map((plan) => (
               <div
                 key={plan.name}
                 className={cn(
-                  "flex flex-col rounded-2xl p-8 transition-all duration-300 hover:-translate-y-1.5 shadow-lg",
+                  "flex flex-col justify-between h-full rounded-2xl p-8 transition-all duration-300 hover:-translate-y-1.5 shadow-lg",
                   plan.highlighted
                     ? "bg-navy text-white border-2 border-copper relative copper-glow"
                     : "bg-white text-navy border border-slate-border hover:border-copper/40"

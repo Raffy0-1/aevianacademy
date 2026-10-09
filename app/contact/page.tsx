@@ -11,6 +11,9 @@ import { SectionHeading } from "@/components/ui/section-heading";
 import { Button } from "@/components/ui/button";
 import { Mail, Phone, MapPin, Loader2, MessageCircle } from "lucide-react";
 
+import { useToast } from "@/components/ui/toast";
+import { scrollToFirstError } from "@/lib/utils/form-errors";
+
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
@@ -22,6 +25,7 @@ type ContactFields = z.infer<typeof contactSchema>;
 export default function ContactPage() {
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const toast = useToast();
 
   const {
     register,
@@ -35,14 +39,20 @@ export default function ContactPage() {
     setLoading(true);
     setSuccessMsg(null);
     try {
-      // Store support ticket or trigger auto email campaigns.
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setSuccessMsg("Thank you! Your message has been received. We will get back to you shortly.");
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      const msg = "Thank you! Your message has been received. We will get back to you shortly.";
+      setSuccessMsg(msg);
+      toast.success(msg);
     } catch (err) {
-      // Ignored
+      toast.error("Failed to send message. Please try again.");
     } finally {
       setLoading(false);
     }
+  };
+
+  const onError = (formErrors: any) => {
+    scrollToFirstError(formErrors);
+    toast.error("Please provide your name, valid email, and a message.");
   };
 
   return (
@@ -98,7 +108,7 @@ export default function ContactPage() {
 
           {/* Form Side */}
           <div className="rounded-lg border border-border bg-card p-8 shadow-sm">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-4">
               {successMsg && (
                 <div className="rounded-md bg-success/10 p-3 text-sm text-success border border-success/20 font-medium">
                   {successMsg}

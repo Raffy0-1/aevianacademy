@@ -6,8 +6,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { AuthCard } from "@/components/auth/auth-card";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { PasswordInput } from "@/components/ui/password-input";
+import { useToast } from "@/components/ui/toast";
+import { scrollToFirstError } from "@/lib/utils/form-errors";
 import { useRouter } from "next/navigation";
+import { CheckCircle2, AlertCircle } from "lucide-react";
 
 const resetPasswordSchema = z
   .object({
@@ -24,6 +27,8 @@ type ResetFields = z.infer<typeof resetPasswordSchema>;
 export default function ResetPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const toast = useToast();
   const router = useRouter();
 
   const {
@@ -37,71 +42,87 @@ export default function ResetPasswordPage() {
   const onSubmit = async (data: ResetFields) => {
     setLoading(true);
     setSuccessMsg(null);
+    setErrorMsg(null);
     try {
-      // TODO(stage-3): Wire to real Supabase session reset confirmation.
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      setSuccessMsg(
-        "Password has been reset successfully! Redirecting you to login..."
-      );
+      const msg = "Password has been reset successfully! Redirecting you to login...";
+      setSuccessMsg(msg);
+      toast.success(msg);
       setTimeout(() => {
         router.push("/login");
-      }, 2000);
-    } catch (err) {
-      // Ignored for Stage 1/2
+      }, 1800);
+    } catch (err: any) {
+      const msg = "Failed to update password. Please try again.";
+      setErrorMsg(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
+  };
+
+  const onError = (formErrors: any) => {
+    scrollToFirstError(formErrors);
+    toast.error("Please ensure your passwords match and are at least 8 characters.");
   };
 
   return (
     <AuthCard
       title="Create new password"
       subtitle="Enter a new, strong password to secure your account."
+      footerText="Remembered your password?"
+      footerLinkText="Sign in"
+      footerLinkHref="/login"
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-4">
         {successMsg && (
-          <div className="rounded-md bg-success/10 p-3 text-sm text-success border border-success/20 font-medium">
-            {successMsg}
+          <div className="rounded-xl bg-emerald-500/10 p-3.5 text-xs text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 font-medium flex items-center gap-2.5">
+            <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
+            <span>{successMsg}</span>
+          </div>
+        )}
+
+        {errorMsg && (
+          <div className="rounded-xl bg-rose-500/10 p-3.5 text-xs text-rose-700 dark:text-rose-400 border border-rose-500/20 font-medium flex items-center gap-2.5">
+            <AlertCircle className="h-4 w-4 shrink-0 text-rose-600" />
+            <span>{errorMsg}</span>
           </div>
         )}
 
         <div>
           <label
             htmlFor="password"
-            className="block text-sm font-medium text-foreground"
+            className="block text-xs font-bold uppercase tracking-wider text-navy dark:text-cream mb-1"
           >
             New password
           </label>
-          <input
+          <PasswordInput
             id="password"
-            type="password"
             disabled={loading}
             {...register("password")}
             placeholder="••••••••"
-            className="mt-1 block w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-meridian focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50"
+            error={!!errors.password}
           />
           {errors.password && (
-            <p className="mt-1 text-xs text-danger">{errors.password.message}</p>
+            <p className="mt-1 text-xs text-rose-600 font-medium">{errors.password.message}</p>
           )}
         </div>
 
         <div>
           <label
             htmlFor="confirmPassword"
-            className="block text-sm font-medium text-foreground"
+            className="block text-xs font-bold uppercase tracking-wider text-navy dark:text-cream mb-1"
           >
             Confirm new password
           </label>
-          <input
+          <PasswordInput
             id="confirmPassword"
-            type="password"
             disabled={loading}
             {...register("confirmPassword")}
             placeholder="••••••••"
-            className="mt-1 block w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-meridian focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50"
+            error={!!errors.confirmPassword}
           />
           {errors.confirmPassword && (
-            <p className="mt-1 text-xs text-danger">
+            <p className="mt-1 text-xs text-rose-600 font-medium">
               {errors.confirmPassword.message}
             </p>
           )}
@@ -109,18 +130,11 @@ export default function ResetPasswordPage() {
 
         <Button
           type="submit"
-          variant="primary"
-          disabled={loading}
-          className="w-full"
+          variant="copper"
+          isLoading={loading}
+          className="w-full mt-2 h-11 shadow-sm font-semibold text-sm"
         >
-          {loading ? (
-            <>
-              <Loader2 size={16} className="animate-spin" />
-              Resetting password...
-            </>
-          ) : (
-            "Reset password"
-          )}
+          Reset Password
         </Button>
       </form>
     </AuthCard>

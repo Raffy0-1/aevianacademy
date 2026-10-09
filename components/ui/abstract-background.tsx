@@ -3,50 +3,47 @@
 import React from "react";
 
 /**
- * High-visibility abstract architectural background overlay.
- * Renders radiant ambient glowing mesh spheres, a crisp architectural grid pattern,
- * and particle rings that create visual depth across all website pages and portals.
+ * Premium, calm architectural background.
+ * Uses soft ambient gradient lighting and a high-precision subtle grid.
+ * Floating constellation nodes removed per user request for a cleaner, high-end editorial aesthetic.
  */
 export function AbstractBackground() {
   return (
-    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden select-none">
-      {/* Radiant Ambient Gradient Mesh Orbs */}
-      <div className="absolute -top-32 -left-32 h-[650px] w-[650px] rounded-full bg-gradient-to-br from-copper/40 via-amber-500/25 to-transparent blur-[90px] animate-pulse" />
-      <div className="absolute top-1/4 -right-32 h-[750px] w-[750px] rounded-full bg-gradient-to-bl from-navy/35 via-indigo-900/25 to-transparent blur-[100px]" />
-      <div className="absolute bottom-10 left-1/3 h-[650px] w-[650px] rounded-full bg-gradient-to-tr from-emerald-500/30 via-teal-600/25 to-transparent blur-[95px]" />
-      <div className="absolute -bottom-20 right-1/4 h-[550px] w-[550px] rounded-full bg-gradient-to-t from-copper/30 via-rose-500/20 to-transparent blur-[85px]" />
+    <div
+      className="pointer-events-none fixed inset-0 z-0 overflow-hidden select-none"
+      aria-hidden="true"
+    >
+      {/* Studio Ambient Gradient Lighting Orbs */}
+      <div className="absolute -top-40 -left-40 h-[750px] w-[750px] rounded-full bg-gradient-to-br from-copper/15 via-amber-400/10 to-transparent blur-[140px] animate-float-slow" />
+      <div className="absolute top-1/4 -right-40 h-[800px] w-[800px] rounded-full bg-gradient-to-bl from-navy/20 via-slate-600/10 to-transparent blur-[150px] animate-float-reverse" />
+      <div className="absolute -bottom-32 left-1/4 h-[700px] w-[700px] rounded-full bg-gradient-to-tr from-copper/15 via-rose-400/5 to-transparent blur-[130px] animate-float-slow" />
+      <div className="absolute top-2/3 right-1/4 h-[600px] w-[600px] rounded-full bg-gradient-to-t from-emerald-500/10 via-teal-700/5 to-transparent blur-[140px] animate-float-reverse" />
 
-      {/* Architectural High-Contrast Line Grid & Dot Matrix Overlay */}
+      {/* Elegant High-Precision Architectural Grid Overlay */}
       <svg
-        className="absolute inset-0 h-full w-full opacity-65"
+        className="absolute inset-0 h-full w-full opacity-25"
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
           <pattern
-            id="abstract-grid-pattern"
-            width="60"
-            height="60"
+            id="fluid-architectural-grid"
+            width="80"
+            height="80"
             patternUnits="userSpaceOnUse"
           >
             <path
-              d="M 60 0 L 0 0 0 60"
+              d="M 80 0 L 0 0 0 80"
               fill="none"
               stroke="#1C2A38"
-              strokeWidth="1.2"
-              opacity="0.25"
+              strokeWidth="0.8"
+              opacity="0.12"
             />
-            <circle cx="60" cy="60" r="3" fill="#C86D51" opacity="0.65" />
-            <circle cx="0" cy="0" r="1.5" fill="#1C2A38" opacity="0.3" />
+            <circle cx="80" cy="80" r="1.5" fill="#C86D51" opacity="0.4" />
+            <circle cx="0" cy="0" r="1" fill="#1C2A38" opacity="0.2" />
           </pattern>
         </defs>
-        <rect width="100%" height="100%" fill="url(#abstract-grid-pattern)" />
+        <rect width="100%" height="100%" fill="url(#fluid-architectural-grid)" />
       </svg>
-
-      {/* Floating Animated Geometric Particle Rings */}
-      <div className="absolute top-1/6 left-12 h-80 w-80 rounded-full border-2 border-dashed border-copper/30 animate-spin-slow" />
-      <div className="absolute top-2/3 right-16 h-[400px] w-[400px] rounded-full border border-navy/30 animate-pulse" />
-      <div className="absolute bottom-1/5 left-1/4 h-56 w-56 rounded-full border border-copper/25" />
     </div>
   );
 }
-

@@ -79,20 +79,97 @@
   }
 
   .glass-card {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(229, 220, 208, 0.6);
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(229, 220, 208, 0.7);
   }
 
   .dark .glass-card {
-    background: rgba(28, 42, 56, 0.85);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(42, 60, 78, 0.6);
+    background: rgba(28, 42, 56, 0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(42, 60, 78, 0.7);
   }
 
   .copper-glow {
     box-shadow: 0 10px 30px -5px rgba(200, 109, 81, 0.25);
   }
+
+  .copper-glow-lg {
+    box-shadow: 0 20px 40px -10px rgba(200, 109, 81, 0.35);
+  }
+
+  /* Anti-Slop High-End Interactive Card */
+  .aevian-card {
+    position: relative;
+    background: #ffffff;
+    border: 1px solid #E2D9CD;
+    border-radius: 1rem;
+    transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .aevian-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(200, 109, 81, 0.5);
+    box-shadow: 0 16px 36px -12px rgba(28, 42, 56, 0.12), 0 0 0 1px rgba(200, 109, 81, 0.15);
+  }
+
+  .dark .aevian-card {
+    background: #1C2A38;
+    border-color: #2A3C4E;
+  }
+
+  .dark .aevian-card:hover {
+    border-color: rgba(200, 109, 81, 0.6);
+    box-shadow: 0 16px 36px -12px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(200, 109, 81, 0.3);
+  }
+}
+
+/* Fluid Organic Animations */
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(25px, -30px) scale(1.04);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.96);
+  }
+}
+
+@keyframes floatReverse {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(-30px, 25px) scale(1.05);
+  }
+  66% {
+    transform: translate(25px, -20px) scale(0.95);
+  }
+}
+
+@keyframes meshPulse {
+  0%, 100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.75;
+  }
+}
+
+.animate-float-slow {
+  animation: floatSlow 18s ease-in-out infinite;
+}
+
+.animate-float-reverse {
+  animation: floatReverse 22s ease-in-out infinite;
+}
+
+.animate-mesh-pulse {
+  animation: meshPulse 10s ease-in-out infinite;
 }
 
 /* Loading Bar Animation */

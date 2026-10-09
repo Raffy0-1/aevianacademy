@@ -1,4 +1,4 @@
-import React from "react";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
@@ -6,7 +6,7 @@ import { Container } from "@/components/ui/container";
 import { Badge } from "@/components/ui/badge";
 import { programs, Course } from "@/lib/data/programs";
 import { ProgramPricing } from "@/components/programs/program-pricing";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, ArrowLeft } from "lucide-react";
 
 export const dynamic = "force-static";
 
@@ -48,7 +48,16 @@ export default async function ProgramDetailPage({ params }: PageProps) {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-background py-16">
+      <main className="min-h-screen bg-background py-12">
+        <Container className="mb-6">
+          <Link
+            href="/programs"
+            className="group inline-flex items-center gap-2 rounded-xl border border-slate-border bg-white px-4 py-2 text-xs font-semibold text-navy transition-all duration-200 hover:-translate-x-1 hover:border-copper hover:text-copper hover:shadow-sm dark:bg-navy dark:border-navy-light dark:text-cream dark:hover:text-copper"
+          >
+            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+            <span>Back to All Programs</span>
+          </Link>
+        </Container>
         <Container className="grid gap-10 lg:grid-cols-3">
           {/* Main Course Info (Left 2 columns) */}
           <div className="space-y-8 lg:col-span-2">

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/toast";
 import { submitHomework } from "@/lib/actions/homework";
 import {
   BookOpen,
@@ -133,6 +134,8 @@ export function StudentDashboardClient({
     },
   ];
 
+  const toast = useToast();
+
   const handleHomeworkSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!homeworkText.trim()) return;
@@ -147,9 +150,11 @@ export function StudentDashboardClient({
       });
 
       if (res?.error) {
-        alert(res.error);
+        toast.error(res.error);
       } else {
-        setHwSuccess("✓ Homework successfully submitted to your tutor!");
+        const msg = "Homework successfully submitted to your tutor!";
+        setHwSuccess(`✓ ${msg}`);
+        toast.success(msg);
         setHomeworkList((prev) => [
           {
             id: `hw-${Date.now()}`,
@@ -164,7 +169,7 @@ export function StudentDashboardClient({
         setHomeworkText("");
       }
     } catch (err: any) {
-      alert("Failed to submit homework.");
+      toast.error("Failed to submit homework. Please try again.");
     } finally {
       setSubmittingHw(false);
     }

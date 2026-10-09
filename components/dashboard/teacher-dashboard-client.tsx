@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/toast";
 import { updateBookingStatus } from "@/lib/actions/bookings";
 import { BookingStatus } from "@prisma/client";
 import {
@@ -112,6 +113,8 @@ export function TeacherDashboardClient({
   const [uploadingPdf, setUploadingPdf] = useState(false);
   const [uploadSuccessMsg, setUploadSuccessMsg] = useState<string | null>(null);
 
+  const toast = useToast();
+
   const handleMarkStatus = async (bookingId: string, status: BookingStatus) => {
     try {
       await updateBookingStatus({
@@ -122,8 +125,9 @@ export function TeacherDashboardClient({
       setBookings((prev) =>
         prev.map((b) => (b.id === bookingId ? { ...b, status } : b))
       );
-    } catch (err) {
-      alert("Failed to update status.");
+      toast.success(`Session status updated to ${status}.`);
+    } catch (err: any) {
+      toast.error("Failed to update status. Please try again.");
     }
   };
 
@@ -140,19 +144,21 @@ export function TeacherDashboardClient({
       });
 
       if (res?.error) {
-        alert(res.error);
+        toast.error(res.error);
       } else {
         setSubmissions((prev) =>
           prev.map((s) =>
             s.id === submissionId ? { ...s, grade: gradeInput, feedback: feedbackInput } : s
           )
         );
-        setGradingSuccess("✓ Student grade & feedback published successfully!");
+        const msg = "Student grade & feedback published successfully!";
+        setGradingSuccess(`✓ ${msg}`);
+        toast.success(msg);
         setGradeInput("");
         setFeedbackInput("");
       }
     } catch (err: any) {
-      alert("Failed to record grade.");
+      toast.error("Failed to record grade.");
     } finally {
       setGradingId(null);
     }

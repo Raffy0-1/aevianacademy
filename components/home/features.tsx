@@ -41,20 +41,25 @@ export function Features() {
             description="Most platforms scale by replacing teachers with pre-recorded videos. Aevian empowers master educators with small classes, better tools, and compounding learning paths."
           />
         </ScrollReveal>
-        <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4 items-stretch">
           <ScrollRevealStagger>
             {features.map((feature) => (
               <div
                 key={feature.title}
-                className="group rounded-2xl border border-slate-border bg-white p-7 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:border-copper/40"
+                className="group aevian-card h-full flex flex-col justify-between p-7 shadow-xs hover:shadow-xl transition-all duration-300"
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-copper/10 text-copper transition-colors group-hover:bg-copper group-hover:text-white">
-                  <feature.icon size={22} strokeWidth={1.8} />
+                <div>
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-copper/10 text-copper transition-all duration-300 group-hover:bg-copper group-hover:text-white group-hover:scale-105">
+                    <feature.icon size={22} strokeWidth={1.8} />
+                  </div>
+                  <h3 className="mt-5 text-lg font-bold text-navy tracking-tight">{feature.title}</h3>
+                  <p className="mt-2.5 text-sm leading-relaxed text-slate">
+                    {feature.description}
+                  </p>
                 </div>
-                <h3 className="mt-5 text-lg font-bold text-navy tracking-tight">{feature.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate">
-                  {feature.description}
-                </p>
+                <div className="mt-6 pt-4 border-t border-slate-border/40 flex items-center text-xs font-semibold text-copper group-hover:translate-x-1 transition-transform">
+                  <span>Explore Advantage &rarr;</span>
+                </div>
               </div>
             ))}
           </ScrollRevealStagger>

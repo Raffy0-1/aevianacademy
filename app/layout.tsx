@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { AbstractBackground } from "@/components/ui/abstract-background";
+import { ToastProvider } from "@/components/ui/toast";
+import { AeviMascot } from "@/components/ui/aevi-mascot";
 
 const display = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -106,8 +108,11 @@ export default function RootLayout({
       <body
         className={`${display.variable} ${body.variable} ${mono.variable} font-body bg-background text-foreground min-h-screen flex flex-col antialiased relative overflow-x-hidden`}
       >
-        <AbstractBackground />
-        <div className="relative z-10 flex-1 flex flex-col">{children}</div>
+        <ToastProvider>
+          <AbstractBackground />
+          <div className="relative z-10 flex-1 flex flex-col">{children}</div>
+          <AeviMascot />
+        </ToastProvider>
       </body>
     </html>
   );

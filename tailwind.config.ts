@@ -31,6 +31,26 @@ const config: Config = {
           hover: "#B65B40",
           light: "#F5EAE6",
         },
+        meridian: {
+          DEFAULT: "#C86D51",
+          hover: "#B65B40",
+          light: "#F5EAE6",
+        },
+        gold: {
+          DEFAULT: "#D97706",
+          hover: "#B45309",
+          light: "#FEF3C7",
+        },
+        danger: {
+          DEFAULT: "#E11D48",
+          hover: "#BE123C",
+          light: "#FFE4E6",
+        },
+        success: {
+          DEFAULT: "#059669",
+          hover: "#047857",
+          light: "#D1FAE5",
+        },
         cream: {
           DEFAULT: "#FAF7F2",
           card: "#FFFFFF",

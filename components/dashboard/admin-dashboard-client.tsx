@@ -4,6 +4,7 @@ import React, { useState, useTransition } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/toast";
 import {
   TrendingUp,
   Users,
@@ -185,9 +186,12 @@ export function AdminDashboardClient({
     maxUses: "",
   });
 
+  const toast = useToast();
+
   // Handlers
   const triggerNotification = (msg: string) => {
     setNotificationMsg(msg);
+    toast.success(msg);
     setTimeout(() => setNotificationMsg(null), 5000);
   };
 
