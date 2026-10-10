@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils";
 const links = [
   { href: "/programs", label: "Programs" },
   { href: "/teachers", label: "Teachers" },
-  { href: "/parents", label: "For Parents" },
+  { href: "/parents", label: "Parents" },
   { href: "/countries", label: "Countries" },
   { href: "/pricing", label: "Pricing" },
 ];
@@ -86,7 +86,7 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/80 bg-background/90 backdrop-blur-md transition-all">
-      <Container className="flex h-20 items-center justify-between">
+      <Container className="flex h-16 items-center justify-between">
         <Link href="/" aria-label="Aevian Academy Home">
           <BrandLogo size="md" />
         </Link>

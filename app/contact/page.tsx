@@ -22,14 +22,18 @@ const contactSchema = z.object({
 
 type ContactFields = z.infer<typeof contactSchema>;
 
+import { createContactTicket } from "@/lib/actions/support";
+
 export default function ContactPage() {
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [ticketId, setTicketId] = useState<string | null>(null);
   const toast = useToast();
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<ContactFields>({
     resolver: zodResolver(contactSchema),
@@ -39,10 +43,22 @@ export default function ContactPage() {
     setLoading(true);
     setSuccessMsg(null);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      const msg = "Thank you! Your message has been received. We will get back to you shortly.";
-      setSuccessMsg(msg);
-      toast.success(msg);
+      const res = await createContactTicket({
+        name: data.name,
+        email: data.email,
+        message: data.message,
+        subject: "General Contact & Inquiry",
+      });
+
+      if (res.error) {
+        toast.error(res.error);
+      } else {
+        const msg = "Thank you! Your ticket and inquiry have been received. Our administrative team will get back to you shortly.";
+        setSuccessMsg(msg);
+        setTicketId(res.ticketId || null);
+        toast.success("Support ticket registered successfully!");
+        reset();
+      }
     } catch (err) {
       toast.error("Failed to send message. Please try again.");
     } finally {
@@ -86,8 +102,8 @@ export default function ContactPage() {
               >
                 <Phone className="text-gold h-5 w-5 shrink-0" />
                 <div>
-                  <div className="text-xs text-muted-foreground">Direct Phone Contact (PAK)</div>
-                  <span className="font-semibold text-foreground">03704942300 (+92 370 4942300)</span>
+                  <div className="text-xs text-muted-foreground">Phone</div>
+                  <span className="font-semibold text-foreground">+92 370 4942300</span>
                 </div>
               </a>
 
@@ -95,12 +111,12 @@ export default function ContactPage() {
                 href="https://wa.me/923704942300"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3 text-emerald-600 transition-colors hover:bg-emerald-500/20 dark:text-emerald-400"
+                className="flex items-center gap-3 rounded-lg border border-border bg-card p-3 transition-colors hover:border-gold"
               >
-                <MessageCircle className="h-5 w-5 shrink-0 text-emerald-500" />
+                <MessageCircle className="text-gold h-5 w-5 shrink-0" />
                 <div>
-                  <div className="text-xs font-semibold uppercase tracking-wider">WhatsApp Contact</div>
-                  <div className="text-sm font-bold">03704942300 (Click to Chat)</div>
+                  <div className="text-xs text-muted-foreground">WhatsApp</div>
+                  <span className="font-semibold text-foreground">+92 370 4942300</span>
                 </div>
               </a>
             </div>
@@ -110,8 +126,13 @@ export default function ContactPage() {
           <div className="rounded-lg border border-border bg-card p-8 shadow-sm">
             <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-4">
               {successMsg && (
-                <div className="rounded-md bg-success/10 p-3 text-sm text-success border border-success/20 font-medium">
-                  {successMsg}
+                <div className="rounded-lg bg-emerald-500/10 p-4 text-sm text-emerald-800 dark:text-emerald-300 border border-emerald-500/30 space-y-1">
+                  <p className="font-semibold">{successMsg}</p>
+                  {ticketId && (
+                    <p className="text-xs text-muted-foreground font-mono">
+                      Tracking Reference ID: <span className="font-bold text-foreground">{ticketId}</span>
+                    </p>
+                  )}
                 </div>
               )}
 

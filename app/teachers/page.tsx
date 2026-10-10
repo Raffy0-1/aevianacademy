@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Award, Calendar, Star, CheckCircle2, Video } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { TeacherCard, TeacherData } from "@/components/teachers/teacher-card";
 
 export const dynamic = "force-dynamic";
 
@@ -125,95 +126,23 @@ export default async function TeachersPage() {
             description="Our teachers hold advanced degrees from Oxford, Imperial, and Stanford. Every instructor passes stringent background checks, pedagogical assessments, and live classroom audits."
           />
 
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {teachers.map((t: any) => (
-              <div
-                key={t.id}
-                className="group aevian-card flex flex-col justify-between overflow-hidden p-0 shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
-              >
-                <div>
-                  {/* Photo Header with Dark Gradient Overlay */}
-                  <div className="relative h-64 w-full overflow-hidden bg-navy-dark">
-                    <Image
-                      src={t.avatar || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80"}
-                      alt={t.user.name}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
-                      priority={t.id === "t1"}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-navy-dark via-navy-dark/40 to-transparent" />
-                    
-                    {/* Badges Overlay */}
-                    <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
-                      <span className="inline-flex items-center gap-1 rounded-full bg-navy/80 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-md border border-white/10">
-                        <CheckCircle2 className="h-3 w-3 text-copper" />
-                        {t.badge || "Verified Expert"}
-                      </span>
-                    </div>
-
-                    <div className="absolute top-3 right-3">
-                      <span className="inline-flex items-center gap-1 rounded-full bg-black/60 px-2.5 py-1 text-[11px] font-bold text-amber-300 backdrop-blur-md">
-                        <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                        {t.rating || "4.9"} ({t.reviews || 80})
-                      </span>
-                    </div>
-
-                    {/* Faculty Name & Role Overlaid on Gradient */}
-                    <div className="absolute bottom-3 left-4 right-4 text-white">
-                      <h3 className="text-xl font-bold tracking-tight text-white drop-shadow-sm">
-                        {t.user.name}
-                      </h3>
-                      <p className="text-xs text-cream/90 font-medium">
-                        {t.role || "Senior Faculty"}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Card Content */}
-                  <div className="p-5">
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <span className="inline-flex items-center gap-1 font-medium text-copper">
-                        <Award className="h-3.5 w-3.5" />
-                        {t.yearsExperience} yrs experience
-                      </span>
-                      <span>•</span>
-                      <span className="inline-flex items-center gap-1">
-                        <Video className="h-3.5 w-3.5 text-emerald-500" />
-                        1-on-1 Live HD
-                      </span>
-                    </div>
-
-                    <p className="mt-3 text-xs leading-relaxed text-muted-foreground line-clamp-3">
-                      {t.bio}
-                    </p>
-
-                    <div className="mt-4 flex flex-wrap gap-1.5">
-                      {(t.subjects || []).map((sub: string) => (
-                        <Badge key={sub} variant="outline" className="text-[11px]">
-                          {sub}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Footer Pricing & CTA */}
-                <div className="border-t border-border/60 bg-muted/30 p-4 px-5 flex items-center justify-between">
-                  <div>
-                    <span className="text-[11px] uppercase tracking-wider text-muted-foreground block font-medium">Session Rate</span>
-                    <span className="font-mono text-base font-bold text-foreground">
-                      ${(t.hourlyRate / 100).toFixed(0)}<span className="text-xs text-muted-foreground font-normal">/hr</span>
-                    </span>
-                  </div>
-                  <Link href="/book-trial">
-                    <Button size="sm" className="gap-1.5 bg-copper hover:bg-copper-hover text-white shadow-sm font-semibold text-xs">
-                      <Calendar className="h-3.5 w-3.5" /> Book Demo
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            ))}
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 items-start">
+            {teachers.map((t: any) => {
+              const cardData: TeacherData = {
+                id: t.id,
+                name: t.user?.name || "Senior Faculty",
+                title: t.role || "Lead Academic Mentor",
+                subject: (t.subjects && t.subjects[0]) || "Curriculum Specialist",
+                rating: t.rating || "4.98",
+                reviewsCount: t.reviews || 95,
+                years: `${t.yearsExperience || 7}+ Yrs Exp`,
+                institution: t.badge || "Cambridge Alum",
+                bio: t.bio || "Dedicated international educator specializing in rigorous exam strategy and 1-on-1 personalized mentorship.",
+                headshot: t.avatar || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80",
+                videoUrl: t.videoUrl,
+              };
+              return <TeacherCard key={t.id} teacher={cardData} />;
+            })}
           </div>
         </Container>
       </main>

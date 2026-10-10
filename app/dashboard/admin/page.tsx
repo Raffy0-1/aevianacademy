@@ -67,12 +67,71 @@ export default async function AdminDashboardPage() {
   try { discountsList = await prisma.discountCode.findMany({ orderBy: { validFrom: "desc" } }); } catch (e) { console.warn("Failed to fetch discounts:", e); }
   try { mediaList = await prisma.media.findMany({ orderBy: { createdAt: "desc" } }); } catch (e) { console.warn("Failed to fetch media:", e); }
 
+  let parentsList: any[] = [];
+  let studentsList: any[] = [];
+  let teachersList: any[] = [];
+  let enrollmentsList: any[] = [];
+
+  try {
+    parentsList = await prisma.user.findMany({
+      where: { role: "PARENT" },
+      include: {
+        parentProfile: {
+          include: {
+            children: {
+              include: {
+                user: { select: { id: true, name: true, email: true } },
+                enrollments: { include: { course: { select: { title: true } } } },
+              },
+            },
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+  } catch (e) { console.warn("Failed to fetch parents:", e); }
+
+  try {
+    studentsList = await prisma.user.findMany({
+      where: { role: "STUDENT" },
+      include: {
+        studentProfile: {
+          include: {
+            parent: { include: { user: { select: { name: true, email: true } } } },
+            enrollments: { include: { course: { select: { title: true } } } },
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+  } catch (e) { console.warn("Failed to fetch students:", e); }
+
+  try {
+    teachersList = await prisma.teacherProfile.findMany({
+      include: {
+        user: { select: { id: true, name: true, email: true } },
+        courses: { select: { id: true, title: true } },
+        availability: true,
+      },
+    });
+  } catch (e) { console.warn("Failed to fetch teacher profiles:", e); }
+
+  try {
+    enrollmentsList = await prisma.enrollment.findMany({
+      include: {
+        student: { include: { user: true, parent: { include: { user: true } } } },
+        course: { include: { packages: { include: { prices: true } } } },
+      },
+      orderBy: { startedAt: "desc" },
+    });
+  } catch (e) { console.warn("Failed to fetch enrollments:", e); }
+
   const stats = [
     { label: "Active Users", value: userCount },
     { label: "Course Modules", value: courseCount },
     { label: "Syllabus Enrollments", value: enrollmentCount },
     { label: "Live Bookings", value: bookingCount },
-    { label: "CRM Leads", value: leadCount },
+    { label: "Registered Leads", value: leadCount },
     { label: "Support Tickets", value: ticketCount },
   ];
 
@@ -100,6 +159,55 @@ export default async function AdminDashboardPage() {
     email: u.email || "N/A",
     role: u.role || "STUDENT",
     createdAt: safeIsoString(u.createdAt),
+  }));
+
+  const mappedParents = (parentsList || []).map((p) => {
+    const children = p.parentProfile?.children || [];
+    const childDetails = children.map((c: any) => ({
+      id: c.id,
+      name: c.user?.name || "Student Child",
+      email: c.user?.email || "",
+      courses: (c.enrollments || []).map((e: any) => e.course?.title).filter(Boolean),
+    }));
+
+    return {
+      id: p.id,
+      name: p.name,
+      email: p.email,
+      phone: p.parentProfile?.phone || null,
+      country: p.parentProfile?.country || null,
+      children: childDetails,
+      createdAt: safeIsoString(p.createdAt),
+    };
+  });
+
+  const mappedStudents = (studentsList || []).map((s) => ({
+    id: s.id,
+    name: s.name,
+    email: s.email,
+    gradeLevel: s.studentProfile?.gradeLevel || "Standard Grade",
+    englishLevel: s.studentProfile?.englishLevel || "Intermediate",
+    parentName: s.studentProfile?.parent?.user?.name || null,
+    parentEmail: s.studentProfile?.parent?.user?.email || null,
+    enrollments: (s.studentProfile?.enrollments || []).map((e: any) => ({
+      courseTitle: e.course?.title || "Enrolled Course",
+      progressPercent: e.progressPercent ?? 25,
+      status: e.status || "ACTIVE",
+    })),
+    createdAt: safeIsoString(s.createdAt),
+  }));
+
+  const mappedTeacherProfiles = (teachersList || []).map((tp) => ({
+    id: tp.id,
+    userId: tp.userId,
+    name: tp.user?.name || "Teacher",
+    email: tp.user?.email || "",
+    bio: tp.bio || "Certified international educator",
+    subjects: tp.subjects || ["General Curriculum"],
+    yearsExperience: tp.yearsExperience || 5,
+    hourlyRate: tp.hourlyRate ? tp.hourlyRate / 100 : 50,
+    courseCount: (tp.courses || []).length,
+    availabilitySlots: (tp.availability || []).length,
   }));
 
   const mappedTickets = (ticketsList || []).map((t) => ({
@@ -135,16 +243,26 @@ export default async function AdminDashboardPage() {
     durationMinutes: b.durationMinutes || 40,
   }));
 
-  const mappedDiscounts = (discountsList || []).map((d) => ({
-    id: d.id || `discount-${Math.random()}`,
-    code: d.code || "PROMO",
-    description: d.description || null,
-    discountPercent: d.discountPercent || null,
-    discountAmount: d.discountAmount ? d.discountAmount / 100 : null,
-    currentUses: d.currentUses || 0,
-    maxUses: d.maxUses || null,
-    active: Boolean(d.active),
-  }));
+  const mappedSubscribers = (enrollmentsList || []).map((e) => {
+    const studentUser = e.student?.user;
+    const parentUser = e.student?.parent?.user;
+    const packageName = e.course?.title || "International Curriculum Masterclass";
+    const monthlyFee = e.course?.packages?.[0]?.prices?.[0]?.priceCents
+      ? e.course.packages[0].prices[0].priceCents / 100
+      : 180;
+
+    return {
+      id: e.id,
+      subscriberName: parentUser?.name || studentUser?.name || "Subscriber",
+      subscriberEmail: parentUser?.email || studentUser?.email || "subscriber@example.com",
+      studentName: studentUser?.name || "Student",
+      packageName,
+      subscribedDate: safeIsoString(e.startedAt),
+      lastActiveDate: safeIsoString(e.startedAt),
+      monthlyFee,
+      status: e.status || "ACTIVE",
+    };
+  });
 
   const mappedMedia = (mediaList || []).map((m) => ({
     id: m.id,
@@ -155,24 +273,18 @@ export default async function AdminDashboardPage() {
   }));
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="font-display text-3xl text-foreground">
-          Platform Administration
-        </h1>
-        <p className="mt-1 text-muted-foreground">
-          Monitor growth trends, allot master tutors, manage CRM lead pipeline, and resolve support tickets.
-        </p>
-      </div>
-
+    <div className="space-y-6">
       <AdminDashboardWrapper
         stats={stats}
         initialLeads={mappedLeads}
         initialUsers={mappedUsers}
+        initialParents={mappedParents}
+        initialStudents={mappedStudents}
+        initialTeachers={mappedTeacherProfiles}
+        initialSubscribers={mappedSubscribers}
         initialTickets={mappedTickets}
         initialCourses={mappedCourses}
         initialBookings={mappedBookings}
-        initialDiscounts={mappedDiscounts}
         initialMedia={mappedMedia}
       />
     </div>

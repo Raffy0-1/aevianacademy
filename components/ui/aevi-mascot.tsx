@@ -14,6 +14,14 @@ export function AeviMascot() {
   const [isWaving, setIsWaving] = useState(false);
   const [blink, setBlink] = useState(false);
 
+  // Auto-dismiss the initial landing speech bubble after ~1.8 seconds
+  useEffect(() => {
+    const dismissTimer = setTimeout(() => {
+      setIsOpen(false);
+    }, 1800);
+    return () => clearTimeout(dismissTimer);
+  }, []);
+
   // Periodic eye blink
   useEffect(() => {
     const interval = setInterval(() => {

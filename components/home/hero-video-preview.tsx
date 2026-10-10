@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Pause, Volume2, VolumeX, Maximize2, X, Star, CheckCircle2 } from "lucide-react";
+import { Volume2, VolumeX, Maximize2, X, Star } from "lucide-react";
 import Image from "next/image";
 
 export function HeroVideoPreview() {
@@ -11,16 +11,13 @@ export function HeroVideoPreview() {
   const [showFullModal, setShowFullModal] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  const togglePlay = () => {
-    if (!videoRef.current) return;
-    if (isPlaying) {
-      videoRef.current.pause();
-      setIsPlaying(false);
-    } else {
-      videoRef.current.play();
-      setIsPlaying(true);
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.play().catch(() => {
+        // Autoplay policy fallback
+      });
     }
-  };
+  }, []);
 
   const toggleMute = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -32,70 +29,49 @@ export function HeroVideoPreview() {
   return (
     <>
       <div className="relative group">
-        {/* Exterior Ambient Aura Glow */}
-        <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-copper via-amber-500/40 to-navy opacity-75 blur-xl transition-all duration-500 group-hover:opacity-100 group-hover:blur-2xl" />
-
-        {/* Main Video Card Shell */}
-        <div className="relative overflow-hidden rounded-3xl border border-white/30 bg-navy/95 p-2 shadow-2xl backdrop-blur-2xl">
+        {/* Main Video Card Shell with Rich 3D Elevation Shadow (No Orange Glow) */}
+        <div className="relative overflow-hidden rounded-3xl border border-slate-700/60 bg-[#141F2B] p-2 sm:p-2.5 shadow-[0_24px_50px_-12px_rgba(15,23,42,0.38),0_12px_24px_-8px_rgba(15,23,42,0.22),0_0_0_1px_rgba(255,255,255,0.08)] hover:shadow-[0_32px_65px_-15px_rgba(15,23,42,0.48),0_16px_32px_-8px_rgba(15,23,42,0.28)] transition-all duration-500">
           {/* Video Container */}
-          <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-navy-dark">
+          <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-[#0F1722]">
             <video
               ref={videoRef}
               autoPlay
               loop
               muted={isMuted}
               playsInline
-              poster="https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&w=1200&q=85"
-              className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+              poster="https://images.unsplash.com/photo-1588702547919-26089e690ecc?auto=format&fit=crop&w=1200&q=85"
+              className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-102"
             >
+              <source src="/videos/hero-class.mp4" type="video/mp4" />
               <source
-                src="https://assets.mixkit.co/videos/preview/mixkit-young-woman-studying-online-with-a-laptop-42998-large.mp4"
-                type="video/mp4"
-              />
-              <source
-                src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+                src="https://assets.mixkit.co/videos/47186/47186-720.mp4"
                 type="video/mp4"
               />
             </video>
 
             {/* Dark gradient overlay for contrast */}
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/20 to-navy/50" />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/15 to-navy/40" />
 
             {/* Floating Top Badge 1: Live Status */}
-            <div className="absolute left-3.5 top-3.5 flex items-center gap-2 rounded-full border border-white/20 bg-navy/80 px-3 py-1 text-[11px] font-semibold text-white shadow-lg backdrop-blur-md">
+            <div className="absolute left-3 top-3 flex items-center gap-2 rounded-full border border-white/20 bg-navy/85 px-3 py-1 text-[11px] font-semibold text-white shadow-lg backdrop-blur-md">
               <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500" />
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
               </span>
               <span>Live 1-on-1 Class in Session</span>
             </div>
 
             {/* Floating Top Badge 2: Verified Rating */}
-            <div className="absolute right-3.5 top-3.5 flex items-center gap-1.5 rounded-full border border-white/20 bg-navy/80 px-3 py-1 text-[11px] font-bold text-copper shadow-lg backdrop-blur-md">
+            <div className="absolute right-3 top-3 flex items-center gap-1.5 rounded-full border border-white/20 bg-navy/85 px-3 py-1 text-[11px] font-bold text-copper shadow-lg backdrop-blur-md">
               <Star className="h-3 w-3 fill-copper text-copper" />
               <span>4.98 ★</span>
               <span className="text-[10px] text-white/70 font-normal">(1,420+ Reviews)</span>
             </div>
 
-            {/* Central Glowing Play / Pause Button Overlay */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <motion.button
-                type="button"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setShowFullModal(true)}
-                className="relative flex h-16 w-16 items-center justify-center rounded-full bg-copper text-white shadow-xl transition-all hover:bg-copper-hover hover:shadow-copper/40"
-                aria-label="Watch live session preview"
-              >
-                <span className="absolute -inset-2 animate-ping rounded-full bg-copper/30" />
-                <Play className="ml-1 h-7 w-7 fill-white" />
-              </motion.button>
-            </div>
-
             {/* Bottom Overlay: Tutor and Student Info */}
-            <div className="absolute bottom-3.5 left-3.5 right-3.5 flex items-center justify-between gap-3 rounded-xl border border-white/15 bg-navy/85 p-3 shadow-lg backdrop-blur-md">
-              <div className="flex items-center gap-3">
-                <div className="relative h-10 w-10 overflow-hidden rounded-full border-2 border-copper">
+            <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-3 rounded-xl border border-white/15 bg-navy/85 p-2.5 sm:p-3 shadow-lg backdrop-blur-md">
+              <div className="flex items-center gap-2.5 sm:gap-3">
+                <div className="relative h-9 w-9 sm:h-10 sm:w-10 overflow-hidden rounded-full border-2 border-copper shrink-0">
                   <Image
                     src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=160&q=80"
                     alt="Dr. Nadia Farooq"
@@ -103,50 +79,58 @@ export function HeroVideoPreview() {
                     height={40}
                     className="h-full w-full object-cover"
                   />
-                  <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-navy bg-emerald-500" />
+                  <div className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-navy bg-emerald-500" />
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <h4 className="text-xs font-bold text-white">Dr. Nadia Farooq</h4>
-                    <span className="rounded bg-copper/20 px-1.5 py-0.2 text-[9px] font-bold text-copper uppercase">
+                    <h4 className="text-xs font-bold text-white leading-tight">Dr. Nadia Farooq</h4>
+                    <span className="rounded bg-copper/20 px-1.5 py-0.5 text-[9px] font-bold text-copper uppercase">
                       Cambridge Alum
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-light">
+                  <p className="text-[11px] text-slate-light leading-tight mt-0.5">
                     1-on-1 with Aiden K. <span className="text-white font-medium">• Sydney, AU 🇦🇺</span>
                   </p>
                 </div>
               </div>
 
               {/* Action Buttons: Sound & Fullscreen */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                 <button
                   type="button"
                   onClick={toggleMute}
-                  className="rounded-lg border border-white/20 bg-white/10 p-2 text-white hover:bg-white/20 transition-colors"
+                  className="rounded-lg border border-white/20 bg-white/10 p-1.5 sm:p-2 text-white hover:bg-white/20 transition-colors cursor-pointer"
                   aria-label={isMuted ? "Unmute video" : "Mute video"}
+                  title={isMuted ? "Unmute" : "Mute"}
                 >
-                  {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+                  {isMuted ? <VolumeX className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> : <Volume2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowFullModal(true)}
-                  className="rounded-lg border border-white/20 bg-white/10 p-2 text-white hover:bg-white/20 transition-colors"
+                  className="rounded-lg border border-white/20 bg-white/10 p-1.5 sm:p-2 text-white hover:bg-white/20 transition-colors cursor-pointer"
                   aria-label="Expand video modal"
+                  title="Expand to Fullscreen"
                 >
-                  <Maximize2 className="h-4 w-4" />
+                  <Maximize2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 </button>
               </div>
             </div>
           </div>
 
           {/* Bottom Card Summary Pill */}
-          <div className="mt-2.5 flex items-center justify-between px-3 py-1.5 text-xs text-slate-light">
+          <div className="mt-2 flex items-center justify-between px-2.5 py-1 text-xs text-slate-light">
             <span className="flex items-center gap-1.5 text-copper font-semibold">
-              <span className="h-2 w-2 rounded-full bg-emerald-400" />
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
               <span>HD 1080p Studio Broadcast Quality</span>
             </span>
-            <span className="text-white/80 font-medium">Click to watch full session demo &rarr;</span>
+            <button
+              type="button"
+              onClick={() => setShowFullModal(true)}
+              className="text-white/80 hover:text-white font-medium transition-colors cursor-pointer text-xs"
+            >
+              Full demo &rarr;
+            </button>
           </div>
         </div>
       </div>
@@ -154,7 +138,7 @@ export function HeroVideoPreview() {
       {/* Fullscreen Video Modal */}
       <AnimatePresence>
         {showFullModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8 bg-black/80 backdrop-blur-md">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8 bg-black/85 backdrop-blur-md">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -165,12 +149,14 @@ export function HeroVideoPreview() {
               <div className="flex items-center justify-between border-b border-navy-light px-6 py-4 text-white">
                 <div>
                   <h3 className="text-base font-bold">Aevian Academy — 1-on-1 Live Class Experience</h3>
-                  <p className="text-xs text-slate-light">Demonstrating our interactive curriculum, whiteboard, and live mentor dynamic.</p>
+                  <p className="text-xs text-slate-light">
+                    Demonstrating our interactive curriculum, whiteboard, and live mentor dynamic.
+                  </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setShowFullModal(false)}
-                  className="rounded-full p-1.5 text-slate-light hover:bg-white/10 hover:text-white transition-colors"
+                  className="rounded-full p-1.5 text-slate-light hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -184,12 +170,9 @@ export function HeroVideoPreview() {
                   playsInline
                   className="h-full w-full object-contain"
                 >
+                  <source src="/videos/hero-class.mp4" type="video/mp4" />
                   <source
-                    src="https://assets.mixkit.co/videos/preview/mixkit-young-woman-studying-online-with-a-laptop-42998-large.mp4"
-                    type="video/mp4"
-                  />
-                  <source
-                    src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+                    src="https://assets.mixkit.co/videos/47186/47186-720.mp4"
                     type="video/mp4"
                   />
                 </video>

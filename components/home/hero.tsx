@@ -23,27 +23,21 @@ export function Hero() {
   const selectedCategory = categories.find((c) => c.id === activeTab) || categories[0];
 
   return (
-    <section className="relative overflow-hidden bg-cream/70 backdrop-blur-xs py-16 lg:py-24 border-b border-slate-border/50">
+    <section className="relative overflow-hidden bg-cream/70 backdrop-blur-xs pt-3 pb-8 sm:pt-4 sm:pb-10 lg:pt-5 lg:pb-12 border-b border-slate-border/50">
       {/* Background Subtle Geometric Glow */}
-      <div className="absolute top-0 right-1/4 -z-10 h-[500px] w-[500px] rounded-full bg-copper/5 blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-10 -z-10 h-[400px] w-[400px] rounded-full bg-navy/5 blur-3xl pointer-events-none" />
+      <div className="absolute top-0 right-1/4 -z-10 h-[450px] w-[450px] rounded-full bg-copper/5 blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-10 -z-10 h-[350px] w-[350px] rounded-full bg-navy/5 blur-3xl pointer-events-none" />
 
-      <Container className="grid items-center gap-12 lg:grid-cols-12">
+      <Container className="grid items-center gap-8 lg:gap-10 lg:grid-cols-12">
         {/* Left Hero Content */}
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
           className="lg:col-span-7 flex flex-col"
         >
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 self-start rounded-full border border-copper/30 bg-copper/10 px-3.5 py-1.5 text-xs font-semibold text-copper">
-            <span className="h-1.5 w-1.5 rounded-full bg-copper" />
-            <span>The Learning Path Strategy</span>
-          </div>
-
           {/* Heading */}
-          <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-navy sm:text-5xl lg:text-6xl leading-[1.08]">
+          <h1 className="text-3xl sm:text-4xl lg:text-[2.85rem] xl:text-[3.35rem] font-extrabold tracking-tight text-navy leading-[1.12]">
             Connecting Students Worldwide with{" "}
             <span className="relative inline-block text-copper underline decoration-copper/30 underline-offset-8">
               Expert Teachers
@@ -51,19 +45,19 @@ export function Hero() {
           </h1>
 
           {/* Subtitle */}
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate">
+          <p className="mt-3.5 max-w-xl text-base sm:text-lg leading-relaxed text-slate">
             Empowering students globally through personalized 1-on-1 tutoring, competitive school assessment prep (NAPLAN, ACARA, TOEFL, UK SAT), communication skills, and Quranic recitation.
           </p>
 
           {/* Interactive Program Tabs */}
-          <div className="mt-8 flex flex-wrap items-center gap-2 rounded-xl bg-white p-1.5 shadow-sm border border-slate-border/60 max-w-xl">
+          <div className="mt-5 flex flex-wrap items-center gap-1.5 rounded-xl bg-white p-1.5 shadow-xs border border-slate-border/60 max-w-xl">
             {categories.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setActiveTab(cat.id)}
-                className={`relative px-3.5 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                className={`relative px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
                   activeTab === cat.id
-                    ? "bg-navy text-white shadow-sm"
+                    ? "bg-navy text-white shadow-xs"
                     : "text-slate hover:text-navy hover:bg-cream-muted"
                 }`}
               >
@@ -76,11 +70,11 @@ export function Hero() {
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
-              initial={{ opacity: 0, y: 8 }}
+              initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.25 }}
-              className="mt-4 flex items-center gap-4 text-xs text-slate font-medium"
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.2 }}
+              className="mt-2.5 flex items-center gap-3.5 text-xs text-slate font-medium"
             >
               <span className="flex items-center gap-1.5 text-copper font-semibold">
                 <CheckCircle2 className="h-4 w-4 text-copper" />
@@ -92,7 +86,7 @@ export function Hero() {
           </AnimatePresence>
 
           {/* CTAs */}
-          <div className="mt-9 flex flex-wrap items-center gap-4">
+          <div className="mt-5 flex flex-wrap items-center gap-3.5">
             <Link href="/book-trial">
               <Button variant="copper" size="lg" className="gap-2 text-base shadow-md">
                 <span>Book Free Trial</span>
@@ -108,10 +102,10 @@ export function Hero() {
           </div>
 
           {/* Trust Metrics */}
-          <div className="mt-10 pt-8 border-t border-slate-border/50 flex flex-wrap items-center gap-8">
+          <div className="mt-6 pt-4 border-t border-slate-border/50 flex flex-wrap items-center gap-7">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-navy text-cream">
-                <Award className="h-5 w-5 text-copper" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-navy text-cream">
+                <Award className="h-4.5 w-4.5 text-copper" />
               </div>
               <div>
                 <p className="text-sm font-bold text-navy">99.4%</p>
@@ -119,8 +113,8 @@ export function Hero() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-copper/10 text-copper">
-                <Users className="h-5 w-5 text-copper" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-copper/10 text-copper">
+                <Users className="h-4.5 w-4.5 text-copper" />
               </div>
               <div>
                 <p className="text-sm font-bold text-navy">5+ Countries</p>
@@ -132,9 +126,9 @@ export function Hero() {
 
         {/* Right High-Definition Live Class Video Preview */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.7, delay: 0.2 }}
+          transition={{ duration: 0.6, delay: 0.15 }}
           className="lg:col-span-5 relative"
         >
           <HeroVideoPreview />

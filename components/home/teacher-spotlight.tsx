@@ -8,6 +8,7 @@ import { SectionHeading } from "@/components/ui/section-heading";
 import { Badge } from "@/components/ui/badge";
 import { Star, Play, X, Award, CheckCircle2, Video } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { TeacherCard } from "@/components/teachers/teacher-card";
 
 interface Teacher {
   id: string;
@@ -91,89 +92,13 @@ export function TeacherSpotlight() {
         />
 
         {/* Master Faculty Cards */}
-        <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4 items-stretch">
+        <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4 items-start">
           {teachers.map((teacher) => (
-            <div
+            <TeacherCard
               key={teacher.name}
-              className="group relative overflow-hidden rounded-2xl bg-navy text-white shadow-xl border border-navy-light flex flex-col justify-between transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-copper/60"
-            >
-              <div>
-                {/* High-Resolution Headshot Photo Container */}
-                <div className="relative aspect-square w-full overflow-hidden bg-navy-dark">
-                  <Image
-                    src={teacher.headshot}
-                    alt={teacher.name}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 25vw"
-                    className="object-cover object-top transition-transform duration-700 group-hover:scale-108"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/20 to-transparent" />
-
-                  {/* Rating Tag */}
-                  <div className="absolute top-3 right-3 flex items-center gap-1 rounded-full bg-navy/80 backdrop-blur-md px-2.5 py-1 text-xs font-bold text-copper border border-white/10 shadow-sm">
-                    <Star className="h-3 w-3 fill-copper text-copper" />
-                    <span>{teacher.rating}</span>
-                  </div>
-
-                  {/* Institution Tag */}
-                  <div className="absolute top-3 left-3">
-                    <span className="rounded-full bg-navy/80 backdrop-blur-md px-2.5 py-1 text-[10px] font-semibold text-white/90 border border-white/10">
-                      {teacher.institution}
-                    </span>
-                  </div>
-
-                  {/* Hover Trigger: "Play Intro Video" */}
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-navy/40 backdrop-blur-xs">
-                    <button
-                      type="button"
-                      onClick={() => setActiveVideoTeacher(teacher)}
-                      className="flex items-center gap-2 rounded-full bg-copper px-4 py-2 text-xs font-bold text-white shadow-xl hover:bg-copper-hover hover:scale-105 transition-all"
-                    >
-                      <Play className="h-3.5 w-3.5 fill-white" />
-                      <span>Play Intro Video</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="p-6 pb-2">
-                  <h3 className="text-lg font-bold text-white tracking-tight">{teacher.name}</h3>
-                  <p className="text-xs font-semibold text-copper mt-0.5">{teacher.title}</p>
-                  <p className="mt-2.5 text-xs text-slate-light leading-relaxed line-clamp-3">
-                    {teacher.bio}
-                  </p>
-                </div>
-              </div>
-
-              {/* Card Footer */}
-              <div className="p-6 pt-0">
-                <div className="mt-4 pt-4 border-t border-navy-light/60 flex items-center justify-between">
-                  <span className="text-xs font-medium text-slate-light truncate pr-2">
-                    {teacher.subject}
-                  </span>
-                  <Badge variant="copper" className="text-[10px] uppercase font-mono shrink-0">
-                    {teacher.years}
-                  </Badge>
-                </div>
-
-                <div className="mt-3 flex items-center justify-between text-xs pt-1">
-                  <button
-                    type="button"
-                    onClick={() => setActiveVideoTeacher(teacher)}
-                    className="inline-flex items-center gap-1 font-semibold text-copper hover:underline text-[11px]"
-                  >
-                    <Video className="h-3 w-3" />
-                    <span>Watch Demo</span>
-                  </button>
-                  <Link
-                    href="/book-trial"
-                    className="text-[11px] font-semibold text-white/80 hover:text-white"
-                  >
-                    Book Trial &rarr;
-                  </Link>
-                </div>
-              </div>
-            </div>
+              teacher={teacher}
+              onWatchDemo={(t) => setActiveVideoTeacher(t as Teacher)}
+            />
           ))}
         </div>
       </Container>

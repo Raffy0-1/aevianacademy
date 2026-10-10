@@ -147,6 +147,8 @@ export async function createDiscountCode(data: {
 
 /**
  * Update User Role
+ * Admin can only switch between PARENT and STUDENT to fix accidental signup role selections.
+ * TEACHER and ADMIN roles are strictly protected and cannot be changed or assigned here.
  */
 export async function updateUserRole(
   userId: string,
@@ -154,10 +156,45 @@ export async function updateUserRole(
 ): Promise<AdminActionResult> {
   try {
     await requireAuth([Role.ADMIN]);
+
+    // Safety check: Only PARENT or STUDENT roles are selectable
+    if (role !== Role.PARENT && role !== Role.STUDENT) {
+      return { error: "Role modification is restricted. Only PARENT and STUDENT roles can be selected." };
+    }
+
+    const targetUser = await prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        parentProfile: true,
+        studentProfile: true,
+      },
+    });
+
+    if (!targetUser) {
+      return { error: "User not found." };
+    }
+
+    // Protect TEACHER and ADMIN roles
+    if (targetUser.role === Role.ADMIN || targetUser.role === Role.TEACHER) {
+      return { error: "Administrative and Teacher accounts are system-locked and cannot have their role modified." };
+    }
+
+    // Ensure reciprocal profile exists if missing
+    const profileUpdates: Record<string, object> = {};
+    if (role === Role.PARENT && !targetUser.parentProfile) {
+      profileUpdates.parentProfile = { create: {} };
+    } else if (role === Role.STUDENT && !targetUser.studentProfile) {
+      profileUpdates.studentProfile = { create: {} };
+    }
+
     const updated = await prisma.user.update({
       where: { id: userId },
-      data: { role },
+      data: {
+        role,
+        ...profileUpdates,
+      },
     });
+
     revalidatePath("/dashboard/admin");
     return { success: true, data: updated };
   } catch (error: any) {
