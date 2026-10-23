@@ -17,7 +17,7 @@ export default function HomePage() {
   return (
     <>
       <Navbar />
-      <main id="main-content">
+      <main id="main-content" className="relative overflow-x-clip">
         <Hero />
         <Stats />
         <Features />

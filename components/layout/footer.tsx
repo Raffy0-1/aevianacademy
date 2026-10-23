@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { Mail, PhoneCall, MessageCircle, Linkedin, Instagram, MapPin, ShieldCheck } from "lucide-react";
+import { MapPin, ShieldCheck } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { BrandLogo } from "@/components/ui/brand-logo";
+import { LinkedInIcon, InstagramIcon, MailIcon, PhoneIcon, WhatsAppIcon } from "@/components/ui/social-icons";
 
 const columns = [
   {
@@ -67,17 +68,17 @@ export function Footer() {
               </p>
             </div>
 
-            {/* Quick Contact & Social Profile Links - Consistent Orange/Copper Accent */}
-            <div className="mt-6 flex flex-wrap items-center gap-3">
+            {/* Quick Contact & Social Profile Links - Minimal Real Icons with White Circular Background */}
+            <div className="mt-6 flex flex-wrap items-center gap-2.5">
               <a
                 href="https://linkedin.com/company/aevianacademy"
                 target="_blank"
                 rel="noopener noreferrer"
                 title="Aevian Academy on LinkedIn"
                 aria-label="LinkedIn Profile"
-                className="group relative flex h-10 w-10 items-center justify-center rounded-full border border-copper/40 bg-navy-light/80 text-copper shadow-sm transition-all duration-300 hover:scale-110 hover:border-copper hover:bg-copper/15 hover:shadow-copper/20"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-xs transition-transform duration-200 hover:scale-110 hover:shadow-md cursor-pointer"
               >
-                <Linkedin size={18} className="text-copper" />
+                <LinkedInIcon className="h-4 w-4" />
               </a>
 
               <a
@@ -86,27 +87,27 @@ export function Footer() {
                 rel="noopener noreferrer"
                 title="Aevian Academy on Instagram"
                 aria-label="Instagram Profile"
-                className="group relative flex h-10 w-10 items-center justify-center rounded-full border border-copper/40 bg-navy-light/80 text-copper shadow-sm transition-all duration-300 hover:scale-110 hover:border-copper hover:bg-copper/15 hover:shadow-copper/20"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-xs transition-transform duration-200 hover:scale-110 hover:shadow-md cursor-pointer"
               >
-                <Instagram size={18} className="text-copper" />
+                <InstagramIcon className="h-4 w-4" />
               </a>
 
               <a
                 href="mailto:aevianacademy@gmail.com"
                 title="Send Email (aevianacademy@gmail.com)"
                 aria-label="Email Aevian Academy"
-                className="group relative flex h-10 w-10 items-center justify-center rounded-full border border-copper/40 bg-navy-light/80 text-copper shadow-sm transition-all duration-300 hover:scale-110 hover:border-copper hover:bg-copper/15 hover:shadow-copper/20"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-xs transition-transform duration-200 hover:scale-110 hover:shadow-md cursor-pointer"
               >
-                <Mail size={18} className="text-copper" />
+                <MailIcon className="h-4 w-4" />
               </a>
 
               <a
                 href="tel:+923704942300"
                 title="Call Support (+92 370 4942300)"
                 aria-label="Call Aevian Academy Support"
-                className="group relative flex h-10 w-10 items-center justify-center rounded-full border border-copper/40 bg-navy-light/80 text-copper shadow-sm transition-all duration-300 hover:scale-110 hover:border-copper hover:bg-copper/15 hover:shadow-copper/20"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-xs transition-transform duration-200 hover:scale-110 hover:shadow-md cursor-pointer"
               >
-                <PhoneCall size={18} className="text-copper" />
+                <PhoneIcon className="h-3.5 w-3.5" />
               </a>
 
               <a
@@ -115,9 +116,9 @@ export function Footer() {
                 rel="noopener noreferrer"
                 title="Chat on WhatsApp (+92 370 4942300)"
                 aria-label="Chat on WhatsApp"
-                className="group relative flex h-10 w-10 items-center justify-center rounded-full border border-copper/40 bg-navy-light/80 text-copper shadow-sm transition-all duration-300 hover:scale-110 hover:border-copper hover:bg-copper/15 hover:shadow-copper/20"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-xs transition-transform duration-200 hover:scale-110 hover:shadow-md cursor-pointer"
               >
-                <MessageCircle size={18} className="text-copper" />
+                <WhatsAppIcon className="h-4.5 w-4.5" />
               </a>
             </div>
           </div>

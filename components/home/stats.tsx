@@ -19,8 +19,9 @@ export function Stats() {
             <div className="grid grid-cols-2 gap-6 sm:grid-cols-4 sm:gap-8">
               {stats.map((stat) => (
                 <div key={stat.label} className="text-center sm:text-left">
-                  <span className="inline-block rounded-full bg-copper/15 px-2 py-0.5 text-[10px] font-bold text-copper uppercase tracking-wider mb-1.5">
-                    {stat.highlight}
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white/85 dark:bg-navy dark:border-slate-700 px-2.5 py-0.5 text-[10px] font-semibold text-navy dark:text-cream tracking-wide mb-2 shadow-2xs">
+                    <span className="h-1 w-1 rounded-full bg-copper" />
+                    <span>{stat.highlight}</span>
                   </span>
                   <p className="font-display text-2xl font-black text-navy sm:text-3xl lg:text-4xl">
                     {stat.value}

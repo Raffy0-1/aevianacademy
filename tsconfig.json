@@ -39,6 +39,7 @@
     "node_modules",
     "prisma.config.ts",
     "prisma",
-    "scripts"
+    "scripts",
+    "skiper26.tsx"
   ]
 }

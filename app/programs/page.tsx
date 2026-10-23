@@ -8,6 +8,7 @@ import { SectionHeading } from "@/components/ui/section-heading";
 import { Badge } from "@/components/ui/badge";
 import { programs } from "@/lib/data/programs";
 import { ArrowRight, Clock, Target } from "lucide-react";
+import { CardAbstract } from "@/components/ui/card-abstract";
 
 export const dynamic = "force-static";
 
@@ -76,13 +77,16 @@ export default function ProgramsPage() {
                             </div>
                           </div>
 
-                          <div className="p-5">
-                            <h3 className="text-lg font-bold text-foreground group-hover:text-copper transition-colors line-clamp-2">
-                              {course.title}
-                            </h3>
-                            <p className="mt-2.5 text-xs text-muted-foreground leading-relaxed line-clamp-3">
-                              {course.description}
-                            </p>
+                          <div className="relative p-5 overflow-hidden">
+                            <CardAbstract variant="orbit" position="bottom-right" />
+                            <div className="relative z-10">
+                              <h3 className="text-lg font-bold text-foreground group-hover:text-copper transition-colors line-clamp-2">
+                                {course.title}
+                              </h3>
+                              <p className="mt-2.5 text-xs text-muted-foreground leading-relaxed line-clamp-3">
+                                {course.description}
+                              </p>
+                            </div>
                           </div>
                         </div>
 

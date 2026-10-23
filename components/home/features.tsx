@@ -1,153 +1,225 @@
-import { Users, FileText, ShieldCheck, Clock } from "lucide-react";
+"use client";
+
+import Link from "next/link";
+import {
+  Users,
+  FileText,
+  ShieldCheck,
+  Clock,
+  ArrowRight,
+  Target,
+  CheckCircle2,
+  TrendingUp,
+  Award,
+  Video,
+  FileCheck,
+} from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { ScrollReveal, ScrollRevealStagger } from "@/components/ui/scroll-reveal";
-
-// Minimal abstract geometric designs for card backgrounds
-function OrbitalPattern() {
-  return (
-    <svg
-      className="absolute -top-10 -right-10 w-44 h-44 pointer-events-none stroke-copper/30 dark:stroke-copper/25 transition-transform duration-700 group-hover:scale-105"
-      viewBox="0 0 200 200"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-    >
-      <circle cx="160" cy="40" r="30" strokeWidth="1" strokeDasharray="3 3" />
-      <circle cx="160" cy="40" r="65" strokeWidth="1" />
-      <circle cx="160" cy="40" r="100" strokeWidth="0.75" strokeDasharray="4 4" />
-      <circle cx="160" cy="40" r="135" strokeWidth="0.75" />
-    </svg>
-  );
-}
-
-function LatticePattern() {
-  return (
-    <svg
-      className="absolute -bottom-8 -right-8 w-40 h-40 pointer-events-none stroke-navy/20 dark:stroke-cream/15 transition-transform duration-700 group-hover:scale-105"
-      viewBox="0 0 180 180"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-    >
-      <path d="M40 90 L90 60 L140 90 L90 120 Z" strokeWidth="1" />
-      <path d="M40 110 L90 80 L140 110 L90 140 Z" strokeWidth="0.75" strokeDasharray="3 3" />
-      <path d="M40 130 L90 100 L140 130 L90 160 Z" strokeWidth="0.75" />
-      <line x1="90" y1="60" x2="90" y2="120" strokeWidth="0.75" />
-    </svg>
-  );
-}
-
-function CrestPattern() {
-  return (
-    <svg
-      className="absolute -top-8 -right-8 w-40 h-40 pointer-events-none stroke-copper/30 dark:stroke-copper/25 transition-transform duration-700 group-hover:scale-105"
-      viewBox="0 0 180 180"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-    >
-      <path d="M90 20 C125 35 150 45 150 85 C150 125 90 160 90 160 C90 160 30 125 30 85 C30 45 55 35 90 20 Z" strokeWidth="1" />
-      <path d="M90 40 C115 52 132 60 132 90 C132 120 90 145 90 145 C90 145 48 120 48 90 C48 60 65 52 90 40 Z" strokeWidth="0.75" strokeDasharray="3 3" />
-      <circle cx="90" cy="90" r="14" strokeWidth="0.75" />
-    </svg>
-  );
-}
-
-function CadencePattern() {
-  return (
-    <svg
-      className="absolute -bottom-8 -right-8 w-40 h-40 pointer-events-none stroke-navy/20 dark:stroke-cream/15 transition-transform duration-700 group-hover:scale-105"
-      viewBox="0 0 180 180"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-    >
-      <circle cx="120" cy="120" r="65" strokeWidth="0.75" strokeDasharray="4 4" />
-      <circle cx="120" cy="120" r="45" strokeWidth="1" />
-      <circle cx="120" cy="120" r="25" strokeWidth="0.75" />
-      <line x1="120" y1="55" x2="120" y2="75" strokeWidth="1.25" />
-      <line x1="185" y1="120" x2="165" y2="120" strokeWidth="1.25" />
-    </svg>
-  );
-}
-
-const features = [
-  {
-    icon: Users,
-    title: "1-on-1 Individual Class (Primary Focus)",
-    description:
-      "Direct, uninterrupted 1-on-1 personalized mentorship where teachers tailor every single minute strictly to your learner's pace.",
-    pattern: OrbitalPattern,
-  },
-  {
-    icon: FileText,
-    title: "PDF Notes, Dashboard & Free Demo",
-    description:
-      "Lecture notes available in PDF format, dedicated Student & Parent dashboards, and your 1st class can be booked as a Free Demo.",
-    pattern: LatticePattern,
-  },
-  {
-    icon: ShieldCheck,
-    title: "150+ Vetted Master Educators",
-    description:
-      "Hand-picked international educators background-checked and allotted by our academic team for ideal subject alignment.",
-    pattern: CrestPattern,
-  },
-  {
-    icon: Clock,
-    title: "40-Min Slots, Custom & Instant Booking",
-    description:
-      "Standard 40-minute focused session slots, custom time slot requests requiring admin confirmation, or instant booking with a 2-hour gap.",
-    pattern: CadencePattern,
-  },
-];
+import { ScrollReveal } from "@/components/ui/scroll-reveal";
+import { CardAbstract } from "@/components/ui/card-abstract";
 
 export function Features() {
   return (
-    <section className="py-16 lg:py-24 bg-cream/70 backdrop-blur-xs border-b border-slate-border/50">
+    <section className="py-20 lg:py-28 bg-cream/70 backdrop-blur-xs border-b border-slate-border/50 relative overflow-hidden">
+      {/* Subtle Architectural Grid Lines */}
+      <div
+        className="absolute inset-0 -z-10 bg-[radial-gradient(#1C2A38_1px,transparent_1px)] [background-size:32px_32px] opacity-[0.03] pointer-events-none"
+        aria-hidden="true"
+      />
+
       <Container>
         <ScrollReveal>
           <SectionHeading
             eyebrow="The Aevian Advantage"
-            title="Built around master teachers, structured paths & real growth"
-            description="Most platforms scale by replacing teachers with pre-recorded videos. Aevian empowers master educators with small classes, better tools, and compounding learning paths."
+            title="Engineered around master teachers, structured paths & measurable growth"
+            description="Most online platforms scale by replacing educators with pre-recorded video playlists. Aevian empowers accredited international faculty with live 1-on-1 focus, diagnostic tools, and compounding learning paths."
           />
         </ScrollReveal>
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4 items-stretch">
-          <ScrollRevealStagger>
-            {features.map((feature) => (
-              <div
-                key={feature.title}
-                className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#FAF8F4] via-[#F5EFE5] to-[#EFE7D8] dark:from-[#182533] dark:via-[#141F2B] dark:to-[#0F1722] border border-[#E3D9CC] dark:border-navy-light/60 p-6 sm:p-7 shadow-[0_4px_20px_-4px_rgba(28,42,56,0.06)] hover:shadow-[0_18px_38px_-10px_rgba(28,42,56,0.14)] hover:border-copper/50 transition-all duration-300 flex flex-col justify-between h-full"
-              >
-                {/* Minimal abstract background watermark (ensures 100% text clarity) */}
-                <div className="absolute inset-0 pointer-events-none opacity-40 group-hover:opacity-75 transition-opacity duration-500 overflow-hidden">
-                  <feature.pattern />
-                </div>
 
-                {/* Content Layer */}
-                <div className="relative z-10">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-copper/10 text-copper transition-all duration-300 group-hover:bg-copper group-hover:text-white group-hover:scale-105 shadow-xs">
-                    <feature.icon size={22} strokeWidth={1.8} />
+        {/* High-End Asymmetrical Bento Grid */}
+        <div className="mt-14 grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
+          {/* Bento Tile 1: Flagship Anchor (Col-span 12 md:col-span-7 lg:col-span-8) */}
+          <div className="md:col-span-7 lg:col-span-8 group relative rounded-3xl border border-slate-200/90 bg-white/80 p-2 sm:p-2.5 shadow-[0_4px_24px_-4px_rgba(28,42,56,0.06)] hover:shadow-[0_16px_40px_-10px_rgba(28,42,56,0.12)] hover:border-copper/40 transition-all duration-300 flex flex-col">
+            <div className="relative flex-1 rounded-[1.35rem] bg-gradient-to-br from-white via-cream/40 to-slate-50/50 p-6 sm:p-8 flex flex-col justify-between overflow-hidden">
+              <CardAbstract variant="orbit" position="top-right" />
+
+              <div>
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-copper/10 text-copper shadow-2xs group-hover:bg-copper group-hover:text-white transition-all duration-300">
+                    <Users size={24} strokeWidth={1.8} />
                   </div>
-                  <h3 className="mt-5 text-lg font-bold text-navy dark:text-cream tracking-tight leading-snug">
-                    {feature.title}
-                  </h3>
-                  <p className="mt-2.5 text-sm leading-relaxed text-slate dark:text-slate-light">
-                    {feature.description}
-                  </p>
+                  <span className="inline-flex items-center gap-2 rounded-lg border border-slate-200/90 bg-white/90 px-3 py-1 text-xs font-mono font-semibold tracking-wider text-navy shadow-2xs">
+                    <span className="text-copper font-bold">//</span>
+                    <span>Flagship Mentorship</span>
+                  </span>
                 </div>
 
-                <div className="relative z-10 mt-6 pt-4 border-t border-slate-border/50 dark:border-navy-light/40 flex items-center text-xs font-semibold text-copper group-hover:translate-x-1 transition-transform">
-                  <span>Explore Advantage &rarr;</span>
+                <h3 className="mt-6 text-xl sm:text-2xl font-extrabold text-navy tracking-tight leading-snug">
+                  1-on-1 Individual Focus — Zero Group Dilution
+                </h3>
+                <p className="mt-2.5 text-sm sm:text-base leading-relaxed text-slate max-w-xl">
+                  Uninterrupted, private mentorship where master teachers adapt every explanation, problem set, and pacing decision strictly to your child&apos;s cognitive curve.
+                </p>
+              </div>
+
+              {/* Interactive Telemetry Mockup Inside Card */}
+              <div className="mt-6 pt-5 border-t border-slate-200/70 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="rounded-xl border border-slate-200/80 bg-white/90 p-3 shadow-2xs">
+                  <div className="flex items-center gap-1.5 text-copper text-xs font-semibold">
+                    <Video className="h-3.5 w-3.5" />
+                    <span>Live 1-on-1 Video</span>
+                  </div>
+                  <p className="mt-1 font-display text-lg font-bold text-navy">100% Focus</p>
+                  <p className="text-[11px] text-slate">Zero distractions</p>
+                </div>
+
+                <div className="rounded-xl border border-slate-200/80 bg-white/90 p-3 shadow-2xs">
+                  <div className="flex items-center gap-1.5 text-emerald-600 text-xs font-semibold">
+                    <TrendingUp className="h-3.5 w-3.5" />
+                    <span>Grade Growth</span>
+                  </div>
+                  <p className="mt-1 font-display text-lg font-bold text-navy">+1.8 Grades</p>
+                  <p className="text-[11px] text-slate">Avg IB/IGCSE gain</p>
+                </div>
+
+                <div className="rounded-xl border border-slate-200/80 bg-white/90 p-3 shadow-2xs">
+                  <div className="flex items-center gap-1.5 text-navy text-xs font-semibold">
+                    <Target className="h-3.5 w-3.5 text-copper" />
+                    <span>Pacing Mode</span>
+                  </div>
+                  <p className="mt-1 font-display text-lg font-bold text-navy">Adaptive</p>
+                  <p className="text-[11px] text-slate">Customized weekly</p>
                 </div>
               </div>
-            ))}
-          </ScrollRevealStagger>
+            </div>
+          </div>
+
+          {/* Bento Tile 2: Faculty Rigor (Col-span 12 md:col-span-5 lg:col-span-4) */}
+          <div className="md:col-span-5 lg:col-span-4 group relative rounded-3xl border border-slate-200/90 bg-white/80 p-2 sm:p-2.5 shadow-[0_4px_24px_-4px_rgba(28,42,56,0.06)] hover:shadow-[0_16px_40px_-10px_rgba(28,42,56,0.12)] hover:border-copper/40 transition-all duration-300 flex flex-col">
+            <div className="relative flex-1 rounded-[1.35rem] bg-gradient-to-br from-[#1C2A38] via-[#16222E] to-[#111A24] text-white p-6 sm:p-7 flex flex-col justify-between overflow-hidden">
+              <CardAbstract variant="compass" position="bottom-right" theme="dark" />
+
+              <div>
+                <div className="flex items-center justify-between">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 text-copper">
+                    <ShieldCheck size={22} strokeWidth={1.8} />
+                  </div>
+                  <span className="rounded-lg bg-white/10 border border-white/20 px-3 py-1 text-xs font-mono font-semibold text-white tracking-wider uppercase">
+                    <span className="text-copper font-bold mr-1.5">//</span>Top 3% Vetted
+                  </span>
+                </div>
+
+                <h3 className="mt-5 text-lg sm:text-xl font-bold text-white tracking-tight leading-snug">
+                  150+ Certified International Educators
+                </h3>
+                <p className="mt-2 text-xs sm:text-sm text-slate-light leading-relaxed">
+                  Subject specialists background-checked, pedagogically evaluated, and aligned with UK, Australian, and US school standards.
+                </p>
+              </div>
+
+              {/* 5-Stage Vetting Protocol Badge */}
+              <div className="mt-6 pt-4 border-t border-white/10 space-y-2">
+                <div className="flex items-center gap-2 text-xs text-white/90">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-copper shrink-0" />
+                  <span>Subject Mastery & Exam Board Certified</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-white/90">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-copper shrink-0" />
+                  <span>Live Peer Observation & Background Check</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Bento Tile 3: Precision Booking (Col-span 12 md:col-span-5 lg:col-span-4) */}
+          <div className="md:col-span-5 lg:col-span-4 group relative rounded-3xl border border-slate-200/90 bg-white/80 p-2 sm:p-2.5 shadow-[0_4px_24px_-4px_rgba(28,42,56,0.06)] hover:shadow-[0_16px_40px_-10px_rgba(28,42,56,0.12)] hover:border-copper/40 transition-all duration-300 flex flex-col">
+            <div className="relative flex-1 rounded-[1.35rem] bg-gradient-to-br from-white via-cream/40 to-slate-50/50 p-6 sm:p-7 flex flex-col justify-between overflow-hidden">
+              <CardAbstract variant="concentric" position="bottom-right" />
+
+              <div>
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-copper/10 text-copper shadow-2xs group-hover:bg-copper group-hover:text-white transition-all duration-300">
+                  <Clock size={22} strokeWidth={1.8} />
+                </div>
+
+                <h3 className="mt-5 text-lg sm:text-xl font-bold text-navy tracking-tight leading-snug">
+                  40-Min Focused Slots & Instant Rescheduling
+                </h3>
+                <p className="mt-2 text-xs sm:text-sm text-slate leading-relaxed">
+                  Engineered around maximum attention span. Lock in fixed weekly slots or book instant make-up sessions with 2 hours notice.
+                </p>
+              </div>
+
+              <div className="mt-6 pt-4 border-t border-slate-200/70 flex items-center justify-between text-xs text-slate font-medium">
+                <span className="flex items-center gap-1.5 text-navy font-semibold">
+                  <Clock className="h-3.5 w-3.5 text-copper" />
+                  <span>Timezone Aware</span>
+                </span>
+                <span className="text-copper font-bold">Zero Hassle</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Bento Tile 4: Compounding Dashboard & Notes (Col-span 12 md:col-span-7 lg:col-span-8) */}
+          <div className="md:col-span-7 lg:col-span-8 group relative rounded-3xl border border-slate-200/90 bg-white/80 p-2 sm:p-2.5 shadow-[0_4px_24px_-4px_rgba(28,42,56,0.06)] hover:shadow-[0_16px_40px_-10px_rgba(28,42,56,0.12)] hover:border-copper/40 transition-all duration-300 flex flex-col">
+            <div className="relative flex-1 rounded-[1.35rem] bg-gradient-to-br from-white via-cream/40 to-slate-50/50 p-6 sm:p-8 flex flex-col justify-between overflow-hidden">
+              <CardAbstract variant="grid" position="bottom-right" />
+              <div className="grid grid-cols-1 sm:grid-cols-12 gap-6 items-center">
+                <div className="sm:col-span-7">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-copper/10 text-copper shadow-2xs group-hover:bg-copper group-hover:text-white transition-all duration-300">
+                    <FileText size={22} strokeWidth={1.8} />
+                  </div>
+
+                  <h3 className="mt-5 text-xl sm:text-2xl font-bold text-navy tracking-tight leading-snug">
+                    PDF Notes, Parent Portal & Real-Time Analytics
+                  </h3>
+                  <p className="mt-2 text-sm text-slate leading-relaxed">
+                    Every live session generates structured PDF lesson notes and educator feedback delivered straight to your portal. Parents stay fully informed without chasing updates.
+                  </p>
+
+                  <div className="mt-5 flex items-center gap-3">
+                    <Link href="/book-trial">
+                      <span className="inline-flex items-center gap-1.5 text-xs font-bold text-copper hover:text-copper-hover group-hover:translate-x-1 transition-all">
+                        <span>Book a Free Diagnostic Demo</span>
+                        <ArrowRight className="h-3.5 w-3.5" />
+                      </span>
+                    </Link>
+                  </div>
+                </div>
+
+                {/* Micro Dashboard Preview Card */}
+                <div className="sm:col-span-5 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                    <div className="flex items-center gap-2">
+                      <div className="h-6 w-6 rounded-full bg-copper/15 text-copper flex items-center justify-center text-[10px] font-bold">
+                        P
+                      </div>
+                      <span className="text-xs font-bold text-navy">Parent Feed</span>
+                    </div>
+                    <span className="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+                      Live
+                    </span>
+                  </div>
+
+                  <div className="mt-3 space-y-2.5">
+                    <div className="rounded-xl bg-slate-50 p-2.5 text-xs">
+                      <p className="font-semibold text-navy text-[11px]">Math Session 12 · Completed</p>
+                      <p className="text-[10px] text-slate mt-0.5">&ldquo;Mastered quadratic inequalities with 95% accuracy.&rdquo;</p>
+                    </div>
+                    <div className="flex items-center justify-between text-[11px] text-slate px-1">
+                      <span className="flex items-center gap-1 text-copper font-medium">
+                        <FileCheck className="h-3 w-3" />
+                        <span>PDF Notes ready</span>
+                      </span>
+                      <span className="font-semibold text-navy">Download</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </Container>
     </section>
   );
 }
-

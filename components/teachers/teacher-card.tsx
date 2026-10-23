@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Star, Video, ArrowRight, ChevronUp, ChevronDown, CheckCircle2 } from "lucide-react";
+import { CardAbstract } from "@/components/ui/card-abstract";
 
 export interface TeacherData {
   id: string;
@@ -31,11 +32,14 @@ export function TeacherCard({ teacher, onWatchDemo }: TeacherCardProps) {
 
   return (
     <div className="relative group w-full overflow-hidden rounded-[20px] bg-[#141F2B] border border-white/10 shadow-[0_12px_32px_-8px_rgba(15,23,42,0.6)] hover:shadow-[0_20px_45px_-10px_rgba(200,109,81,0.3)] hover:border-copper/60 transition-all duration-300 flex flex-col justify-between">
+      {/* Subtle Minimal Corner Watermark */}
+      <CardAbstract variant="compass" position="top-right" theme="dark" />
+
       {/* Top Border Accent Tab (card-border-top from design) */}
       <div className="w-[55%] h-[4.5px] bg-gradient-to-r from-copper via-amber-500 to-copper mx-auto rounded-b-xl shadow-xs transition-all duration-300 group-hover:w-[70%]" />
 
       {/* Main Front Content */}
-      <div className="p-5 pb-4 text-center">
+      <div className="relative z-10 p-5 pb-4 text-center">
         {/* Headshot Squircle Image Container (.img from design) */}
         <div className="relative w-24 h-28 sm:w-28 sm:h-32 mx-auto mt-2 rounded-[18px] overflow-hidden border-2 border-copper/40 bg-[#0F1722] shadow-md group-hover:scale-105 group-hover:border-copper transition-all duration-300">
           <Image

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
 import { AbstractBackground } from "@/components/ui/abstract-background";
 import { ToastProvider } from "@/components/ui/toast";
 import { AeviMascot } from "@/components/ui/aevi-mascot";
@@ -127,6 +128,8 @@ export default function RootLayout({
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <head>
         <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM Context" />
+        <link rel="preload" href="/vendor/three.r134.min.js" as="script" />
+        <link rel="preload" href="/vendor/vanta.rings.min.js" as="script" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -143,11 +146,18 @@ export default function RootLayout({
         >
           Skip to main content
         </a>
-        <ToastProvider>
-          <AbstractBackground />
-          <div className="relative z-10 flex-1 flex flex-col">{children}</div>
-          <AeviMascot />
-        </ToastProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem={false}
+          disableTransitionOnChange={false}
+        >
+          <ToastProvider>
+            <AbstractBackground />
+            <div className="relative z-10 flex-1 flex flex-col">{children}</div>
+            <AeviMascot />
+          </ToastProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

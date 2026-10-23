@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowLeft, Bell, CheckCircle2, Sparkles } from "lucide-react";
+import { ArrowLeft, Bell, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ComingSoonAnimation } from "@/components/ui/coming-soon-animation";
 
 interface ComingSoonBannerProps {
   badge?: string;
@@ -36,61 +36,14 @@ export function ComingSoonBanner({
       <div className="pointer-events-none absolute -top-12 -left-12 h-44 w-44 rounded-full bg-copper/10 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-12 -right-12 h-44 w-44 rounded-full bg-amber-500/10 blur-3xl" />
 
-      {/* Floating Animated Coming Soon Illustration */}
+      {/* Dynamic Vector Coming Soon Animation */}
       <div className="relative mx-auto flex items-center justify-center">
-        {/* Animated Confetti Particles */}
-        <motion.div
-          animate={{
-            scale: [1, 1.25, 1],
-            rotate: [0, 180, 360],
-            opacity: [0.6, 1, 0.6],
-          }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -top-3 left-1/4 h-3 w-3 rounded-full bg-copper/40"
-        />
-        <motion.div
-          animate={{
-            scale: [1, 1.3, 1],
-            rotate: [360, 180, 0],
-            opacity: [0.5, 0.9, 0.5],
-          }}
-          transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-          className="absolute top-6 right-1/4 h-2.5 w-2.5 rounded-full bg-amber-400/50"
-        />
-        <motion.div
-          animate={{
-            scale: [0.9, 1.2, 0.9],
-            opacity: [0.4, 0.8, 0.4],
-          }}
-          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          className="absolute bottom-4 left-1/5 h-2 w-2 rounded-full bg-navy/30 dark:bg-cream/30"
-        />
-
-        {/* Main Floating Illustration */}
-        <motion.div
-          animate={{
-            y: [0, -10, 0],
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="relative h-56 w-72 sm:h-64 sm:w-80"
-        >
-          <Image
-            src="/images/coming-soon.png"
-            alt="Coming Soon"
-            fill
-            priority
-            className="object-contain drop-shadow-md select-none pointer-events-none"
-          />
-        </motion.div>
+        <ComingSoonAnimation className="w-full max-w-[340px] sm:max-w-[380px]" />
       </div>
 
       {/* Status Badge */}
-      <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-copper/30 bg-copper/10 px-3.5 py-1 text-xs font-bold text-copper uppercase tracking-wider">
-        <Sparkles className="h-3.5 w-3.5" />
+      <div className="mt-6 inline-flex items-center gap-2 rounded-lg border border-slate-200/90 bg-white/90 px-3 py-1 text-xs font-mono font-semibold tracking-wider text-navy shadow-2xs">
+        <span className="text-copper font-bold">//</span>
         <span>{badge}</span>
       </div>
 

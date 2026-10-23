@@ -4,14 +4,23 @@ import React, { useEffect, useRef } from "react";
 
 function loadScript(src: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    if (document.querySelector(`script[src="${src}"]`)) {
-      resolve();
+    const existing = document.querySelector(`script[src="${src}"]`) as HTMLScriptElement | null;
+    if (existing) {
+      if (existing.getAttribute("data-loaded") === "true") {
+        resolve();
+        return;
+      }
+      existing.addEventListener("load", () => resolve(), { once: true });
+      existing.addEventListener("error", () => reject(new Error(`Failed to load ${src}`)), { once: true });
       return;
     }
     const script = document.createElement("script");
     script.src = src;
     script.async = true;
-    script.onload = () => resolve();
+    script.onload = () => {
+      script.setAttribute("data-loaded", "true");
+      resolve();
+    };
     script.onerror = () => reject(new Error(`Failed to load script ${src}`));
     document.body.appendChild(script);
   });
@@ -31,19 +40,48 @@ export function VantaRingsBackground({ className = "", children }: VantaRingsBac
 
     async function init() {
       try {
-        if (!(window as any).THREE) {
-          await loadScript("/vendor/three.r134.min.js").catch(() =>
-            loadScript("https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js")
-          );
+        const loadThree = (!(window as any).THREE || !(window as any).THREE?.Group)
+          ? loadScript("/vendor/three.r134.min.js").catch(() =>
+              loadScript("https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js")
+            )
+          : Promise.resolve();
+
+        const loadRings = (!(window as any).VANTA?.RINGS)
+          ? loadScript("/vendor/vanta.rings.min.js").catch(() =>
+              loadScript("https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.rings.min.js")
+            )
+          : Promise.resolve();
+
+        await Promise.all([loadThree, loadRings]);
+
+        // Safety guard: Suppress Three.js NaN bounding sphere console errors if any degenerate vertex slips through
+        if ((window as any).THREE?.BufferGeometry?.prototype?.computeBoundingSphere) {
+          const proto = (window as any).THREE.BufferGeometry.prototype;
+          if (!proto._patchedForVanta) {
+            const originalCompute = proto.computeBoundingSphere;
+            proto.computeBoundingSphere = function () {
+              try {
+                originalCompute.call(this);
+                if (this.boundingSphere && isNaN(this.boundingSphere.radius)) {
+                  this.boundingSphere.radius = 100;
+                }
+              } catch (e) {
+                // silent recovery
+              }
+            };
+            proto._patchedForVanta = true;
+          }
         }
-        if (!(window as any).VANTA?.RINGS) {
-          await loadScript("/vendor/vanta.rings.min.js").catch(() =>
-            loadScript("https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.rings.min.js")
-          );
-        }
-        if (isMounted && elRef.current && (window as any).VANTA?.RINGS) {
+
+        if (
+          isMounted &&
+          elRef.current &&
+          (window as any).VANTA?.RINGS &&
+          (window as any).THREE?.Group
+        ) {
           vantaEffect = (window as any).VANTA.RINGS({
             el: elRef.current,
+            THREE: (window as any).THREE,
             mouseControls: true,
             touchControls: true,
             gyroControls: false,

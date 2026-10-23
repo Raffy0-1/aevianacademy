@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
 
 // AEVIAN BRAND DESIGN SYSTEM
 // Palette based on Brand Identity Exploration Moodboard:
@@ -82,8 +83,17 @@ const config: Config = {
         sm: "0.5rem",
         md: "0.75rem",
         lg: "1rem",
-        xl: "1.5rem",
-        "2xl": "2rem",
+        xl: "1.25rem",
+        "2xl": "1.5rem",
+        "3xl": "2rem",
+        full: "9999px",
+      },
+      boxShadow: {
+        "2xs": "0 1px 2px 0 rgba(28, 42, 56, 0.04)",
+        xs: "0 1px 3px 0 rgba(28, 42, 56, 0.06), 0 1px 2px -1px rgba(28, 42, 56, 0.04)",
+        card: "0 4px 24px -4px rgba(28, 42, 56, 0.06)",
+        floating: "0 12px 36px -10px rgba(28, 42, 56, 0.12)",
+        copper: "0 4px 18px rgba(200, 109, 81, 0.32)",
       },
       keyframes: {
         "fade-up": {
@@ -115,7 +125,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [tailwindcssAnimate],
 };
 
 export default config;

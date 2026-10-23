@@ -3,202 +3,154 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ArrowRight, MessageCircle } from "lucide-react";
+import { X, ArrowRight, GraduationCap } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/social-icons";
 
 /**
- * "Aevi" the Intelligent Owl-Bot Guide
- * Studio-grade animated vector mascot that assists visitors with booking and choosing paths.
+ * Aevian Academic Admissions Concierge
+ * High-end floating advisory widget providing direct WhatsApp chat and trial booking.
  */
 export function AeviMascot() {
-  const [isOpen, setIsOpen] = useState(true);
-  const [isWaving, setIsWaving] = useState(false);
-  const [blink, setBlink] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
 
-  // Auto-dismiss the initial landing speech bubble after ~1.8 seconds
+  // Gentle initial teaser prompt after 3 seconds for first-time visitors
   useEffect(() => {
-    const dismissTimer = setTimeout(() => {
-      setIsOpen(false);
-    }, 1800);
-    return () => clearTimeout(dismissTimer);
-  }, []);
+    const timer = setTimeout(() => {
+      if (!hasInteracted) {
+        setIsOpen(true);
+      }
+    }, 2800);
 
-  // Periodic eye blink
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setBlink(true);
-      setTimeout(() => setBlink(false), 200);
-    }, 4500);
-    return () => clearInterval(interval);
-  }, []);
+    const autoClose = setTimeout(() => {
+      if (!hasInteracted) {
+        setIsOpen(false);
+      }
+    }, 8500);
+
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(autoClose);
+    };
+  }, [hasInteracted]);
 
   return (
     <aside
-      aria-label="Aevi AI Assistant"
+      aria-label="Aevian Academic Admissions Concierge"
       className="fixed bottom-6 right-6 z-40 flex flex-col items-end select-none pointer-events-auto"
     >
-      {/* Speech Bubble */}
+      {/* Concierge Dialog Card */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 15, scale: 0.9 }}
+            initial={{ opacity: 0, y: 16, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.9 }}
-            transition={{ type: "spring", stiffness: 400, damping: 28 }}
-            className="mb-3 max-w-xs sm:max-w-sm rounded-2xl border border-slate-border/80 bg-white/95 p-4 shadow-2xl backdrop-blur-xl dark:border-navy-light dark:bg-navy/95"
+            exit={{ opacity: 0, y: 12, scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 360, damping: 26 }}
+            className="mb-3 w-80 sm:w-96 rounded-2xl border border-slate-200/80 bg-white/95 p-5 shadow-2xl backdrop-blur-xl dark:border-navy-light/60 dark:bg-navy/95"
           >
             {/* Header row */}
-            <div className="flex items-center justify-between border-b border-slate-border/50 pb-2 dark:border-navy-light">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-navy dark:text-cream">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-copper opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-copper" />
-                </span>
-                <span>Aevi • Academic Guide</span>
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-navy-light/40">
+              <div className="flex items-center gap-2.5">
+                <div className="relative flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-navy to-navy-dark text-copper shadow-inner dark:from-navy-light dark:to-navy">
+                  <GraduationCap className="h-4 w-4" />
+                  <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-emerald-500 dark:border-navy" />
+                </div>
+                <div>
+                  <h3 className="text-xs font-bold text-navy dark:text-cream tracking-tight">
+                    Admission Assistance
+                  </h3>
+                  <p className="text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
+                    Chat directly on WhatsApp
+                  </p>
+                </div>
               </div>
+
               <button
                 type="button"
-                onClick={() => setIsOpen(false)}
-                className="rounded-full p-1 text-slate hover:bg-slate/10 hover:text-navy transition-colors dark:text-slate-light"
-                aria-label="Close assistant message"
+                onClick={() => {
+                  setIsOpen(false);
+                  setHasInteracted(true);
+                }}
+                className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-navy transition-colors dark:hover:bg-navy-light/40 dark:hover:text-cream cursor-pointer"
+                aria-label="Close admissions advisor"
               >
-                <X className="h-3.5 w-3.5" />
+                <X className="h-4 w-4" />
               </button>
             </div>
 
-            {/* Bubble Message */}
-            <p className="mt-2.5 text-xs font-medium leading-relaxed text-slate dark:text-slate-light">
-              👋 <strong>Need help choosing the right learning path?</strong> Match with a certified IB, IGCSE, or Assessment tutor for a <strong>free 40-minute demo class</strong>!
+            {/* Counsel Message */}
+            <p className="mt-3 text-xs leading-relaxed text-slate dark:text-slate-light">
+              Unsure which curriculum track best fits your child? Connect with our Senior Academic Dean for diagnostic evaluation and a <strong>complimentary 40-minute trial session</strong>.
             </p>
 
-            {/* CTA Buttons */}
-            <div className="mt-3 flex flex-wrap items-center gap-2">
+            {/* Direct Action Links */}
+            <div className="mt-4 flex items-center gap-2">
               <Link
                 href="/book-trial"
-                onClick={() => setIsOpen(false)}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-copper px-3 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-copper-hover transition-colors"
+                onClick={() => {
+                  setIsOpen(false);
+                  setHasInteracted(true);
+                }}
+                className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-copper px-3.5 py-2 text-xs font-bold text-white shadow-sm hover:bg-copper-hover transition-all cursor-pointer"
               >
-                <span>Book Free Demo</span>
+                <span>Book Free 40-Min Trial</span>
                 <ArrowRight className="h-3 w-3" />
               </Link>
               <a
                 href="https://wa.me/923704942300"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-500/20 transition-colors dark:text-emerald-400"
+                onClick={() => setHasInteracted(true)}
+                title="Chat directly on WhatsApp"
+                aria-label="Chat directly on WhatsApp"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200/90 bg-white shadow-xs hover:scale-105 hover:shadow-md transition-all dark:border-navy-light/60 dark:bg-navy-light/40 cursor-pointer"
               >
-                <MessageCircle className="h-3 w-3 text-emerald-600" />
-                <span>WhatsApp</span>
+                <WhatsAppIcon className="h-4.5 w-4.5" />
               </a>
             </div>
 
-            {/* Little Triangle Pointer to Mascot */}
-            <div className="absolute -bottom-2 right-8 h-4 w-4 rotate-45 border-b border-r border-slate-border/80 bg-white/95 dark:border-navy-light dark:bg-navy/95" />
+            {/* Pointer Chevron to Launcher */}
+            <div className="absolute -bottom-2 right-6 h-4 w-4 rotate-45 border-b border-r border-slate-200/80 bg-white/95 dark:border-navy-light/60 dark:bg-navy/95" />
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Interactive Mascot Button */}
+      {/* Floating Concierge Badge Launcher */}
       <motion.button
         type="button"
-        whileHover={{ scale: 1.08 }}
+        whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        onClick={() => setIsOpen(!isOpen)}
-        onMouseEnter={() => setIsWaving(true)}
-        onMouseLeave={() => setIsWaving(false)}
-        className="group relative flex items-center justify-center bg-transparent border-0 p-0 focus:outline-none cursor-pointer filter drop-shadow-xl hover:drop-shadow-2xl transition-all"
-        aria-label="Toggle Aevi Academic Guide"
+        onClick={() => {
+          setIsOpen(!isOpen);
+          setHasInteracted(true);
+        }}
+        className="group relative flex items-center gap-3 rounded-full border border-slate-200/90 bg-white/95 pl-3 pr-4 py-2.5 shadow-xl backdrop-blur-md hover:border-copper/50 hover:shadow-2xl transition-all cursor-pointer dark:border-navy-light dark:bg-navy/95 dark:hover:border-copper/50"
+        aria-label="Open Admission Assistance"
       >
-        {/* Studio-Grade Vector Owl-Bot ("Aevi") */}
-        <svg
-          viewBox="0 0 100 100"
-          className="relative h-16 w-16 transition-transform duration-300 group-hover:scale-105"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          {/* Mortarboard Academic Cap */}
-          <path
-            d="M 50 12 L 85 24 L 50 36 L 15 24 Z"
-            fill="#C86D51"
-            stroke="#FFFFFF"
-            strokeWidth="1.5"
-          />
-          {/* Cap Skull Cap */}
-          <path d="M 28 29 L 28 40 C 28 48 72 48 72 40 L 72 29 Z" fill="#1C2A38" />
-          {/* Golden Tassel */}
-          <path d="M 50 24 L 20 32 L 20 44" stroke="#D97706" strokeWidth="2" strokeLinecap="round" />
-          <circle cx="20" cy="45" r="3" fill="#D97706" />
-
-          {/* Owl-Bot Head & Body Container */}
-          <rect
-            x="20"
-            y="35"
-            width="60"
-            height="55"
-            rx="22"
-            fill="#1C2A38"
-            stroke="#C86D51"
-            strokeWidth="2.5"
-          />
-
-          {/* Golden Crest Plate */}
-          <rect x="30" y="65" width="40" height="20" rx="10" fill="#2A3C4E" />
-          {/* Logo Glyph on Chest */}
-          <circle cx="50" cy="75" r="4" fill="#C86D51" />
-
-          {/* Futuristic Visor Eyes Plate */}
-          <rect
-            x="26"
-            y="43"
-            width="48"
-            height="20"
-            rx="8"
-            fill="#111A24"
-            stroke="#2A3C4E"
-            strokeWidth="1.5"
-          />
-
-          {/* Left Eye */}
-          <ellipse
-            cx="38"
-            cy="53"
-            rx="5.5"
-            ry={blink ? "0.5" : "5.5"}
-            fill="#38BDF8"
-            className="transition-all duration-150"
-          />
-          {!blink && <circle cx="40" cy="51" r="1.8" fill="#FFFFFF" />}
-
-          {/* Right Eye */}
-          <ellipse
-            cx="62"
-            cy="53"
-            rx="5.5"
-            ry={blink ? "0.5" : "5.5"}
-            fill="#38BDF8"
-            className="transition-all duration-150"
-          />
-          {!blink && <circle cx="64" cy="51" r="1.8" fill="#FFFFFF" />}
-
-          {/* Cute Geometric Golden Beak */}
-          <polygon points="46,57 54,57 50,63" fill="#D97706" />
-
-          {/* Waving Right Wing */}
-          <motion.path
-            d={isWaving ? "M 78 52 C 88 42, 92 48, 86 64 Z" : "M 78 52 C 84 56, 84 68, 78 72 Z"}
-            fill="#C86D51"
-            animate={isWaving ? { rotate: [0, -15, 15, -10, 0] } : {}}
-            transition={{ repeat: Infinity, duration: 0.8 }}
-          />
-
-          {/* Left Wing */}
-          <path d="M 22 52 C 16 56, 16 68, 22 72 Z" fill="#C86D51" />
-        </svg>
-
-        {/* Notification Dot */}
-        {!isOpen && (
-          <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-copper text-[9px] font-bold text-white shadow-md">
-            1
+        {/* Prestige Monogram Seal / Shield */}
+        <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-navy text-copper shadow-sm dark:bg-navy-light">
+          <GraduationCap className="h-4.5 w-4.5 transition-transform group-hover:rotate-6" />
+          {/* Live Active Beacon Dot */}
+          <span className="absolute top-0 right-0 flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
           </span>
+        </div>
+
+        {/* Text Label */}
+        <div className="text-left hidden sm:block">
+          <p className="text-[11px] font-bold text-navy dark:text-cream leading-tight tracking-tight">
+            Admissions Desk
+          </p>
+          <p className="text-[10px] font-medium text-copper leading-tight">
+            Ask Anything
+          </p>
+        </div>
+
+        {/* Unread Indicator on Initial Render */}
+        {!isOpen && !hasInteracted && (
+          <span className="flex h-2 w-2 rounded-full bg-copper sm:hidden" />
         )}
       </motion.button>
     </aside>

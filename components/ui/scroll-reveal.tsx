@@ -7,12 +7,14 @@ interface ScrollRevealProps {
   children: React.ReactNode;
   delay?: number;
   direction?: "up" | "down" | "left" | "right" | "none";
+  className?: string;
 }
 
 export function ScrollReveal({
   children,
   delay = 0,
   direction = "up",
+  className,
 }: ScrollRevealProps) {
   const getOffset = () => {
     switch (direction) {
@@ -39,6 +41,7 @@ export function ScrollReveal({
         delay,
         ease: [0.16, 1, 0.3, 1], // cubic-bezier matching the premium design spec
       }}
+      className={className}
     >
       {children}
     </motion.div>
@@ -48,14 +51,16 @@ export function ScrollReveal({
 export function ScrollRevealStagger({
   children,
   staggerDelay = 0.08,
+  className = "h-full flex flex-col",
 }: {
   children: React.ReactNode[];
   staggerDelay?: number;
+  className?: string;
 }) {
   return (
     <>
       {React.Children.map(children, (child, idx) => (
-        <ScrollReveal key={idx} delay={idx * staggerDelay}>
+        <ScrollReveal key={idx} delay={idx * staggerDelay} className={className}>
           {child}
         </ScrollReveal>
       ))}

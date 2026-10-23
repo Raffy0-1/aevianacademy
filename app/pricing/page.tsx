@@ -8,10 +8,8 @@ export default function PricingPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-background py-16">
-        <Container>
-          <PricingPreview />
-        </Container>
+      <main className="min-h-screen">
+        <PricingPreview />
       </main>
       <Footer />
     </>

@@ -1,15 +1,39 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Volume2, VolumeX, Maximize2, X, Star } from "lucide-react";
+import { Maximize2, X, Star } from "lucide-react";
 import Image from "next/image";
 
 export function HeroVideoPreview() {
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [isMuted, setIsMuted] = useState(true);
   const [showFullModal, setShowFullModal] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Lock body scroll and listen for Escape key when modal is open
+  useEffect(() => {
+    if (showFullModal) {
+      document.body.style.overflow = "hidden";
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+          setShowFullModal(false);
+        }
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.body.style.overflow = "";
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    } else {
+      document.body.style.overflow = "";
+    }
+  }, [showFullModal]);
 
   useEffect(() => {
     if (videoRef.current) {
@@ -19,17 +43,10 @@ export function HeroVideoPreview() {
     }
   }, []);
 
-  const toggleMute = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!videoRef.current) return;
-    videoRef.current.muted = !isMuted;
-    setIsMuted(!isMuted);
-  };
-
   return (
     <>
       <div className="relative group">
-        {/* Main Video Card Shell with Rich 3D Elevation Shadow (No Orange Glow) */}
+        {/* Main Video Card Shell with Rich 3D Elevation Shadow */}
         <div className="relative overflow-hidden rounded-3xl border border-slate-700/60 bg-[#141F2B] p-2 sm:p-2.5 shadow-[0_24px_50px_-12px_rgba(15,23,42,0.38),0_12px_24px_-8px_rgba(15,23,42,0.22),0_0_0_1px_rgba(255,255,255,0.08)] hover:shadow-[0_32px_65px_-15px_rgba(15,23,42,0.48),0_16px_32px_-8px_rgba(15,23,42,0.28)] transition-all duration-500">
           {/* Video Container */}
           <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-[#0F1722]">
@@ -37,7 +54,7 @@ export function HeroVideoPreview() {
               ref={videoRef}
               autoPlay
               loop
-              muted={isMuted}
+              muted
               playsInline
               poster="https://images.unsplash.com/photo-1588702547919-26089e690ecc?auto=format&fit=crop&w=1200&q=85"
               className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-102"
@@ -52,13 +69,9 @@ export function HeroVideoPreview() {
             {/* Dark gradient overlay for contrast */}
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/15 to-navy/40" />
 
-            {/* Floating Top Badge 1: Live Status */}
-            <div className="absolute left-3 top-3 flex items-center gap-2 rounded-full border border-white/20 bg-navy/85 px-3 py-1 text-[11px] font-semibold text-white shadow-lg backdrop-blur-md">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-              </span>
-              <span>Live 1-on-1 Class in Session</span>
+            {/* Floating Top Badge 1: Clean Live Session (No blinking dot) */}
+            <div className="absolute left-3 top-3 flex items-center rounded-full border border-white/20 bg-navy/85 px-3 py-1 text-[11px] font-semibold text-white shadow-lg backdrop-blur-md">
+              <span>Live Session</span>
             </div>
 
             {/* Floating Top Badge 2: Verified Rating */}
@@ -94,17 +107,8 @@ export function HeroVideoPreview() {
                 </div>
               </div>
 
-              {/* Action Buttons: Sound & Fullscreen */}
+              {/* Action Button: Fullscreen only (Audio button removed per user request) */}
               <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                <button
-                  type="button"
-                  onClick={toggleMute}
-                  className="rounded-lg border border-white/20 bg-white/10 p-1.5 sm:p-2 text-white hover:bg-white/20 transition-colors cursor-pointer"
-                  aria-label={isMuted ? "Unmute video" : "Mute video"}
-                  title={isMuted ? "Unmute" : "Mute"}
-                >
-                  {isMuted ? <VolumeX className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> : <Volume2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
-                </button>
                 <button
                   type="button"
                   onClick={() => setShowFullModal(true)}
@@ -118,82 +122,92 @@ export function HeroVideoPreview() {
             </div>
           </div>
 
-          {/* Bottom Card Summary Pill */}
-          <div className="mt-2 flex items-center justify-between px-2.5 py-1 text-xs text-slate-light">
-            <span className="flex items-center gap-1.5 text-copper font-semibold">
-              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>HD 1080p Studio Broadcast Quality</span>
-            </span>
-            <button
-              type="button"
-              onClick={() => setShowFullModal(true)}
-              className="text-white/80 hover:text-white font-medium transition-colors cursor-pointer text-xs"
+          {/* Bottom Card Summary Pill — Clean 'Book now' link only (HD broadcast text & pulsing dot removed) */}
+          <div className="mt-2.5 flex items-center justify-end px-3 py-0.5 text-xs text-slate-light">
+            <Link
+              href="/book-trial"
+              className="text-white/85 hover:text-white font-semibold transition-colors cursor-pointer text-xs flex items-center gap-1 group/btn"
             >
-              Full demo &rarr;
-            </button>
+              <span>Book now</span>
+              <span className="transition-transform group-hover/btn:translate-x-0.5">&rarr;</span>
+            </Link>
           </div>
         </div>
       </div>
 
-      {/* Fullscreen Video Modal */}
-      <AnimatePresence>
-        {showFullModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8 bg-black/85 backdrop-blur-md">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="relative w-full max-w-4xl overflow-hidden rounded-3xl border border-white/20 bg-navy shadow-2xl"
-            >
-              {/* Header */}
-              <div className="flex items-center justify-between border-b border-navy-light px-6 py-4 text-white">
-                <div>
-                  <h3 className="text-base font-bold">Aevian Academy — 1-on-1 Live Class Experience</h3>
-                  <p className="text-xs text-slate-light">
-                    Demonstrating our interactive curriculum, whiteboard, and live mentor dynamic.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setShowFullModal(false)}
-                  className="rounded-full p-1.5 text-slate-light hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+      {/* Fullscreen Video Modal Portaled to Body (z-[100] over navbar) */}
+      {mounted &&
+        createPortal(
+          <AnimatePresence>
+            {showFullModal && (
+              <div
+                className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 md:p-8 bg-black/90 backdrop-blur-xl animate-in fade-in duration-200"
+                onClick={() => setShowFullModal(false)}
+              >
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.94, y: 12 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.94, y: 12 }}
+                  transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="relative w-full max-w-4xl max-h-[92vh] flex flex-col rounded-2xl sm:rounded-3xl border border-white/20 bg-navy shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] overflow-hidden"
                 >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
+                  {/* Header */}
+                  <div className="flex shrink-0 items-center justify-between border-b border-navy-light px-4 sm:px-6 py-3 text-white bg-navy">
+                    <div className="pr-4">
+                      <h3 className="text-sm sm:text-base font-bold text-white line-clamp-1">
+                        Aevian Academy — 1-on-1 Live Class Experience
+                      </h3>
+                      <p className="text-[11px] sm:text-xs text-slate-light line-clamp-1">
+                        Demonstrating our interactive curriculum, whiteboard, and live mentor dynamic.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowFullModal(false)}
+                      className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-white/10 hover:bg-copper text-white transition-all cursor-pointer shrink-0 shadow-sm"
+                      aria-label="Close video (Esc)"
+                      title="Close (Esc)"
+                    >
+                      <X className="h-5 w-5" />
+                    </button>
+                  </div>
 
-              {/* Video Player */}
-              <div className="aspect-video w-full bg-black">
-                <video
-                  autoPlay
-                  controls
-                  playsInline
-                  className="h-full w-full object-contain"
-                >
-                  <source src="/videos/hero-class.mp4" type="video/mp4" />
-                  <source
-                    src="https://assets.mixkit.co/videos/47186/47186-720.mp4"
-                    type="video/mp4"
-                  />
-                </video>
-              </div>
+                  {/* Video Player — Height Constrained to Prevent Off-Screen Overflow */}
+                  <div className="relative flex-1 min-h-0 bg-black flex items-center justify-center overflow-hidden">
+                    <video
+                      autoPlay
+                      controls
+                      playsInline
+                      className="max-h-[55vh] sm:max-h-[62vh] w-full h-auto object-contain"
+                    >
+                      <source src="/videos/hero-class.mp4" type="video/mp4" />
+                      <source
+                        src="https://assets.mixkit.co/videos/47186/47186-720.mp4"
+                        type="video/mp4"
+                      />
+                    </video>
+                  </div>
 
-              {/* Modal Footer CTA */}
-              <div className="flex flex-wrap items-center justify-between gap-4 bg-navy-dark px-6 py-4">
-                <div className="text-xs text-slate-light">
-                  Ready to experience this with your child? Your 1st 40-minute class is completely free.
-                </div>
-                <a
-                  href="/book-trial"
-                  className="rounded-xl bg-copper px-5 py-2.5 text-xs font-bold text-white hover:bg-copper-hover transition-colors shadow-md"
-                >
-                  Book Your Free 40-Min Demo
-                </a>
+                  {/* Modal Footer CTA */}
+                  <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 bg-navy-dark px-4 sm:px-6 py-3 border-t border-navy-light/60">
+                    <div className="text-xs text-slate-light max-w-md">
+                      Ready to experience this with your child? Your 1st 40-minute class is completely free.
+                    </div>
+                    <Link
+                      href="/book-trial"
+                      onClick={() => setShowFullModal(false)}
+                      className="rounded-full bg-copper px-5 py-2 text-xs font-bold text-white hover:bg-copper-hover active:scale-[0.98] transition-all shadow-md shrink-0"
+                    >
+                      Book Your Free 40-Min Demo
+                    </Link>
+                  </div>
+                </motion.div>
               </div>
-            </motion.div>
-          </div>
+            )}
+          </AnimatePresence>,
+          document.body
         )}
-      </AnimatePresence>
     </>
   );
 }

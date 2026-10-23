@@ -12,14 +12,14 @@ export function Newsletter() {
       <VantaRingsBackground className="py-20 sm:py-28">
         <Container className="relative z-10 flex flex-col items-center">
           <div className="w-full max-w-2xl rounded-3xl border border-white/20 bg-navy/80 p-8 sm:p-12 text-center text-white shadow-2xl backdrop-blur-xl">
-            {/* Pill */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-copper/30 bg-copper/10 px-3.5 py-1 text-xs font-semibold text-copper mb-4">
-              <Mail className="h-3.5 w-3.5 text-copper" />
+            {/* Academic Eyebrow Badge */}
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-1 text-xs font-medium tracking-wide text-white mb-4 select-none">
+              <span className="h-1.5 w-1.5 rounded-full bg-copper" />
               <span>Aevian Academic Digest</span>
             </div>
 
             <h2 className="text-3xl font-extrabold sm:text-4xl tracking-tight text-white leading-tight">
-              One thoughtful email a month. <span className="text-copper">Zero noise.</span>
+              Subscribe for <span className="text-copper">latest updates</span>
             </h2>
 
             <p className="mt-3.5 max-w-lg mx-auto text-sm sm:text-base text-slate-light leading-relaxed">
@@ -31,7 +31,7 @@ export function Newsletter() {
                 e.preventDefault();
                 alert("Thank you for subscribing to the Aevian Academic Digest!");
               }}
-              className="mt-8 flex w-full max-w-md mx-auto flex-col gap-3 sm:flex-row"
+              className="mt-8 flex w-full max-w-md mx-auto flex-col gap-3 sm:flex-row items-center"
             >
               <label htmlFor="newsletter-email" className="sr-only">
                 Email address
