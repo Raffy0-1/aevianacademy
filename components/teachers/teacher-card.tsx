@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Star, Video, ArrowRight, ChevronRight, RotateCcw, CheckCircle2 } from "lucide-react";
+import { Star, ArrowRight, ChevronRight, RotateCcw } from "lucide-react";
 import { CardAbstract } from "@/components/ui/card-abstract";
 
 export interface TeacherData {
@@ -27,7 +27,7 @@ interface TeacherCardProps {
   onWatchDemo?: (teacher: TeacherData) => void;
 }
 
-export function TeacherCard({ teacher, onWatchDemo }: TeacherCardProps) {
+export function TeacherCard({ teacher }: TeacherCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
 
   return (
@@ -40,7 +40,9 @@ export function TeacherCard({ teacher, onWatchDemo }: TeacherCardProps) {
         className="relative w-full h-full"
       >
         {/* ==================== FRONT FACE ==================== */}
-        <div className="absolute inset-0 w-full h-full rounded-[20px] bg-[#141F2B] border border-white/10 shadow-[0_12px_32px_-8px_rgba(15,23,42,0.6)] hover:shadow-[0_20px_45px_-10px_rgba(200,109,81,0.3)] hover:border-copper/60 transition-colors duration-300 flex flex-col justify-between overflow-hidden p-5 [backface-visibility:hidden]">
+        <div
+          className={`absolute inset-0 w-full h-full rounded-[20px] bg-[#141F2B] border border-white/10 shadow-[0_12px_32px_-8px_rgba(15,23,42,0.6)] hover:shadow-[0_20px_45px_-10px_rgba(200,109,81,0.3)] hover:border-copper/60 transition-colors duration-300 flex flex-col justify-between overflow-hidden p-5 [backface-visibility:hidden] ${isFlipped ? "pointer-events-none" : ""}`}
+        >
           {/* Corner Watermark */}
           <CardAbstract variant="compass" position="top-right" theme="dark" />
 
@@ -97,7 +99,9 @@ export function TeacherCard({ teacher, onWatchDemo }: TeacherCardProps) {
         </div>
 
         {/* ==================== BACK FACE (REVEALED ON FLIP) ==================== */}
-        <div className="absolute inset-0 w-full h-full rounded-[20px] bg-[#141F2B] border border-copper/50 shadow-[0_16px_40px_-8px_rgba(200,109,81,0.25)] flex flex-col justify-between overflow-hidden p-5 text-left [backface-visibility:hidden] [transform:rotateY(180deg)]">
+        <div
+          className={`absolute inset-0 w-full h-full rounded-[20px] bg-[#141F2B] border border-copper/50 shadow-[0_16px_40px_-8px_rgba(200,109,81,0.25)] flex flex-col justify-between overflow-hidden p-5 text-left [backface-visibility:hidden] [transform:rotateY(180deg)] ${!isFlipped ? "pointer-events-none" : ""}`}
+        >
           {/* Subtle Watermark */}
           <CardAbstract variant="orbit" position="bottom-right" theme="dark" />
 
@@ -139,35 +143,18 @@ export function TeacherCard({ teacher, onWatchDemo }: TeacherCardProps) {
               </p>
             </div>
 
-            {/* Quick Actions */}
-            <div className="flex items-center justify-between gap-2 pt-1">
-              {teacher.videoUrl && onWatchDemo ? (
-                <button
-                  type="button"
-                  onClick={() => onWatchDemo(teacher)}
-                  className="inline-flex items-center gap-1 text-xs font-bold text-copper hover:text-copper-hover cursor-pointer"
-                >
-                  <Video className="h-3.5 w-3.5" />
-                  <span>Watch Demo</span>
-                </button>
-              ) : (
-                <span className="text-[11px] text-slate-light flex items-center gap-1">
-                  <CheckCircle2 className="h-3 w-3 text-emerald-400" /> Vetted Faculty
-                </span>
-              )}
-
-              <Link
-                href="/book-trial"
-                className="inline-flex items-center gap-1 rounded-lg bg-copper px-3 py-1.5 text-xs font-bold text-white hover:bg-copper-hover transition-colors shadow-xs"
-              >
-                <span>Book Trial</span>
-                <ArrowRight className="h-3 w-3" />
-              </Link>
-            </div>
+            {/* Book Trial CTA — full width */}
+            <Link
+              href="/book-trial"
+              className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-copper px-4 py-2 text-xs sm:text-sm font-bold text-white shadow-md hover:bg-copper-hover transition-colors"
+            >
+              <span>Book Free Trial</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
           </div>
 
           {/* Flip Back Button */}
-          <div className="relative z-10 pt-2 border-t border-white/10">
+          <div className="relative z-10 pt-2.5 mt-1 border-t border-white/10">
             <button
               type="button"
               onClick={() => setIsFlipped(false)}
