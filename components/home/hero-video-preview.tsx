@@ -48,8 +48,8 @@ export function HeroVideoPreview() {
       <div className="relative group">
         {/* Main Video Card Shell with Rich 3D Elevation Shadow */}
         <div className="relative overflow-hidden rounded-3xl border border-slate-700/60 bg-[#141F2B] p-2 sm:p-2.5 shadow-[0_24px_50px_-12px_rgba(15,23,42,0.38),0_12px_24px_-8px_rgba(15,23,42,0.22),0_0_0_1px_rgba(255,255,255,0.08)] hover:shadow-[0_32px_65px_-15px_rgba(15,23,42,0.48),0_16px_32px_-8px_rgba(15,23,42,0.28)] transition-all duration-500">
-          {/* Video Container */}
-          <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-[#0F1722]">
+          {/* Video Container - Cinematic 16:9 for clean first-frame fit */}
+          <div className="relative aspect-[16/9.2] sm:aspect-video w-full overflow-hidden rounded-2xl bg-[#0F1722]">
             <video
               ref={videoRef}
               autoPlay
@@ -70,21 +70,21 @@ export function HeroVideoPreview() {
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/15 to-navy/40" />
 
             {/* Floating Top Badge 1: Clean Live Session (No blinking dot) */}
-            <div className="absolute left-3 top-3 flex items-center rounded-full border border-white/20 bg-navy/85 px-3 py-1 text-[11px] font-semibold text-white shadow-lg backdrop-blur-md">
+            <div className="absolute left-2.5 top-2.5 sm:left-3 sm:top-3 flex items-center rounded-full border border-white/20 bg-navy/85 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-[11px] font-semibold text-white shadow-lg backdrop-blur-md">
               <span>Live Session</span>
             </div>
 
             {/* Floating Top Badge 2: Verified Rating */}
-            <div className="absolute right-3 top-3 flex items-center gap-1.5 rounded-full border border-white/20 bg-navy/85 px-3 py-1 text-[11px] font-bold text-copper shadow-lg backdrop-blur-md">
+            <div className="absolute right-2.5 top-2.5 sm:right-3 sm:top-3 flex items-center gap-1.5 rounded-full border border-white/20 bg-navy/85 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-[11px] font-bold text-copper shadow-lg backdrop-blur-md">
               <Star className="h-3 w-3 fill-copper text-copper" />
               <span>4.98 ★</span>
-              <span className="text-[10px] text-white/70 font-normal">(1,420+ Reviews)</span>
+              <span className="text-[10px] text-white/70 font-normal hidden sm:inline">(1,420+ Reviews)</span>
             </div>
 
             {/* Bottom Overlay: Tutor and Student Info */}
-            <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-3 rounded-xl border border-white/15 bg-navy/85 p-2.5 sm:p-3 shadow-lg backdrop-blur-md">
-              <div className="flex items-center gap-2.5 sm:gap-3">
-                <div className="relative h-9 w-9 sm:h-10 sm:w-10 overflow-hidden rounded-full border-2 border-copper shrink-0">
+            <div className="absolute bottom-2 left-2 right-2 sm:bottom-2.5 sm:left-2.5 sm:right-2.5 flex items-center justify-between gap-2.5 rounded-xl border border-white/15 bg-navy/85 p-2 sm:p-2.5 shadow-lg backdrop-blur-md">
+              <div className="flex items-center gap-2 sm:gap-2.5">
+                <div className="relative h-8 w-8 sm:h-9 sm:w-9 overflow-hidden rounded-full border-2 border-copper shrink-0">
                   <Image
                     src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=160&q=80"
                     alt="Dr. Nadia Farooq"
@@ -92,38 +92,38 @@ export function HeroVideoPreview() {
                     height={40}
                     className="h-full w-full object-cover"
                   />
-                  <div className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-navy bg-emerald-500" />
+                  <div className="absolute bottom-0 right-0 h-2 w-2 rounded-full border-2 border-navy bg-emerald-500" />
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <h4 className="text-xs font-bold text-white leading-tight">Dr. Nadia Farooq</h4>
-                    <span className="rounded bg-copper/20 px-1.5 py-0.5 text-[9px] font-bold text-copper uppercase">
+                    <h4 className="text-[11px] sm:text-xs font-bold text-white leading-tight">Dr. Nadia Farooq</h4>
+                    <span className="rounded bg-copper/20 px-1.5 py-0.5 text-[8px] sm:text-[9px] font-bold text-copper uppercase">
                       Cambridge Alum
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-light leading-tight mt-0.5">
+                  <p className="text-[10px] sm:text-[11px] text-slate-light leading-tight mt-0.5">
                     1-on-1 with Aiden K. <span className="text-white font-medium">• Sydney, AU 🇦🇺</span>
                   </p>
                 </div>
               </div>
 
-              {/* Action Button: Fullscreen only (Audio button removed per user request) */}
+              {/* Action Button: Fullscreen */}
               <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                 <button
                   type="button"
                   onClick={() => setShowFullModal(true)}
-                  className="rounded-lg border border-white/20 bg-white/10 p-1.5 sm:p-2 text-white hover:bg-white/20 transition-colors cursor-pointer"
+                  className="rounded-lg border border-white/20 bg-white/10 p-1.5 text-white hover:bg-white/20 transition-colors cursor-pointer"
                   aria-label="Expand video modal"
                   title="Expand to Fullscreen"
                 >
-                  <Maximize2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  <Maximize2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                 </button>
               </div>
             </div>
           </div>
 
-          {/* Bottom Card Summary Pill — Clean 'Book now' link only (HD broadcast text & pulsing dot removed) */}
-          <div className="mt-2.5 flex items-center justify-end px-3 py-0.5 text-xs text-slate-light">
+          {/* Bottom Card Summary Pill */}
+          <div className="mt-2 flex items-center justify-end px-3 py-0.5 text-xs text-slate-light">
             <Link
               href="/book-trial"
               className="text-white/85 hover:text-white font-semibold transition-colors cursor-pointer text-xs flex items-center gap-1 group/btn"

@@ -22,7 +22,7 @@ export function Hero() {
   const selectedCategory = categories.find((c) => c.id === activeTab) || categories[0];
 
   return (
-    <section className="relative overflow-visible bg-cream/70 backdrop-blur-xs pt-6 pb-12 sm:pt-8 sm:pb-16 lg:pt-10 lg:pb-20 border-b border-slate-border/50">
+    <section className="relative overflow-visible bg-cream/70 backdrop-blur-xs pt-4 pb-12 sm:pt-6 sm:pb-16 lg:pt-6 lg:pb-20 border-b border-slate-border/50">
       {/* Subtle Architectural Grid Background */}
       <div 
         className="absolute inset-0 -z-10 bg-[radial-gradient(#1C2A38_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.035] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" 
@@ -36,7 +36,7 @@ export function Hero() {
       {/* Skiper19 Flow Stroke — Scroll-Linked Terracotta Ribbon */}
       <FlowStroke className="h-[2200px]" />
 
-      <Container className="grid items-center gap-10 lg:gap-12 lg:grid-cols-12 relative z-10">
+      <Container className="grid items-start gap-8 lg:gap-10 lg:grid-cols-12 relative z-10">
         {/* Left Hero Content */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -160,7 +160,7 @@ export function Hero() {
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, delay: 0.12 }}
-          className="lg:col-span-5 relative"
+          className="lg:col-span-5 relative lg:pt-1"
         >
           <HeroVideoPreview />
         </motion.div>
