@@ -46,7 +46,7 @@ export function Hero() {
         >
           {/* 1. Genuine Architectural Eyebrow Badge (No blinking dot, no transparent orange wash) */}
           <div className="inline-flex items-center gap-2 rounded-lg border border-slate-200/90 bg-white/90 dark:bg-navy-dark dark:border-slate-800 px-3 py-1 text-xs font-mono font-semibold tracking-wider text-navy/90 dark:text-cream/90 shadow-2xs select-none w-fit mb-4">
-            <span className="text-copper font-bold">//</span>
+            <span className="text-copper font-bold">{"//"}</span>
             <span>Live 1-on-1 International Tutoring · IB, Cambridge &amp; SAT</span>
           </div>
 

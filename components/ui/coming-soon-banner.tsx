@@ -43,7 +43,7 @@ export function ComingSoonBanner({
 
       {/* Status Badge */}
       <div className="mt-6 inline-flex items-center gap-2 rounded-lg border border-slate-200/90 bg-white/90 px-3 py-1 text-xs font-mono font-semibold tracking-wider text-navy shadow-2xs">
-        <span className="text-copper font-bold">//</span>
+        <span className="text-copper font-bold">{"//"}</span>
         <span>{badge}</span>
       </div>
 

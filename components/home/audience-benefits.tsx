@@ -29,7 +29,7 @@ export function AudienceBenefits() {
 
               <div className="relative z-10">
                 <div className="inline-flex items-center gap-2 rounded-lg border border-slate-200/90 bg-white/90 px-3 py-1 font-mono text-xs font-semibold tracking-wider text-navy shadow-2xs">
-                  <span className="text-copper font-bold">//</span>
+                  <span className="text-copper font-bold">{"//"}</span>
                   <span>For Parents</span>
                 </div>
                 <h3 className="mt-4 text-2xl sm:text-3xl font-extrabold tracking-[-0.025em] text-navy leading-snug">
@@ -63,7 +63,7 @@ export function AudienceBenefits() {
 
               <div className="relative z-10">
                 <div className="inline-flex items-center gap-2 rounded-lg border border-white/20 bg-white/10 px-3 py-1 font-mono text-xs font-semibold tracking-wider text-white">
-                  <span className="text-copper font-bold">//</span>
+                  <span className="text-copper font-bold">{"//"}</span>
                   <span>For Students</span>
                 </div>
                 <h3 className="mt-4 text-2xl sm:text-3xl font-extrabold tracking-[-0.025em] text-white leading-snug">

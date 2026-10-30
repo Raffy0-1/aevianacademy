@@ -50,7 +50,7 @@ export function Features() {
                     <Users size={24} strokeWidth={1.8} />
                   </div>
                   <span className="inline-flex items-center gap-2 rounded-lg border border-slate-200/90 bg-white/90 px-3 py-1 text-xs font-mono font-semibold tracking-wider text-navy shadow-2xs">
-                    <span className="text-copper font-bold">//</span>
+                    <span className="text-copper font-bold">{"//"}</span>
                     <span>Flagship Mentorship</span>
                   </span>
                 </div>
@@ -106,7 +106,7 @@ export function Features() {
                     <ShieldCheck size={22} strokeWidth={1.8} />
                   </div>
                   <span className="rounded-lg bg-white/10 border border-white/20 px-3 py-1 text-xs font-mono font-semibold text-white tracking-wider uppercase">
-                    <span className="text-copper font-bold mr-1.5">//</span>Top 3% Vetted
+                    <span className="text-copper font-bold mr-1.5">{"//"}</span>Top 3% Vetted
                   </span>
                 </div>
 
